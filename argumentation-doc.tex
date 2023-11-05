@@ -10,6 +10,7 @@
 
 \newtheorem{example}{Example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 \maketitle
 
@@ -21,7 +22,7 @@
 \begin{figure}[ht]
     \centering
     \begin{af}
-        \argument{args1}{a}
+        \argument{args1}{$a_1$}
         \argument[right=of args1]{args2}{b}
         \argument[right=of args2]{args3}{c}
         \argument[right=of args3]{args4}{d}
@@ -95,24 +96,32 @@
 In the following, we provide an overview over the functionality of the \textsf{argumentation} package.
 
 \subsection{Package Options}
-    Three options are provided to customize the look of the argumentation framework: \textsf{namestyle}, \textsf{argumentstyle} and \textsf{attackstyle}.
+    Multiple options are provided to customize the look of the argumentation framework.
     The \textsf{namestyle} option accepts three different values
     \begin{align*}
-        \mathsf{italics} &\quad \text{The argument name is rendered in \emph{italics}.}\\
+        \mathsf{italics} &\quad \text{(default) The argument name is rendered in \emph{italics}.}\\
         \mathsf{bold} &\quad \text{The argument name is rendered in \textbf{bold}.}\\
-        \mathsf{bolditalics} &\quad \text{(default) The argument name is rendered with \textbf{\emph{both}}.}\\
+        \mathsf{bolditalics} &\quad \text{The argument name is rendered with \textbf{\emph{both}}.}\\
+        \mathsf{normal} &\quad \text{The argument name is rendered normally.}
     \end{align*}
 
     The \textsf{argumentstyle} option controls the style of the argument nodes and accepts two values
         \begin{align*}
             \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
-            \mathsf{retro} &\quad \text{Alternative style, node size may vary for large argument names.}
+            \mathsf{retro} &\quad \text{Alternative style, thicker outline and slightly larger nodes.}
         \end{align*}
 
     The \textsf{attackstyle} option controls the style of the attack arrows and accepts two values
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
-        \mathsf{retro} &\quad \text{Alternative style, arrow tip is smaller and flatter.}
+        \mathsf{retro} &\quad \text{Alternative style, arrow tip is larger and sharper.}
+    \end{align*}
+
+    The \textsf{supportstyle} option controls the style of the support arrows and accepts three values
+    \begin{align*}
+        \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
+        \mathsf{dashed} &\quad \text{Dashed arrow line, same tip.}\\
+        \mathsf{double} &\quad \text{Double arrow line and large flat tip.}\\
     \end{align*}
     
 
