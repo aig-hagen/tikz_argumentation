@@ -1,0 +1,397 @@
+\documentclass{article}
+
+\title{The \texttt{argumentation} Package}
+\author{Lars Bengel\\\small lars.bengel@fernuni-hagen.de}
+%\date{}
+
+%%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{argumentation}
+\usepackage{amsmath}
+
+\newtheorem{example}{Example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Example}
+\vspace{-0.7cm}
+\begin{figure}[ht]
+    \centering
+    \begin{af}
+        \argument{args1}{a}
+        \argument[right=of args1]{args2}{b}
+        \argument[right=of args2]{args3}{c}
+        \argument[right=of args3]{args4}{d}
+        \argument[right=of args4]{args5}{e}
+        \argument[below=of args1]{args6}{f}
+        \argument[inactive,right=of args6]{args7}{g}
+        \argument[inactive,argin,right=of args7]{args8}{h}
+        \argument[right=of args8]{args9}{i}
+        \argument[right=of args9]{args10}{j}
+
+        \afname[left of=args1,yshift=-0.8cm,xshift=-0.2cm]{cap}{\textbf{F:}}
+
+        \selfattack{args1}
+        \dualattack[]{args1}{args6}
+        \dualattack[inactive]{args6}{args7}
+        
+        \attack[inactive]{args8}{args7}
+        \attack[inactive]{args7}{args2}
+        \attack[]{args3}{args2}    
+        \attack[]{args4}{args5}
+        \attack[]{args5}{args10}
+        \attack[]{args10}{args9}
+        \attack[]{args9}{args4}
+
+        \support[]{args4}{args3}
+        \support[]{args9}{args3}
+    \end{af}
+    \caption{An exemplary AF created with the \textsf{argumentation} package.}
+    \label{fig:example}
+\end{figure}
+\vspace{-0.4cm}
+\begin{verbatim}
+    \usepackage{argumentation}
+    \begin{figure}[ht]
+        \centering
+        \begin{af}
+            \argument{args1}{a}
+            \argument[right=of args1]{args2}{b}
+            \argument[right=of args2]{args3}{c}
+            \argument[right=of args3]{args4}{d}
+            \argument[right=of args4]{args5}{e}
+            \argument[below=of args1]{args6}{f}
+            \argument[inactive,right=of args6]{args7}{g}
+            \argument[inactive,argin,right=of args7]{args8}{h}
+            \argument[right=of args8]{args9}{i}
+            \argument[right=of args9]{args10}{j}
+    
+            \afname[left of=args1,yshift=-0.8cm,xshift=-0.2cm]{cap}{\textbf{F:}}
+    
+            \selfattack{args1}
+            \dualattack[]{args1}{args6}
+            \dualattack[inactive]{args6}{args7}
+            
+            \attack[inactive]{args8}{args7}
+            \attack[inactive]{args7}{args2}
+            \attack[]{args3}{args2}    
+            \attack[]{args4}{args5}
+            \attack[]{args5}{args10}
+            \attack[]{args10}{args9}
+            \attack[]{args9}{args4}
+
+            \support[]{args4}{args3}
+            \support[]{args9}{args3}
+        \end{af}
+        \caption{An exemplary AF created with the \textsf{argumentation} package.}
+        \label{fig:example}
+    \end{figure}
+\end{verbatim}
+
+\section{Documentation for Version 1.0 [2023/11/05]}
+In the following, we provide an overview over the functionality of the \textsf{argumentation} package.
+
+\subsection{Package Options}
+    Three options are provided to customize the look of the argumentation framework: \textsf{namestyle}, \textsf{argumentstyle} and \textsf{attackstyle}.
+    The \textsf{namestyle} option accepts three different values
+    \begin{align*}
+        \mathsf{italics} &\quad \text{The argument name is rendered in \emph{italics}.}\\
+        \mathsf{bold} &\quad \text{The argument name is rendered in \textbf{bold}.}\\
+        \mathsf{bolditalics} &\quad \text{(default) The argument name is rendered with \textbf{\emph{both}}.}\\
+    \end{align*}
+
+    The \textsf{argumentstyle} option controls the style of the argument nodes and accepts two values
+        \begin{align*}
+            \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
+            \mathsf{retro} &\quad \text{Alternative style, node size may vary for large argument names.}
+        \end{align*}
+
+    The \textsf{attackstyle} option controls the style of the attack arrows and accepts two values
+    \begin{align*}
+        \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
+        \mathsf{retro} &\quad \text{Alternative style, arrow tip is smaller and flatter.}
+    \end{align*}
+    
+
+\subsection{Environments}
+The package provides two environments for creating abstract argumentation frameworks and bipolar argumentation frameworks in \LaTeX-documents.
+
+\subsubsection{\textsf{af}-Environment}
+    The \textsf{argumentation} package provides the \textsf{af} environment for creating abstract argumentation framework.
+    The \textsf{af} environment extends the \textsf{tikzpicture} environment, meaning all \textsf{tikzpicture}-parameters can be used inside the \textsf{af} environment as well.
+    The most relevant parameter is \verb|node distance|, which is set to \verb|1cm| per default.
+    
+\subsubsection{\textsf{miniaf}-Environment}
+    The \textsf{miniaf} environment can be used to create argumentation frameworks using less space.
+    Especially useful for two-column layout documents.
+    It provides essentially the same as the \textsf{af} environment, but with \verb|node distance=0.5cm| and for each node \verb|minimum size=0.5cm|, \verb|font=\small|.
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{miniaf}
+        \argument{args1}{a}
+        \argument[right=of args1]{args2}{b}
+        \argument[right=of args2]{args3}{c}
+        \argument[right=of args3]{args4}{d}
+        \argument[right=of args4]{args5}{e}
+        \argument[below=of args1]{args6}{f}
+        \argument[inactive,right=of args6]{args7}{g}
+        \argument[inactive,argin,right=of args7]{args8}{h}
+        \argument[right=of args8]{args9}{i}
+        \argument[right=of args9]{args10}{j}
+
+        \afname[left of=args1,yshift=-0.5cm,xshift=-0.2cm]{cap}{\textbf{F:}}
+
+        \selfattack{args1}
+        \dualattack[]{args1}{args6}
+        \dualattack[inactive]{args6}{args7}
+        \attack[inactive]{args8}{args7}
+
+        \attack[inactive]{args7}{args2}
+        \attack[]{args3}{args2}
+
+        \support[]{args4}{args3}
+        \support[]{args9}{args3}
+
+        \attack[]{args4}{args5}
+        \attack[]{args5}{args10}
+        \attack[]{args10}{args9}
+        \attack[]{args9}{args4}
+    \end{miniaf}
+    \caption{An exemplary Mini-AF created with the \textsf{miniaf} environment.}
+    \label{fig:example_mini}
+\end{figure}
+
+
+\subsection{Arguments}
+    Arguments can be created with the following command
+
+    \verb|\argument{id}{name}|
+
+    \noindent
+    To create an argument, you must provide a unique identifier \textsf{id} and the \textsf{name} to be displayed in the picture.
+    The \textsf{id} of an argument is then referred to when creating attacks as well as for the relative positioning of the other arguments.
+
+    The \textsf{standard} style of an argument is defined with the following parameters, all of which can be overridden if desired.
+    \begin{align*}
+        \textsf{circle} &\quad \text{the shape of the argument.}\\
+        \textsf{minimum~size=0.75cm} &\quad \text{the minimum size of the circle, to ensure consistent}\\
+        &\quad \text{argument size.}\\
+        \textsf{draw=black} &\quad \text{outline and text color of the argument.}\\
+        \textsf{thick} &\quad \text{the outline of the circle is rendered in \textsf{thick} mode.}\\
+        \textsf{fill=white} &\quad \text{the background color of the argument.}\\
+        \textsf{font=large} &\quad \text{the font size of the argument name.}\\
+        \textsf{text~centered} &\quad \text{positioning of the argument name inside the circle.}\\
+        \textsf{inner~sep=0} &\quad \text{inner margins of the circle, set to \textsf{0} to optimize space.}
+    \end{align*}
+    \subsubsection{Relative Positioning}    
+    This package supports relative placement of the arguments via the \textsf{tikz}-library \textsf{positioning}.
+    The relative positioning information is provided as an optional parameter via
+    
+    \verb|\argument[dir=of arg_id]{id}{name}|
+    
+    \noindent
+    with \textsf{dir} being one of: \emph{right}, \emph{left}, \emph{below} and \emph{above} and \textsf{arg\_id} being the id of another argument.
+    
+    Additionally, you can adjust the horizontal/vertical position of an argument via the options \textsf{xshift} and \textsf{yshift}.
+    You must also specify the distance in one of the following ways
+
+    \verb|\argument[xshift=5mm]{id}{name}|
+
+    \verb|\argument[xshift=5pt]{id}{name}|
+
+    \verb|\argument[xshift=5ex]{id}{name}|
+
+    \begin{example}~
+
+    \begin{verbatim}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2, yshift=-10pt]{arg3}{c}
+        \end{af}
+    \end{verbatim}
+
+    \begin{center}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2, yshift=-10pt]{arg3}{c}
+        \end{af}
+    \end{center}
+        
+    \end{example}
+
+    \subsubsection{Argument Styles}
+    Furthermore, you can provide optional parameters to adjust the style of the argument node.
+    For that you can use all \textsf{tikz}-style options and additionally the following pre-defined style parameters:
+    \begin{align*}
+        \mathsf{inactive} &\quad \text{The argument is displayed in grey and with a dotted outline.}\\
+        \mathsf{argin} &\quad \text{The argument is displayed with green background color.}\\
+        \mathsf{argout} &\quad \text{The argument is displayed with red background color.}\\
+        \mathsf{argundec} &\quad \text{The argument is displayed with cyan background color.}
+    \end{align*}
+
+    \begin{example}
+        
+    \end{example}
+
+\subsection{Attacks}
+    Attacks between two arguments can be created with the command
+
+    \verb|\attack{arg1}{arg2}|
+
+    \noindent
+    where \textsf{arg1} and \textsf{arg2} are the identifiers of two previously defined arguments.
+    The \textsf{standard} style for attacks is defined with the \textsf{arrows.meta} library as follows
+    \begin{align*}
+        \texttt{-{Stealth[scale=1.25]}}
+    \end{align*}
+
+\subsubsection{Attack Styles}
+    To customize an attack you can provide additional optional parameters:
+    \begin{align*}
+        \mathsf{inactive} &\quad \text{The attack is displayed in grey and with a dotted line.}\\
+        \mathsf{bend~right} &\quad \text{The attack arrow is bent to the right.}\\
+        &\quad \text{Can additionally provide the angle, e.\,g., \textsf{bend~right=40}.}\\
+        \mathsf{bend~left} &\quad \text{The attack arrow is bent to the left. Can also provide an angle.}\\
+    \end{align*}
+
+    Furthermore, all \textsf{tikz} style parameters can be used here as well.
+
+    \begin{example}~
+    \begin{verbatim}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+            \argument[right=of arg3]{arg4}{d}
+    
+            \attack{arg1}{arg2}
+            \attack[bend right]{arg2}{arg3}
+            \attack[bend left=10,inactive]{arg3}{arg4}
+        \end{af}    
+    \end{verbatim}
+
+    \begin{center}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+            \argument[right=of arg3]{arg4}{d}
+    
+            \attack{arg1}{arg2}
+            \attack[bend right]{arg2}{arg3}
+            \attack[bend left=10,inactive]{arg3}{arg4}
+        \end{af}
+    \end{center}
+    \end{example}
+    
+
+    Additionally, you can create a symmetric attack between two arguments with
+
+    \verb|\dualattack{arg1}{arg2}|
+
+    \noindent
+    and a self-attack for an argument with
+
+    \verb|\selfattack{arg1}|
+
+    \noindent
+    For both commands, you can use the same optional parameters as for the \verb|\attack| command.
+
+    \begin{example}~
+    \begin{verbatim}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+    
+            \selfattack{arg1}
+            \dualattack{arg1}{arg2}
+        \end{af}    
+    \end{verbatim}
+
+    \begin{center}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+    
+            \selfattack{arg2}
+            \dualattack{arg1}{arg2}
+        \end{af}
+    \end{center}
+    \end{example}
+    
+
+\subsection{Supports}
+    You can create a support relation between two arguments with the command
+
+    \verb|\support{arg1}{arg2}|
+
+    \noindent
+    where \verb|arg1| and \verb|arg2| are the identifiers of two previously defined arguments.
+    The support arrow use the same tip as the attack arrows, but have a perpendicular mark to distinguish them from attacks.
+    Supports can be customized in the same way as attacks.
+
+    \begin{example}~
+    \begin{verbatim}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+    
+            \support{arg1}{arg2}
+            \support[bend right]{arg2}{arg3}
+        \end{af}    
+    \end{verbatim}
+
+    \begin{center}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+    
+            \support{arg1}{arg2}
+            \support[bend right]{arg2}{arg3}
+        \end{af}    
+    \end{center}
+    \end{example}
+
+
+\subsection{Further Commands}
+    If you want to display an identifier for your argumentation framework in the picture, you can use the command
+
+    \verb|\afname{id}{name}|
+
+    \noindent
+    where \verb|id| is an identifier for the created node and \verb|name| is the text displayed in the picture.
+    Additionally, positioning information can be provided via the optional parameters.
+
+    \begin{example}~
+    \begin{verbatim}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \afname[left=of arg1]{caption}{$F:$}
+    
+            \attack{arg1}{arg2}
+        \end{af}    
+    \end{verbatim}
+
+    \begin{center}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+            \afname[left=of arg1]{caption}{$F:$}
+    
+            \support{arg1}{arg2}
+        \end{af}    
+    \end{center}
+    \end{example}
+
+\end{document}

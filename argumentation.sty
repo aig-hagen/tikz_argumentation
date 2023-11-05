@@ -1,0 +1,104 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{argumentation}[2023/11/05 Argumentation]
+% Author: Lars Bengel
+% E-Mail: lars.bengel@fernuni-hagen.de
+% Version: 1.0
+% License: LaTeX Project Public License 1.3c
+
+%%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage{options}                        % For managing package options
+\RequirePackage{tikz}                           % For drawing the argumentation frameworks
+\usetikzlibrary{positioning}                    % For relative node positioning
+\usetikzlibrary{arrows.meta}                    % For directed edges / attack arrows
+\usetikzlibrary{decorations.markings}           % For creating the support edge markings
+
+\newcommand{\argstyle}[1]{\textbf{\emph{#1}}}   % Defines the font style in which argument names are displayed
+
+
+%%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\options{
+    /argumentation/.new family,
+    /argumentation/argumentstyle/.new choice = {standard, retro},
+    /argumentation/namestyle/.new choice = {normal, italics, bold, bolditalics},
+    /argumentation/attackstyle/.new choice = {standard, retro},
+    /argumentation/@unknown/.new cmd 2 = \PackageWarning{argumentation}{Unknown option `#1'}
+}
+\options@ProcessOptions{/argumentation}
+
+%%%%%%%%%% Preprocessing options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifcase\option{/argumentation/namestyle/@ord}\relax
+\or\renewcommand{\argstyle}[1]{\emph{#1}}
+\or\renewcommand{\argstyle}[1]{\textbf{#1}}
+\or\renewcommand{\argstyle}[1]{\textbf{\emph{#1}}}
+\fi
+
+\ifcase\option{/argumentation/argumentstyle/@ord}
+\tikzset{arg/.style={circle, minimum size=0.75cm,draw=black,thick,fill=white,font=\large, text centered, inner sep=0}}
+\or\tikzset{arg/.style={circle, minimum size=0.7cm,draw=black,thick,fill=white}}
+\fi
+
+\ifcase\option{/argumentation/attackstyle/@ord}
+\tikzset{att/.style={-{Stealth[scale=1.25]}}}
+\or\tikzset{att/.style={->}}
+\fi
+
+%%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tikzset{ % Basic predefined tikz-styles
+    % Self-Loop style
+    every loop/.style={min distance=2mm,in=0,out=60,looseness=5},
+    % Color shortcuts for labelled arguments and reduced arguments
+    inactive/.style={draw=black!30, text=black!40,densely dashed},
+    argin/.style={fill=green},
+    argout/.style={fill=red},
+    argundec/.style={fill=cyan},
+    % Style for displaying AF name in Figure
+    caption/.style={draw=none},
+    % Style for support mark
+    support mark/.style = {postaction = {decorate,decoration={markings,mark=at position #1 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},
+}
+
+\newcommand{\setargumentstyle}[1]{\tikzset{arg/.style={#1}}}
+\newcommand{\setattackstyle}[1]{\tikzset{att/.style={#1}}}
+\newcommand{\setloopstyle}[1]{\tikzset{every loop/.style={#1}}}
+
+\newcommand{\adjustargumentstyle}[1]{\tikzset{arg/.append style={#1}}}
+\newcommand{\adjustattackstyle}[1]{\tikzset{att/.append style={#1}}}
+
+\newcommand{\resetargumentstyle}{\setargumentstyle{circle, minimum size=0.75cm,draw=black,thick,fill=white,font=\large, text centered, inner sep=0}}
+\newcommand{\resetattackstyle}{\setattackstyle{-{Stealth[scale=1.25]}}}
+\newcommand{\resetloopstyle}{\setloopstyle{min distance=2mm,in=0,out=60,looseness=5}}
+
+
+\newenvironment{af}{
+    \tikzpicture
+}{%
+    \endtikzpicture
+}
+
+\newenvironment{miniaf}[1][]{
+    \tikzset{arg/.append style={font=\small, minimum size=0.5cm},
+             att/.append style={-{Stealth[scale=0.9]}},
+    }
+    \tikzpicture[node distance=0.5cm,#1]
+}{%
+    \endtikzpicture
+}
+
+% Creates a node displaying the name of the AF
+\newcommand{\afname}[3][]{\node[caption,#1](#2){#3};}
+
+% Creates an argument node
+\newcommand{\argument}[3][]{\node[arg,#1](#2){\argstyle{#3}};}
+
+% Creates an attack edge
+\newcommand{\attack}[3][]{\path(#2) edge [att,#1] (#3);}
+
+% Creates a self-attack
+\newcommand{\selfattack}[2][]{\path(#2) edge [att,loop,#1] (#2);}
+
+% Creates two symmetric attack edges between two arguments
+\newcommand{\dualattack}[3][]{\path(#2) edge [att, bend right,#1] (#3);\path(#3) edge [att, bend right,#1] (#2);}
+
+% Creates a support edge between two arguments
+\newcommand{\support}[3][]{\path(#2) edge [att,support mark=0.3,#1] (#3);}
