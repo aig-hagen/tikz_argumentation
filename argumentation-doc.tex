@@ -5,9 +5,11 @@
 %\date{}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{argumentation}
+\usepackage[namestyle=italics,argumentstyle=standard]{argumentation}
 \usepackage{amsmath}
+\usepackage{xcolor}
 
+\newcommand{\opt}[1]{\ensuremath{\textcolor[rgb]{1.00,0.00,0.00}{\langle #1\rangle}}}
 \newtheorem{example}{Example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -22,7 +24,7 @@
 \begin{figure}[ht]
     \centering
     \begin{af}
-        \argument{args1}{$a_1$}
+        \argument{args1}{a}
         \argument[right=of args1]{args2}{b}
         \argument[right=of args2]{args3}{c}
         \argument[right=of args3]{args4}{d}
@@ -36,19 +38,19 @@
         \afname[left of=args1,yshift=-0.8cm,xshift=-0.2cm]{cap}{\textbf{F:}}
 
         \selfattack{args1}
-        \dualattack[]{args1}{args6}
+        \dualattack{args1}{args6}
         \dualattack[inactive]{args6}{args7}
         
         \attack[inactive]{args8}{args7}
         \attack[inactive]{args7}{args2}
-        \attack[]{args3}{args2}    
-        \attack[]{args4}{args5}
-        \attack[]{args5}{args10}
-        \attack[]{args10}{args9}
-        \attack[]{args9}{args4}
+        \attack{args3}{args2}    
+        \attack{args4}{args5}
+        \attack{args5}{args10}
+        \attack{args10}{args9}
+        \attack{args9}{args4}
 
-        \support[]{args4}{args3}
-        \support[]{args9}{args3}
+        \support{args4}{args3}
+        \support{args9}{args3}
     \end{af}
     \caption{An exemplary AF created with the \textsf{argumentation} package.}
     \label{fig:example}
@@ -73,51 +75,68 @@
             \afname[left of=args1,yshift=-0.8cm,xshift=-0.2cm]{cap}{\textbf{F:}}
     
             \selfattack{args1}
-            \dualattack[]{args1}{args6}
+            \dualattack{args1}{args6}
             \dualattack[inactive]{args6}{args7}
             
             \attack[inactive]{args8}{args7}
             \attack[inactive]{args7}{args2}
-            \attack[]{args3}{args2}    
-            \attack[]{args4}{args5}
-            \attack[]{args5}{args10}
-            \attack[]{args10}{args9}
-            \attack[]{args9}{args4}
+            \attack{args3}{args2}    
+            \attack{args4}{args5}
+            \attack{args5}{args10}
+            \attack{args10}{args9}
+            \attack{args9}{args4}
 
-            \support[]{args4}{args3}
-            \support[]{args9}{args3}
+            \support{args4}{args3}
+            \support{args9}{args3}
         \end{af}
         \caption{An exemplary AF created with the \textsf{argumentation} package.}
         \label{fig:example}
     \end{figure}
 \end{verbatim}
 
-\section{Documentation for Version 1.0 [2023/11/05]}
+\section{Documentation for Version 1.1 [2023/11/05]}
 In the following, we provide an overview over the functionality of the \textsf{argumentation} package.
 
 \subsection{Package Options}
-    Multiple options are provided to customize the look of the argumentation framework.
-    The \textsf{namestyle} option accepts three different values
+    The package provides the following options to customize the look of the argumentation frameworks.
+    \begin{align*}
+        \mathsf{namestyle} &\quad \text{Customizes the font of the argument names.}\\
+        \mathsf{argumentstyle} &\quad \text{Customizes the appearance of the argument nodes.}\\
+        \mathsf{attackstyle} &\quad \text{Customizes the appearance of the attack edges.}\\
+        \mathsf{supportstyle} &\quad \text{Customizes the appearance of the support edges.}\\
+    \end{align*}
+
+    In the following, we list the available options for each of the style parameters.\\
+
+\noindent\texttt{namestyle=}$\langle option\rangle$
+    
+    The \textsf{namestyle} parameter accepts three different options
     \begin{align*}
         \mathsf{italics} &\quad \text{(default) The argument name is rendered in \emph{italics}.}\\
         \mathsf{bold} &\quad \text{The argument name is rendered in \textbf{bold}.}\\
         \mathsf{bolditalics} &\quad \text{The argument name is rendered with \textbf{\emph{both}}.}\\
-        \mathsf{normal} &\quad \text{The argument name is rendered normally.}
+        \mathsf{normal} &\quad \text{The argument name is rendered normally.}\\
     \end{align*}
 
-    The \textsf{argumentstyle} option controls the style of the argument nodes and accepts two values
-        \begin{align*}
-            \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
-            \mathsf{retro} &\quad \text{Alternative style, thicker outline and slightly larger nodes.}
-        \end{align*}
+\noindent\texttt{argumentstyle=}$\langle option\rangle$
 
-    The \textsf{attackstyle} option controls the style of the attack arrows and accepts two values
+    The \textsf{argumentstyle} parameter accepts two options
+    \begin{align*}
+        \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
+        \mathsf{retro} &\quad \text{Thicker outline and slightly larger nodes.}\\
+    \end{align*}
+
+\noindent\texttt{attackstyle=}$\langle option\rangle$
+    
+    The \textsf{attackstyle} parameter accepts two options
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
-        \mathsf{retro} &\quad \text{Alternative style, arrow tip is larger and sharper.}
+        \mathsf{retro} &\quad \text{Alternative style, arrow tip is larger and sharper.}\\
     \end{align*}
 
-    The \textsf{supportstyle} option controls the style of the support arrows and accepts three values
+\noindent\texttt{supportstyle=}$\langle option\rangle$
+    
+    The \textsf{supportstyle} parameter accepts three options
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
         \mathsf{dashed} &\quad \text{Dashed arrow line, same tip.}\\
@@ -126,17 +145,37 @@ In the following, we provide an overview over the functionality of the \textsf{a
     
 
 \subsection{Environments}
-The package provides two environments for creating abstract argumentation frameworks and bipolar argumentation frameworks in \LaTeX-documents.
+The package provides two environments for creating abstract argumentation frameworks and bipolar argumentation frameworks in \LaTeX-documents.\\
 
-\subsubsection{\textsf{af}-Environment}
+\noindent
+\verb|\begin{af}[|\opt{options}\verb|]|
+
+\opt{environment~contents}
+
+\noindent
+\verb|\end{af}|
+
+\begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+    \item
     The \textsf{argumentation} package provides the \textsf{af} environment for creating abstract argumentation framework.
     The \textsf{af} environment extends the \textsf{tikzpicture} environment, meaning all \textsf{tikzpicture}-parameters can be used inside the \textsf{af} environment as well.
-    The most relevant parameter is \verb|node distance|, which is set to \verb|1cm| per default.
+    The most relevant parameter is \verb|node distance|, which is set to \verb|1cm| per default.\\
+\end{list}
     
-\subsubsection{\textsf{miniaf}-Environment}
+\noindent
+\verb|\begin{miniaf}[|\opt{options}\verb|]|
+
+\opt{environment~contents}
+
+\noindent
+\verb|\end{miniaf}|
+
+\begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+    \item
     The \textsf{miniaf} environment can be used to create argumentation frameworks using less space.
     Especially useful for two-column layout documents.
     It provides essentially the same as the \textsf{af} environment, but with \verb|node distance=0.5cm| and for each node \verb|minimum size=0.5cm|, \verb|font=\small|.
+\end{list}
 
 
 \begin{figure}[ht]
@@ -179,7 +218,7 @@ The package provides two environments for creating abstract argumentation framew
 \subsection{Arguments}
     Arguments can be created with the following command
 
-    \verb|\argument{id}{name}|
+    \verb|\argument{|\opt{id}\verb|}{|\opt{name}\verb|}|
 
     \noindent
     To create an argument, you must provide a unique identifier \textsf{id} and the \textsf{name} to be displayed in the picture.
@@ -201,7 +240,7 @@ The package provides two environments for creating abstract argumentation framew
     This package supports relative placement of the arguments via the \textsf{tikz}-library \textsf{positioning}.
     The relative positioning information is provided as an optional parameter via
     
-    \verb|\argument[dir=of arg_id]{id}{name}|
+    \verb|\argument[|\opt{dir}\verb|=of |\opt{arg\_id}\verb|]{|\opt{id}\verb|}{|\opt{name}\verb|}|
     
     \noindent
     with \textsf{dir} being one of: \emph{right}, \emph{left}, \emph{below} and \emph{above} and \textsf{arg\_id} being the id of another argument.
@@ -245,10 +284,6 @@ The package provides two environments for creating abstract argumentation framew
         \mathsf{argundec} &\quad \text{The argument is displayed with cyan background color.}
     \end{align*}
 
-    \begin{example}
-        
-    \end{example}
-
 \subsection{Attacks}
     Attacks between two arguments can be created with the command
 
@@ -269,7 +304,7 @@ The package provides two environments for creating abstract argumentation framew
         &\quad \text{Can additionally provide the angle, e.\,g., \textsf{bend~right=40}.}\\
         \mathsf{bend~left} &\quad \text{The attack arrow is bent to the left. Can also provide an angle.}\\
     \end{align*}
-
+    
     Furthermore, all \textsf{tikz} style parameters can be used here as well.
 
     \begin{example}~
@@ -395,7 +430,6 @@ The package provides two environments for creating abstract argumentation framew
         \begin{af}
             \argument{arg1}{a}
             \argument[right=of arg1]{arg2}{b}
-            \argument[right=of arg2]{arg3}{c}
             \afname[left=of arg1]{caption}{$F:$}
     
             \support{arg1}{arg2}

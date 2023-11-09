@@ -1,9 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{argumentation}[2023/11/05 Argumentation]
-% Author: Lars Bengel
-% E-Mail: lars.bengel@fernuni-hagen.de
-% Version: 1.0
-% License: LaTeX Project Public License 1.3c
+% Author:   Lars Bengel
+% E-Mail:   lars.bengel@fernuni-hagen.de
+% Version:  1.1
+% Date:     2023/11/05
+% License:  LaTeX Project Public License 1.3c
 
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{options}                        % For managing package options
@@ -13,25 +14,26 @@
 \usetikzlibrary{arrows}                    % For directed edges / attack arrows
 \usetikzlibrary{decorations.markings}           % For creating the support edge markings
 
-\newcommand{\argstyle}[1]{\textbf{\emph{#1}}}   % Defines the font style in which argument names are displayed
+\newcommand{\argstyle}[1]{#1}   % Defines the font style in which argument names are displayed
 
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \options{
     /argumentation/.new family,
     /argumentation/argumentstyle/.new choice = {standard, retro},
-    /argumentation/namestyle/.new choice = {italics, bold, bolditalics, normal},
+    /argumentation/namestyle/.new choice = {italics, bold, bolditalics, monospace, normal},
     /argumentation/attackstyle/.new choice = {standard, retro},
     /argumentation/supportstyle/.new choice = {standard, dashed, double},
     /argumentation/@unknown/.new cmd 2 = \PackageWarning{argumentation}{Unknown option `#1'}
 }
 \options@ProcessOptions{/argumentation}
 
-%%%%%%%%%% Preprocessing options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% Processing options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcase\option{/argumentation/namestyle/@ord}
 \renewcommand{\argstyle}[1]{\emph{#1}}
 \or\renewcommand{\argstyle}[1]{\textbf{#1}}
-\or\renewcommand{\argstyle}[1]{\textbf{\emph{#1}}}
+\or\renewcommand{\argstyle}[1]{\emph{\textbf{#1}}}
+\or\renewcommand{\argstyle}[1]{\texttt{#1}}
 \or\relax
 \fi
 
