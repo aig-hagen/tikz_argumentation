@@ -6,18 +6,18 @@
 % Date:     2023/11/05
 % License:  LaTeX Project Public License 1.3c
 
-%%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{options}                        % For managing package options
 \RequirePackage{tikz}                           % For drawing the argumentation frameworks
 \usetikzlibrary{positioning}                    % For relative node positioning
 \usetikzlibrary{arrows.meta}                    % For directed edges / attack arrows
-\usetikzlibrary{arrows}                    % For directed edges / attack arrows
+\usetikzlibrary{arrows}                         % For directed edges / attack arrows
 \usetikzlibrary{decorations.markings}           % For creating the support edge markings
 
-\newcommand{\argstyle}[1]{#1}   % Defines the font style in which argument names are displayed
+\newcommand{\argstyle}[1]{#1}                   % Defines the font style in which argument names are displayed
 
 
-%%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \options{
     /argumentation/.new family,
     /argumentation/argumentstyle/.new choice = {standard, retro},
@@ -55,7 +55,7 @@
 \or\tikzset{support/.style = {-{Classical TikZ Rightarrow},double}}
 \fi
 
-%%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \tikzset{ % Basic predefined tikz-styles
     % Self-Loop style

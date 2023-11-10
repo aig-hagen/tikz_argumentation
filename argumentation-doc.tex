@@ -5,11 +5,14 @@
 %\date{}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[namestyle=italics,argumentstyle=standard]{argumentation}
-\usepackage{amsmath}
-\usepackage{xcolor}
+\usepackage[]{argumentation}                    % Main Package
+\usepackage{amsmath}                            % For example environment
+\usepackage{xspace}                             % For dynamic spacing after commands
+\usepackage{xcolor}                             % Coloring
+\usepackage[hidelinks]{hyperref}                % Hyperlinks
 
-\newcommand{\opt}[1]{\ensuremath{\textcolor[rgb]{1.00,0.00,0.00}{\langle #1\rangle}}}
+\newcommand{\tikzname}{Ti\emph{k}Z\xspace}
+\newcommand{\opt}[2][red]{\ensuremath{\textcolor{#1}{\langle #2\rangle}}}
 \newtheorem{example}{Example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -98,7 +101,19 @@
 In the following, we provide an overview over the functionality of the \textsf{argumentation} package.
 
 \subsection{Package Options}
-    The package provides the following options to customize the look of the argumentation frameworks.
+    The \textsf{argumentation} package can be imported via the command
+    
+    \noindent
+    \verb|\usepackage{argumentation}|
+
+    Alternatively, one can also adjust the appearance by providing some package options via
+
+    \noindent
+    \verb|\usepackage[|\opt{options}\verb|]{argumentation}|
+    
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+        \item The package provides the following \emph{optional} options to customize the look of the argumentation frameworks.
+    \end{list}
     \begin{align*}
         \mathsf{namestyle} &\quad \text{Customizes the font of the argument names.}\\
         \mathsf{argumentstyle} &\quad \text{Customizes the appearance of the argument nodes.}\\
@@ -108,7 +123,7 @@ In the following, we provide an overview over the functionality of the \textsf{a
 
     In the following, we list the available options for each of the style parameters.\\
 
-\noindent\texttt{namestyle=}$\langle option\rangle$
+\noindent\texttt{namestyle=}\opt{option}
     
     The \textsf{namestyle} parameter accepts three different options
     \begin{align*}
@@ -118,7 +133,7 @@ In the following, we provide an overview over the functionality of the \textsf{a
         \mathsf{normal} &\quad \text{The argument name is rendered normally.}\\
     \end{align*}
 
-\noindent\texttt{argumentstyle=}$\langle option\rangle$
+\noindent\texttt{argumentstyle=}\opt{option}
 
     The \textsf{argumentstyle} parameter accepts two options
     \begin{align*}
@@ -126,7 +141,7 @@ In the following, we provide an overview over the functionality of the \textsf{a
         \mathsf{retro} &\quad \text{Thicker outline and slightly larger nodes.}\\
     \end{align*}
 
-\noindent\texttt{attackstyle=}$\langle option\rangle$
+\noindent\texttt{attackstyle=}\opt{option}
     
     The \textsf{attackstyle} parameter accepts two options
     \begin{align*}
@@ -134,7 +149,7 @@ In the following, we provide an overview over the functionality of the \textsf{a
         \mathsf{retro} &\quad \text{Alternative style, arrow tip is larger and sharper.}\\
     \end{align*}
 
-\noindent\texttt{supportstyle=}$\langle option\rangle$
+\noindent\texttt{supportstyle=}\opt{option}
     
     The \textsf{supportstyle} parameter accepts three options
     \begin{align*}
@@ -150,7 +165,7 @@ The package provides two environments for creating abstract argumentation framew
 \noindent
 \verb|\begin{af}[|\opt{options}\verb|]|
 
-\opt{environment~contents}
+\opt[green]{environment~content}
 
 \noindent
 \verb|\end{af}|
@@ -158,14 +173,15 @@ The package provides two environments for creating abstract argumentation framew
 \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
     \item
     The \textsf{argumentation} package provides the \textsf{af} environment for creating abstract argumentation framework.
-    The \textsf{af} environment extends the \textsf{tikzpicture} environment, meaning all \textsf{tikzpicture}-parameters can be used inside the \textsf{af} environment as well.
-    The most relevant parameter is \verb|node distance|, which is set to \verb|1cm| per default.\\
+    The \textsf{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \textsf{af} environment as well.
+    Furthermore, all option for the \textsf{tikzpicture} environment can be provided as \emph{options}.
+    For instance, the option parameter \verb|node distance|, which is set to \verb|1cm| per default.\\
 \end{list}
     
 \noindent
 \verb|\begin{miniaf}[|\opt{options}\verb|]|
 
-\opt{environment~contents}
+\opt[green]{environment~content}
 
 \noindent
 \verb|\end{miniaf}|
@@ -174,7 +190,7 @@ The package provides two environments for creating abstract argumentation framew
     \item
     The \textsf{miniaf} environment can be used to create argumentation frameworks using less space.
     Especially useful for two-column layout documents.
-    It provides essentially the same as the \textsf{af} environment, but with \verb|node distance=0.5cm| and for each node \verb|minimum size=0.5cm|, \verb|font=\small|.
+    It provides essentially the same as the \textsf{af} environment, but with \verb|node distance| set to \verb|0.5cm| and for each node \verb|minimum size=0.5cm|, \verb|font=\small|.
 \end{list}
 
 
@@ -216,43 +232,33 @@ The package provides two environments for creating abstract argumentation framew
 
 
 \subsection{Arguments}
-    Arguments can be created with the following command
-
-    \verb|\argument{|\opt{id}\verb|}{|\opt{name}\verb|}|
+    Arguments can be created with the following command\\
 
     \noindent
-    To create an argument, you must provide a unique identifier \textsf{id} and the \textsf{name} to be displayed in the picture.
-    The \textsf{id} of an argument is then referred to when creating attacks as well as for the relative positioning of the other arguments.
-
-    The \textsf{standard} style of an argument is defined with the following parameters, all of which can be overridden if desired.
-    \begin{align*}
-        \textsf{circle} &\quad \text{the shape of the argument.}\\
-        \textsf{minimum~size=0.75cm} &\quad \text{the minimum size of the circle, to ensure consistent}\\
-        &\quad \text{argument size.}\\
-        \textsf{draw=black} &\quad \text{outline and text color of the argument.}\\
-        \textsf{thick} &\quad \text{the outline of the circle is rendered in \textsf{thick} mode.}\\
-        \textsf{fill=white} &\quad \text{the background color of the argument.}\\
-        \textsf{font=large} &\quad \text{the font size of the argument name.}\\
-        \textsf{text~centered} &\quad \text{positioning of the argument name inside the circle.}\\
-        \textsf{inner~sep=0} &\quad \text{inner margins of the circle, set to \textsf{0} to optimize space.}
-    \end{align*}
-    \subsubsection{Relative Positioning}    
-    This package supports relative placement of the arguments via the \textsf{tikz}-library \textsf{positioning}.
-    The relative positioning information is provided as an optional parameter via
+    \verb|\argument{|\opt{id}\verb|}{|\opt{name}\verb|}|
     
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+        \item\opt{id}~ is the identifier of the new argument
+        \item\opt{name}~ is the displayed name of the argument
+        \item To create an argument, you must provide a unique identifier and the name to be displayed in the picture.
+        The \opt{id} of an argument is then referred to when creating attacks as well as for the relative positioning of other arguments.
+
+    \end{list}
+
+\subsubsection{Relative Positioning}    
+    This package supports relative placement of the arguments via the \tikzname-library \textsf{positioning}.
+    The relative positioning information is provided as an optional parameter via\\
+
+    \noindent
     \verb|\argument[|\opt{dir}\verb|=of |\opt{arg\_id}\verb|]{|\opt{id}\verb|}{|\opt{name}\verb|}|
     
-    \noindent
-    with \textsf{dir} being one of: \emph{right}, \emph{left}, \emph{below} and \emph{above} and \textsf{arg\_id} being the id of another argument.
-    
-    Additionally, you can adjust the horizontal/vertical position of an argument via the options \textsf{xshift} and \textsf{yshift}.
-    You must also specify the distance in one of the following ways
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+        \item\opt{dir}~ has to be one of: \emph{right}, \emph{left}, \emph{below} and \emph{above} 
+        \item\opt{arg\_id}~ is the identifier of another argument
+        \item Additionally, you can adjust the horizontal/vertical position of an argument via the options \verb|xshift=|\opt{v} and \verb|yshift=|\opt{v}.
+        The value \opt{v} is the horizontal/vertical offset, e.\,g., \verb|5pt|, \verb|-3ex| or \verb|0.2cm|.
+    \end{list}
 
-    \verb|\argument[xshift=5mm]{id}{name}|
-
-    \verb|\argument[xshift=5pt]{id}{name}|
-
-    \verb|\argument[xshift=5ex]{id}{name}|
 
     \begin{example}~
 
@@ -274,29 +280,42 @@ The package provides two environments for creating abstract argumentation framew
         
     \end{example}
 
-    \subsubsection{Argument Styles}
+\subsubsection{Argument Styling}
     Furthermore, you can provide optional parameters to adjust the style of the argument node.
-    For that you can use all \textsf{tikz}-style options and additionally the following pre-defined style parameters:
+    For that you can use all \tikzname-style options and additionally the following pre-defined style parameters:
     \begin{align*}
         \mathsf{inactive} &\quad \text{The argument is displayed in grey and with a dotted outline.}\\
         \mathsf{argin} &\quad \text{The argument is displayed with green background color.}\\
         \mathsf{argout} &\quad \text{The argument is displayed with red background color.}\\
-        \mathsf{argundec} &\quad \text{The argument is displayed with cyan background color.}
+        \mathsf{argundec} &\quad \text{The argument is displayed with cyan background color.}\\
     \end{align*}
+
+    Some relevant \tikzname style-parameters are
+    \begin{align*}
+        %\textsf{circle} &\quad \text{the shape of the argument.}\\
+        \textsf{minimum~size=0.75cm} &\quad \text{the minimum size of the circle, to ensure consistent}\\
+        &\quad \text{argument size.}\\
+        \textsf{draw=black} &\quad \text{outline and text color of the argument.}\\
+        %\textsf{thick} &\quad \text{the outline of the circle is rendered in \textsf{thick} mode.}\\
+        \textsf{fill=white} &\quad \text{the background color of the argument.}\\
+        \textsf{font=large} &\quad \text{the font size of the argument name.}\\
+        %\textsf{text~centered} &\quad \text{positioning of the argument name inside the circle.}\\
+        \textsf{inner~sep=0} &\quad \text{inner margins of the circle, set to \textsf{0} to optimize space.}
+    \end{align*}
+    
 
 \subsection{Attacks}
-    Attacks between two arguments can be created with the command
-
-    \verb|\attack{arg1}{arg2}|
+    Attacks between two arguments can be created with the command\\
 
     \noindent
-    where \textsf{arg1} and \textsf{arg2} are the identifiers of two previously defined arguments.
-    The \textsf{standard} style for attacks is defined with the \textsf{arrows.meta} library as follows
-    \begin{align*}
-        \texttt{-{Stealth[scale=1.25]}}
-    \end{align*}
+    \verb|\attack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|
 
-\subsubsection{Attack Styles}
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+        \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments.
+    \end{list}
+
+    
+\subsubsection{Attack Styling}
     To customize an attack you can provide additional optional parameters:
     \begin{align*}
         \mathsf{inactive} &\quad \text{The attack is displayed in grey and with a dotted line.}\\
@@ -338,12 +357,14 @@ The package provides two environments for creating abstract argumentation framew
 
     Additionally, you can create a symmetric attack between two arguments with
 
-    \verb|\dualattack{arg1}{arg2}|
+    \noindent
+    \verb|\dualattack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|\\
 
     \noindent
     and a self-attack for an argument with
 
-    \verb|\selfattack{arg1}|
+    \noindent
+    \verb|\selfattack{|\opt{arg1}\verb|}|\\
 
     \noindent
     For both commands, you can use the same optional parameters as for the \verb|\attack| command.
@@ -372,15 +393,16 @@ The package provides two environments for creating abstract argumentation framew
     
 
 \subsection{Supports}
-    You can create a support relation between two arguments with the command
-
-    \verb|\support{arg1}{arg2}|
+    You can create a support relation between two arguments with the command\\
 
     \noindent
-    where \verb|arg1| and \verb|arg2| are the identifiers of two previously defined arguments.
+    \verb|\support{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|
+
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+    \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments.
     The support arrow use the same tip as the attack arrows, but have a perpendicular mark to distinguish them from attacks.
     Supports can be customized in the same way as attacks.
-
+    \end{list}
     \begin{example}~
     \begin{verbatim}
         \begin{af}
@@ -407,13 +429,15 @@ The package provides two environments for creating abstract argumentation framew
 
 
 \subsection{Further Commands}
-    If you want to display an identifier for your argumentation framework in the picture, you can use the command
-
-    \verb|\afname{id}{name}|
+    If you want to display an identifier for your argumentation framework in the picture, you can use the command\\
 
     \noindent
-    where \verb|id| is an identifier for the created node and \verb|name| is the text displayed in the picture.
+    \verb|\afname{|\opt{id}\verb|}{|\opt{name}\verb|}|
+
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+    \item where \opt{id} is an identifier for the created node and \opt{name} is the text displayed in the picture.
     Additionally, positioning information can be provided via the optional parameters.
+    \end{list}
 
     \begin{example}~
     \begin{verbatim}
