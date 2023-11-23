@@ -1,8 +1,8 @@
 \documentclass{article}
 
-\title{The \texttt{argumentation} Package}
-\author{Lars Bengel\\\small lars.bengel@fernuni-hagen.de}
-%\date{}
+\title{The \argumentation Package}
+\author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
+\date{Version 1.1 [2023/11/23]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[]{argumentation}                    % Main Package
@@ -12,6 +12,7 @@
 \usepackage[hidelinks]{hyperref}                % Hyperlinks
 
 \newcommand{\tikzname}{Ti\emph{k}Z\xspace}
+\newcommand{\argumentation}{\texttt{argumentation}\xspace}
 \newcommand{\opt}[2][red]{\ensuremath{\textcolor{#1}{\langle #2\rangle}}}
 \newtheorem{example}{Example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,7 +56,7 @@
         \support{args4}{args3}
         \support{args9}{args3}
     \end{af}
-    \caption{An exemplary AF created with the \textsf{argumentation} package.}
+    \caption{An exemplary AF created with the \argumentation package.}
     \label{fig:example}
 \end{figure}
 \vspace{-0.4cm}
@@ -92,16 +93,16 @@
             \support{args4}{args3}
             \support{args9}{args3}
         \end{af}
-        \caption{An exemplary AF created with the \textsf{argumentation} package.}
+        \caption{An exemplary AF created with the \argumentation package.}
         \label{fig:example}
     \end{figure}
 \end{verbatim}
 
-\section{Documentation for Version 1.1 [2023/11/05]}
-In the following, we provide an overview over the functionality of the \textsf{argumentation} package.
+\section{Documentation for Version 1.1 [2023/11/23]}
+In the following, we provide an overview over the functionality of the \argumentation package.
 
 \subsection{Package Options}
-    The \textsf{argumentation} package can be imported via the command
+    The \argumentation package can be imported via the command
     
     \noindent
     \verb|\usepackage{argumentation}|
@@ -159,8 +160,8 @@ In the following, we provide an overview over the functionality of the \textsf{a
     \end{align*}
     
 
-\subsection{Environments}
-The package provides two environments for creating abstract argumentation frameworks and bipolar argumentation frameworks in \LaTeX-documents.\\
+\subsection{The \texttt{af} Environment}
+The \argumentation package provides an environment for creating abstract argumentation frameworks and bipolar argumentation frameworks in \LaTeX-documents.\\
 
 \noindent
 \verb|\begin{af}[|\opt{options}\verb|]|
@@ -172,31 +173,21 @@ The package provides two environments for creating abstract argumentation framew
 
 \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
     \item
-    The \textsf{argumentation} package provides the \textsf{af} environment for creating abstract argumentation framework.
-    The \textsf{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \textsf{af} environment as well.
-    Furthermore, all option for the \textsf{tikzpicture} environment can be provided as \emph{options}.
+    The \argumentation package provides the \texttt{af} environment for creating abstract argumentation framework.
+    The \texttt{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \texttt{af} environment as well.
+    Furthermore, all options for the \textsf{tikzpicture} environment can be used for the \texttt{af} environment as well.
     For instance, the option parameter \verb|node distance|, which is set to \verb|1cm| per default.\\
+
+    If you want to create an argumentation framework with limited space available, you can provide one of the following predefined options for the environment. This is especially useful for two-column layout documents.
+    \begin{align*}
+        \mathsf{tiny} &\quad \text{\textsf{node distance} is set to $0.35cm$ and nodes are smaller.}\\
+        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.5cm$ and nodes are smaller.}\\
+    \end{align*}
 \end{list}
-    
-\noindent
-\verb|\begin{miniaf}[|\opt{options}\verb|]|
-
-\opt[green]{environment~content}
-
-\noindent
-\verb|\end{miniaf}|
-
-\begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item
-    The \textsf{miniaf} environment can be used to create argumentation frameworks using less space.
-    Especially useful for two-column layout documents.
-    It provides essentially the same as the \textsf{af} environment, but with \verb|node distance| set to \verb|0.5cm| and for each node \verb|minimum size=0.5cm|, \verb|font=\small|.
-\end{list}
-
 
 \begin{figure}[ht]
     \centering
-    \begin{miniaf}
+    \begin{af}[small]
         \argument{args1}{a}
         \argument[right=of args1]{args2}{b}
         \argument[right=of args2]{args3}{c}
@@ -225,11 +216,12 @@ The package provides two environments for creating abstract argumentation framew
         \attack[]{args5}{args10}
         \attack[]{args10}{args9}
         \attack[]{args9}{args4}
-    \end{miniaf}
-    \caption{An exemplary Mini-AF created with the \textsf{miniaf} environment.}
+    \end{af}
+    \caption{An exemplary AF created with the \textsf{small} option set.}
     \label{fig:example_mini}
 \end{figure}
 
+While the following commands are intended to be used inside the \texttt{af} environment, they can also be used inside the \textsf{tikzpicture} environment.
 
 \subsection{Arguments}
     Arguments can be created with the following command\\
@@ -282,9 +274,10 @@ The package provides two environments for creating abstract argumentation framew
 
 \subsubsection{Argument Styling}
     Furthermore, you can provide optional parameters to adjust the style of the argument node.
-    For that you can use all \tikzname-style options and additionally the following pre-defined style parameters:
+    For that you can use all \tikzname-style options and additionally the following predefined style parameters:
     \begin{align*}
         \mathsf{inactive} &\quad \text{The argument is displayed in grey and with a dotted outline.}\\
+        \mathsf{invisible} &\quad \text{The argument is completely transparent.}\\
         \mathsf{argin} &\quad \text{The argument is displayed with green background color.}\\
         \mathsf{argout} &\quad \text{The argument is displayed with red background color.}\\
         \mathsf{argundec} &\quad \text{The argument is displayed with cyan background color.}\\
@@ -319,6 +312,8 @@ The package provides two environments for creating abstract argumentation framew
     To customize an attack you can provide additional optional parameters:
     \begin{align*}
         \mathsf{inactive} &\quad \text{The attack is displayed in grey and with a dotted line.}\\
+        \mathsf{invisible} &\quad \text{The attack is completely transparent.}\\
+        \mathsf{selfattack} &\quad \text{Use if source and target of the attack are the same node.}\\
         \mathsf{bend~right} &\quad \text{The attack arrow is bent to the right.}\\
         &\quad \text{Can additionally provide the angle, e.\,g., \textsf{bend~right=40}.}\\
         \mathsf{bend~left} &\quad \text{The attack arrow is bent to the left. Can also provide an angle.}\\
@@ -353,15 +348,14 @@ The package provides two environments for creating abstract argumentation framew
         \end{af}
     \end{center}
     \end{example}
-    
 
-    Additionally, you can create a symmetric attack between two arguments with
+    Additionally, there is a shortcut for creating a symmetric attack between two arguments with
 
     \noindent
     \verb|\dualattack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|\\
 
     \noindent
-    and a self-attack for an argument with
+    and a shortcut for a self-attack for an argument with
 
     \noindent
     \verb|\selfattack{|\opt{arg1}\verb|}|\\
@@ -460,5 +454,19 @@ The package provides two environments for creating abstract argumentation framew
         \end{af}    
     \end{center}
     \end{example}
+
+\section{Version History}
+
+\subsection*{[v1.0 2023/11/05]}
+\begin{itemize}
+    \item First Version.
+\end{itemize}
+
+\subsection*{[v1.1 2023/11/23]}
+\begin{itemize}
+    \item Adjusted standard styles.
+    \item Now only provides one environment, which can be parameterised.
+    \item Updated and improved documentation.
+\end{itemize}
 
 \end{document}

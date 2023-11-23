@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2023/11/05 Argumentation]
+\ProvidesPackage{argumentation}[2023/11/23 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
 % Version:  1.1
-% Date:     2023/11/05
+% Date:     2023/11/23
 % License:  LaTeX Project Public License 1.3c
 
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,6 +16,8 @@
 
 \newcommand{\argstyle}[1]{#1}                   % Defines the font style in which argument names are displayed
 
+\newif\iftinyaf
+\newif\ifsmallaf
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \options{
@@ -38,14 +40,12 @@
 \fi
 
 \ifcase\option{/argumentation/argumentstyle/@ord}
-\tikzset{argument/.style={circle,draw=black,minimum size=0.7cm,inner sep=0,outer sep=0}}
-\or\tikzset{argument/.style={circle, minimum size=0.75cm,draw=black,thick,fill=white,font=\Large, text centered, inner sep=0,outer sep=0}}
+\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0}}
+\or\tikzset{argument/.style={circle,draw=black,thick,font=\Large,text centered,inner sep=0,outer sep=0}}
 \fi
 
 \ifcase\option{/argumentation/attackstyle/@ord}
-\tikzset{>=stealth',
-        attack/.style={->}
-}
+\tikzset{attack/.style={-{stealth'}}}
 \or\tikzset{attack/.style={-{Stealth[scale=1.25]}}}
 \fi
 
@@ -57,41 +57,33 @@
 
 %%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\tikzset{ % Basic predefined tikz-styles
-    % Self-Loop style
-    every loop/.style={min distance=2mm,in=0,out=60,looseness=5},
-    % Color shortcuts for labelled arguments and reduced arguments
-    inactive/.style={draw=black!30, text=black!40,densely dashed},
-    argin/.style={fill=green},
-    argout/.style={fill=red},
-    argundec/.style={fill=cyan},
-    % Style for displaying AF name in Figure
-    caption/.style={draw=none},
+\tikzset{ % global predefined tikz-styles
+    argument size/.style={minimum size=0.7cm},                              % Standard size of argument nodes
+    selfattack/.style={loop,min distance=2mm,in=0,out=60,looseness=5},      % Standard style for self-attacks
+    inactive/.style={draw=black!30, text=black!40,densely dashed},          % Make a node or edge inactive, i.e., greyed out
+    argin/.style={fill=green},                                              % Color an argument that is labelled in
+    argout/.style={fill=red},                                               % Color an argument that is labelled out
+    argundec/.style={fill=cyan},                                            % Color an argument that is labelled undecided
+    caption/.style={draw=none},                                             % Style for displaying AF name in Figure
+    invisible/.style={draw=none,text=black!0},                              % Make a node or edge invisible
 }
 
 \newcommand{\setargumentstyle}[1]{\tikzset{argument/.style={#1}}}
 \newcommand{\setattackstyle}[1]{\tikzset{attack/.style={#1}}}
-\newcommand{\setloopstyle}[1]{\tikzset{every loop/.style={#1}}}
+\newcommand{\setloopstyle}[1]{\tikzset{selfattack/.style={#1}}}
 
 \newcommand{\adjustargumentstyle}[1]{\tikzset{argument/.append style={#1}}}
 \newcommand{\adjustattackstyle}[1]{\tikzset{attack/.append style={#1}}}
 
-\newcommand{\resetargumentstyle}{\setargumentstyle{circle, minimum size=0.75cm,draw=black,thick,fill=white,font=\Large, text centered, inner sep=0}}
-\newcommand{\resetattackstyle}{\setattackstyle{-{Stealth[scale=1.25]}}}
-\newcommand{\resetloopstyle}{\setloopstyle{min distance=2mm,in=0,out=60,looseness=5}}
 
-
-\newenvironment{af}{
-    \tikzpicture
-}{%
-    \endtikzpicture
+%%%%%%%%%%%%%%% Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pgfkeys{
+    /tikz/small/.style = {node distance=0.5cm,argument size/.style={font=\small, minimum size=0.5cm},caption/.append style={font=\small}},
+    /tikz/tiny/.style = {node distance=0.35cm,argument size/.style={font=\small, minimum size=0.4cm},caption/.append style={font=\small}},
 }
 
-\newenvironment{miniaf}[1][]{
-    \tikzset{argument/.append style={font=\small, minimum size=0.5cm},
-             attack/.append style={->},
-    }
-    \tikzpicture[node distance=0.5cm,#1]
+\newenvironment{af}[1][]{
+    \tikzpicture[#1]
 }{%
     \endtikzpicture
 }
@@ -100,13 +92,13 @@
 \newcommand{\afname}[3][]{\node[caption,#1](#2){#3};}
 
 % Creates an argument node
-\newcommand{\argument}[3][]{\node[argument,#1](#2){\argstyle{#3}};}
+\newcommand{\argument}[3][]{\node[argument,argument size,#1](#2){\argstyle{#3}};}
 
 % Creates an attack edge
 \newcommand{\attack}[3][]{\path(#2) edge [attack,#1] (#3);}
 
 % Creates a self-attack
-\newcommand{\selfattack}[2][]{\path(#2) edge [attack,loop,#1] (#2);}
+\newcommand{\selfattack}[2][]{\path(#2) edge [attack,selfattack,#1] (#2);}
 
 % Creates two symmetric attack edges between two arguments
 \newcommand{\dualattack}[3][]{\path(#2) edge [attack, bend right,#1] (#3);\path(#3) edge [attack, bend right,#1] (#2);}
