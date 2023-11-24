@@ -17,25 +17,33 @@
 \newcommand{\argstyle}[1]{#1}                   % Defines the font style in which argument names are displayed
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\pgfkeys{/argumentation/argumentstyle/.is choice}
-\pgfkeys{/argumentation/argumentstyle/standard/.code={\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0}}}}
-\pgfkeys{/argumentation/argumentstyle/retro/.code={\tikzset{argument/.style={circle,draw=black,thick,font=\Large,text centered,inner sep=0,outer sep=0}}}}
+\pgfkeys{/argumentation/argumentstyle/.is choice,
+    /argumentation/argumentstyle/standard/.code={\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0}}},
+    /argumentation/argumentstyle/retro/.code={\tikzset{argument/.style={circle,draw=black,thick,font=\Large,text centered,inner sep=0,outer sep=0}}},
+    /argumentation/argumentstyle=standard,
+}
 
-\pgfkeys{/argumentation/attackstyle/.is choice}
-\pgfkeys{/argumentation/attackstyle/standard/.code={\tikzset{attack/.style={-{stealth'}}}}}
-\pgfkeys{/argumentation/attackstyle/retro/.code={\tikzset{attack/.style={-{Stealth[scale=1.25]}}}}}
+\pgfkeys{/argumentation/attackstyle/.is choice,
+    /argumentation/attackstyle/standard/.code={\tikzset{attack/.style={-{stealth'}}}},
+    /argumentation/attackstyle/retro/.code={\tikzset{attack/.style={-{Stealth[scale=1.25]}}}},
+    /argumentation/attackstyle=standard,
+}
 
-\pgfkeys{/argumentation/supportstyle/.is choice}
-\pgfkeys{/argumentation/supportstyle/standard/.code={\tikzset{support/.style = {postaction = {decorate,decoration={markings,mark=at position #1 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}}}}}
-\pgfkeys{/argumentation/supportstyle/dashed/.code={\tikzset{support/.style = {densely dashed}}}}
-\pgfkeys{/argumentation/supportstyle/double/.code={\tikzset{support/.style = {-{Classical TikZ Rightarrow},double}}}}
+\pgfkeys{/argumentation/supportstyle/.is choice,
+    /argumentation/supportstyle/standard/.code={\tikzset{support/.style = {postaction = {decorate,decoration={markings,mark=at position #1 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}}}},
+    /argumentation/supportstyle/dashed/.code={\tikzset{support/.style = {densely dashed}}},
+    /argumentation/supportstyle/double/.code={\tikzset{support/.style = {-{Classical TikZ Rightarrow},double}}},
+    /argumentation/supportstyle=dashed,
+}
 
-\pgfkeys{/argumentation/namestyle/.is choice}
-\pgfkeys{/argumentation/namestyle/normal/.code={\relax}}
-\pgfkeys{/argumentation/namestyle/italics/.code={\renewcommand{\argstyle}[1]{\emph{#1}}}}
-\pgfkeys{/argumentation/namestyle/bold/.code={\renewcommand{\argstyle}[1]{\textbf{#1}}}}
-\pgfkeys{/argumentation/namestyle/bolditalics/.code={\renewcommand{\argstyle}[1]{\emph{\textbf{#1}}}}}
-\pgfkeys{/argumentation/namestyle/monospace/.code={\renewcommand{\argstyle}[1]{\texttt{#1}}}}
+\pgfkeys{/argumentation/namestyle/.is choice,
+    /argumentation/namestyle/normal/.code={\relax},
+    /argumentation/namestyle/italics/.code={\renewcommand{\argstyle}[1]{\emph{#1}}},
+    /argumentation/namestyle/bold/.code={\renewcommand{\argstyle}[1]{\textbf{#1}}},
+    /argumentation/namestyle/bolditalics/.code={\renewcommand{\argstyle}[1]{\emph{\textbf{#1}}}},
+    /argumentation/namestyle/monospace/.code={\renewcommand{\argstyle}[1]{\texttt{#1}}},
+    /argumentation/namestyle=normal,
+}
 
 \ProcessPgfPackageOptions{/argumentation}
 %%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,6 +57,8 @@
     argundec/.style={fill=cyan},                                            % Color an argument that is labelled undecided
     caption/.style={draw=none},                                             % Style for displaying AF name in Figure
     invisible/.style={draw=none,text=black!0},                              % Make a node or edge invisible
+    incomplete/.style={dashed},                                             % Style for displaying incomplete nodes or attacks
+    annotation/.style={above,font=\small}
 }
 
 \newcommand{\setargumentstyle}[1]{\tikzset{argument/.style={#1}}}
@@ -71,8 +81,12 @@
     \endtikzpicture
 }
 
+%%%%%%%%%%%%%%%% Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Creates a node displaying the name of the AF
 \newcommand{\afname}[3][]{\node[caption,#1](#2){#3};}
+
+\newcommand{\annotation}[3][]{\node[annotation,of=#2,#1](an_#2){#3};}
 
 % Creates an argument node
 \newcommand{\argument}[3][]{\node[argument,argument size,#1](#2){\argstyle{#3}};}
@@ -85,6 +99,9 @@
 
 % Creates two symmetric attack edges between two arguments
 \newcommand{\dualattack}[3][]{\path(#2) edge [attack, bend right,#1] (#3);\path(#3) edge [attack, bend right,#1] (#2);}
+
+% Creates a weighted attack
+\newcommand{\annotatedattack}[4][]{\path(#2) edge [attack,#1] node[annotation](p_#2_#3){#4} (#3);}
 
 % Creates a support edge between two arguments
 \newcommand{\support}[3][]{\path(#2) edge [attack,support=0.3,#1] (#3);}

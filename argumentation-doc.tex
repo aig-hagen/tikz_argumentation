@@ -5,7 +5,7 @@
 \date{Version 1.1 [2023/11/23]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[argumentstyle=standard,namestyle=normal,attackstyle=standard,supportstyle=dashed]{argumentation}                    % Main Package
+\usepackage[]{argumentation}                    % Main Package
 \usepackage{amsmath}                            % For example environment
 \usepackage{xspace}                             % For dynamic spacing after commands
 \usepackage{xcolor}                             % Coloring
@@ -40,6 +40,8 @@
         \argument[right=of args8]{args9}{i}
         \argument[right=of args9]{args10}{j}
 
+        %\annotation[right]{args5}{$a\lor b$}
+
         \afname[left of=args1,yshift=-0.8cm,xshift=-0.2cm]{cap}{\textbf{F:}}
 
         \selfattack{args1}
@@ -48,7 +50,7 @@
         
         \attack[inactive]{args8}{args7}
         \attack[inactive]{args7}{args2}
-        \attack{args3}{args2}    
+        \annotatedattack{args3}{args2}{$3$}   
         \attack{args4}{args5}
         \attack{args5}{args10}
         \attack{args10}{args9}
