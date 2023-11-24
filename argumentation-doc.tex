@@ -5,11 +5,12 @@
 \date{Version 1.1 [2023/11/23]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[]{argumentation}                    % Main Package
+\usepackage[argumentstyle=standard,namestyle=normal,attackstyle=standard,supportstyle=dashed]{argumentation}                    % Main Package
 \usepackage{amsmath}                            % For example environment
 \usepackage{xspace}                             % For dynamic spacing after commands
 \usepackage{xcolor}                             % Coloring
 \usepackage[hidelinks]{hyperref}                % Hyperlinks
+\usepackage{subcaption}                         % For two-part figures
 
 \newcommand{\tikzname}{Ti\emph{k}Z\xspace}
 \newcommand{\argumentation}{\texttt{argumentation}\xspace}
@@ -99,7 +100,9 @@
 \end{verbatim}
 
 \section{Documentation for Version 1.1 [2023/11/23]}
-In the following, we provide an overview over the functionality of the \argumentation package.
+In the following, we give an overview over the functionality of the \argumentation package.
+In general, the functionality provided by this package is fully compatible with \tikzname.
+Meaning every command from this package can be used inside the \textsf{tikzpicture} environment and every \tikzname command or option can be used inside the \texttt{af} environment or in context of the argument nodes and attack edges.
 
 \subsection{Package Options}
     The \argumentation package can be imported via the command
@@ -176,18 +179,23 @@ The \argumentation package provides an environment for creating abstract argumen
     The \argumentation package provides the \texttt{af} environment for creating abstract argumentation framework.
     The \texttt{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \texttt{af} environment as well.
     Furthermore, all options for the \textsf{tikzpicture} environment can be used for the \texttt{af} environment as well.
-    For instance, the option parameter \verb|node distance|, which is set to \verb|1cm| per default.\\
+    For instance, the option parameter \verb|node distance|, which is set to \verb|1cm| per default.
 
     If you want to create an argumentation framework with limited space available, you can provide one of the following predefined options for the environment. This is especially useful for two-column layout documents.
     \begin{align*}
         \mathsf{tiny} &\quad \text{\textsf{node distance} is set to $0.35cm$ and nodes are smaller.}\\
         \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.5cm$ and nodes are smaller.}\\
     \end{align*}
+
+    \begin{example}
+        Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{tiny} and \textsf{small} option respectively.
+    \end{example}
 \end{list}
 
 \begin{figure}[ht]
-    \centering
-    \begin{af}[small]
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af}[small]
         \argument{args1}{a}
         \argument[right=of args1]{args2}{b}
         \argument[right=of args2]{args3}{c}
@@ -216,9 +224,49 @@ The \argumentation package provides an environment for creating abstract argumen
         \attack[]{args5}{args10}
         \attack[]{args10}{args9}
         \attack[]{args9}{args4}
-    \end{af}
-    \caption{An exemplary AF created with the \textsf{small} option set.}
-    \label{fig:example_mini}
+        \end{af}
+        \caption{An exemplary AF created with the \textsf{small} option set.}
+        \label{fig:example_small}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af}[tiny]
+        \argument{args1}{a}
+        \argument[right=of args1]{args2}{b}
+        \argument[right=of args2]{args3}{c}
+        \argument[right=of args3]{args4}{d}
+        \argument[right=of args4]{args5}{e}
+        \argument[below=of args1]{args6}{f}
+        \argument[inactive,right=of args6]{args7}{g}
+        \argument[inactive,argin,right=of args7]{args8}{h}
+        \argument[right=of args8]{args9}{i}
+        \argument[right=of args9]{args10}{j}
+
+        \afname[left of=args1,yshift=-0.5cm,xshift=-0.2cm]{cap}{\textbf{F:}}
+
+        \selfattack{args1}
+        \dualattack[]{args1}{args6}
+        \dualattack[inactive]{args6}{args7}
+        \attack[inactive]{args8}{args7}
+
+        \attack[inactive]{args7}{args2}
+        \attack[]{args3}{args2}
+
+        \support[]{args4}{args3}
+        \support[]{args9}{args3}
+
+        \attack[]{args4}{args5}
+        \attack[]{args5}{args10}
+        \attack[]{args10}{args9}
+        \attack[]{args9}{args4}
+        \end{af}
+        \caption{An exemplary AF created with the \textsf{tiny} option set.}
+        \label{fig:example_tiny}
+    \end{subfigure}
+    \caption{Two AFs with smaller nodes, created by using the \textsf{small} and \textsf{tiny} options of the \texttt{af} environment.}
+    \label{fig:mini_afs}
+    
 \end{figure}
 
 While the following commands are intended to be used inside the \texttt{af} environment, they can also be used inside the \textsf{tikzpicture} environment.

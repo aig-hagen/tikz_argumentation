@@ -7,7 +7,7 @@
 % License:  LaTeX Project Public License 1.3c
 
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{options}                        % For managing package options
+\RequirePackage{pgfopts}                        % For managing package options
 \RequirePackage{tikz}                           % For drawing the argumentation frameworks
 \usetikzlibrary{positioning}                    % For relative node positioning
 \usetikzlibrary{arrows.meta}                    % For directed edges / attack arrows
@@ -16,45 +16,28 @@
 
 \newcommand{\argstyle}[1]{#1}                   % Defines the font style in which argument names are displayed
 
-\newif\iftinyaf
-\newif\ifsmallaf
-
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\options{
-    /argumentation/.new family,
-    /argumentation/argumentstyle/.new choice = {standard, retro},
-    /argumentation/namestyle/.new choice = {italics, bold, bolditalics, monospace, normal},
-    /argumentation/attackstyle/.new choice = {standard, retro},
-    /argumentation/supportstyle/.new choice = {standard, dashed, double},
-    /argumentation/@unknown/.new cmd 2 = \PackageWarning{argumentation}{Unknown option `#1'}
-}
-\options@ProcessOptions{/argumentation}
+\pgfkeys{/argumentation/argumentstyle/.is choice}
+\pgfkeys{/argumentation/argumentstyle/standard/.code={\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0}}}}
+\pgfkeys{/argumentation/argumentstyle/retro/.code={\tikzset{argument/.style={circle,draw=black,thick,font=\Large,text centered,inner sep=0,outer sep=0}}}}
 
-%%%%%%%%%% Processing options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ifcase\option{/argumentation/namestyle/@ord}
-\renewcommand{\argstyle}[1]{\emph{#1}}
-\or\renewcommand{\argstyle}[1]{\textbf{#1}}
-\or\renewcommand{\argstyle}[1]{\emph{\textbf{#1}}}
-\or\renewcommand{\argstyle}[1]{\texttt{#1}}
-\or\relax
-\fi
+\pgfkeys{/argumentation/attackstyle/.is choice}
+\pgfkeys{/argumentation/attackstyle/standard/.code={\tikzset{attack/.style={-{stealth'}}}}}
+\pgfkeys{/argumentation/attackstyle/retro/.code={\tikzset{attack/.style={-{Stealth[scale=1.25]}}}}}
 
-\ifcase\option{/argumentation/argumentstyle/@ord}
-\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0}}
-\or\tikzset{argument/.style={circle,draw=black,thick,font=\Large,text centered,inner sep=0,outer sep=0}}
-\fi
+\pgfkeys{/argumentation/supportstyle/.is choice}
+\pgfkeys{/argumentation/supportstyle/standard/.code={\tikzset{support/.style = {postaction = {decorate,decoration={markings,mark=at position #1 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}}}}}
+\pgfkeys{/argumentation/supportstyle/dashed/.code={\tikzset{support/.style = {densely dashed}}}}
+\pgfkeys{/argumentation/supportstyle/double/.code={\tikzset{support/.style = {-{Classical TikZ Rightarrow},double}}}}
 
-\ifcase\option{/argumentation/attackstyle/@ord}
-\tikzset{attack/.style={-{stealth'}}}
-\or\tikzset{attack/.style={-{Stealth[scale=1.25]}}}
-\fi
+\pgfkeys{/argumentation/namestyle/.is choice}
+\pgfkeys{/argumentation/namestyle/normal/.code={\relax}}
+\pgfkeys{/argumentation/namestyle/italics/.code={\renewcommand{\argstyle}[1]{\emph{#1}}}}
+\pgfkeys{/argumentation/namestyle/bold/.code={\renewcommand{\argstyle}[1]{\textbf{#1}}}}
+\pgfkeys{/argumentation/namestyle/bolditalics/.code={\renewcommand{\argstyle}[1]{\emph{\textbf{#1}}}}}
+\pgfkeys{/argumentation/namestyle/monospace/.code={\renewcommand{\argstyle}[1]{\texttt{#1}}}}
 
-\ifcase\option{/argumentation/supportstyle/@ord}
-\tikzset{support/.style = {postaction = {decorate,decoration={markings,mark=at position #1 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}}}
-\or\tikzset{support/.style = {densely dashed}}
-\or\tikzset{support/.style = {-{Classical TikZ Rightarrow},double}}
-\fi
-
+\ProcessPgfPackageOptions{/argumentation}
 %%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \tikzset{ % global predefined tikz-styles
