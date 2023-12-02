@@ -2,7 +2,7 @@
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.1 [2023/11/23]}
+\date{Version 1.1 [2023/12/03]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[]{argumentation}                    % Main Package
@@ -33,7 +33,7 @@
         \argument[right=of args1]{args2}{b}
         \argument[right=of args2]{args3}{c}
         \argument[right=of args3]{args4}{d}
-        \argument[right=of args4]{args5}{e}
+        \argument[right=of args4,incomplete]{args5}{e}
         \argument[below=of args1]{args6}{f}
         \argument[inactive,right=of args6]{args7}{g}
         \argument[inactive,argin,right=of args7]{args8}{h}
@@ -50,8 +50,8 @@
         
         \attack[inactive]{args8}{args7}
         \attack[inactive]{args7}{args2}
-        \annotatedattack{args3}{args2}{$3$}   
-        \attack{args4}{args5}
+        \annotatedattack{args3}{args2}{$3$}
+        \attack[incomplete]{args4}{args5}
         \attack{args5}{args10}
         \attack{args10}{args9}
         \attack{args9}{args4}
@@ -72,7 +72,7 @@
             \argument[right=of args1]{args2}{b}
             \argument[right=of args2]{args3}{c}
             \argument[right=of args3]{args4}{d}
-            \argument[right=of args4]{args5}{e}
+            \argument[right=of args4,incomplete]{args5}{e}
             \argument[below=of args1]{args6}{f}
             \argument[inactive,right=of args6]{args7}{g}
             \argument[inactive,argin,right=of args7]{args8}{h}
@@ -87,8 +87,8 @@
             
             \attack[inactive]{args8}{args7}
             \attack[inactive]{args7}{args2}
-            \attack{args3}{args2}    
-            \attack{args4}{args5}
+            \annotatedattack{args3}{args2}{$3$}
+            \attack[incomplete]{args4}{args5}
             \attack{args5}{args10}
             \attack{args10}{args9}
             \attack{args9}{args4}
@@ -101,7 +101,7 @@
     \end{figure}
 \end{verbatim}
 
-\section{Documentation for Version 1.1 [2023/11/23]}
+\section{Documentation for Version 1.1 [2023/12/03]}
 In the following, we give an overview over the functionality of the \argumentation package.
 In general, the functionality provided by this package is fully compatible with \tikzname.
 Meaning every command from this package can be used inside the \textsf{tikzpicture} environment and every \tikzname command or option can be used inside the \texttt{af} environment or in context of the argument nodes and attack edges.
@@ -133,10 +133,11 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
     
     The \textsf{namestyle} parameter accepts three different options
     \begin{align*}
-        \mathsf{italics} &\quad \text{(default) The argument name is rendered in \emph{italics}.}\\
+        \mathsf{normal} &\quad \text{(default) The argument name is rendered normally.}\\
+        \mathsf{italics} &\quad \text{The argument name is rendered in \emph{italics}.}\\
         \mathsf{bold} &\quad \text{The argument name is rendered in \textbf{bold}.}\\
         \mathsf{bolditalics} &\quad \text{The argument name is rendered with \textbf{\emph{both}}.}\\
-        \mathsf{normal} &\quad \text{The argument name is rendered normally.}\\
+        \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
     \end{align*}
 
 \noindent\texttt{argumentstyle=}\opt{option}
@@ -144,15 +145,16 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
     The \textsf{argumentstyle} parameter accepts two options
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
-        \mathsf{retro} &\quad \text{Thicker outline and slightly larger nodes.}\\
+        %\mathsf{retro} &\quad \text{Thicker outline and slightly larger nodes.}\\
     \end{align*}
 
+\newpage
 \noindent\texttt{attackstyle=}\opt{option}
     
     The \textsf{attackstyle} parameter accepts two options
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
-        \mathsf{retro} &\quad \text{Alternative style, arrow tip is larger and sharper.}\\
+        \mathsf{large} &\quad \text{Alternative style, arrow tip is larger and sharper.}\\
     \end{align*}
 
 \noindent\texttt{supportstyle=}\opt{option}
@@ -163,7 +165,22 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
         \mathsf{dashed} &\quad \text{Dashed arrow line, same tip.}\\
         \mathsf{double} &\quad \text{Double arrow line and large flat tip.}\\
     \end{align*}
-    
+
+You can override the \textsf{argumentstyle}, \textsf{attackstyle} and \textsf{supportstyle} parameters and set a custom style via the following commands respectively.
+
+\noindent
+\verb|\setargumentstyle{|\opt{style}\verb|}|
+
+\noindent
+\verb|\setattackstyle{|\opt{style}\verb|}|
+
+\noindent
+\verb|\setsupportstyle{|\opt{style}\verb|}|
+
+\begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+    \item
+    where \opt{style} is a list of \tikzname style parameters.
+\end{list}
 
 \subsection{The \texttt{af} Environment}
 The \argumentation package provides an environment for creating abstract argumentation frameworks and bipolar argumentation frameworks in \LaTeX-documents.\\
@@ -186,11 +203,11 @@ The \argumentation package provides an environment for creating abstract argumen
     If you want to create an argumentation framework with limited space available, you can provide one of the following predefined options for the environment. This is especially useful for two-column layout documents.
     \begin{align*}
         \mathsf{tiny} &\quad \text{\textsf{node distance} is set to $0.35cm$ and nodes are smaller.}\\
-        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.5cm$ and nodes are smaller.}\\
+        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.55cm$ and nodes are smaller.}\\
     \end{align*}
 
     \begin{example}
-        Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{tiny} and \textsf{small} option respectively.
+        Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{small} and \textsf{tiny} option respectively.
     \end{example}
 \end{list}
 
@@ -307,16 +324,20 @@ While the following commands are intended to be used inside the \texttt{af} envi
     \begin{verbatim}
         \begin{af}
             \argument{arg1}{a}
-            \argument[right=of arg1]{arg2}{b}
-            \argument[right=of arg2, yshift=-10pt]{arg3}{c}
+            \argument[below=of arg1]{arg2}{b}
+            \argument[right=of arg1, yshift=-24pt,xshift=-8pt]{arg3}{c}
+            \argument[right=of arg3, xshift=-0.5cm]{arg4}{d}
+            \argument[right=of arg4, yshift=5ex]{arg4}{e}
         \end{af}
     \end{verbatim}
 
     \begin{center}
         \begin{af}
             \argument{arg1}{a}
-            \argument[right=of arg1]{arg2}{b}
-            \argument[right=of arg2, yshift=-10pt]{arg3}{c}
+            \argument[below=of arg1]{arg2}{b}
+            \argument[right=of arg1, yshift=-24pt,xshift=-8pt]{arg3}{c}
+            \argument[right=of arg3, xshift=-0.5cm]{arg4}{d}
+            \argument[right=of arg4, yshift=5ex]{arg4}{e}
         \end{af}
     \end{center}
         
@@ -326,25 +347,26 @@ While the following commands are intended to be used inside the \texttt{af} envi
     Furthermore, you can provide optional parameters to adjust the style of the argument node.
     For that you can use all \tikzname-style options and additionally the following predefined style parameters:
     \begin{align*}
-        \mathsf{inactive} &\quad \text{The argument is displayed in grey and with a dotted outline.}\\
-        \mathsf{invisible} &\quad \text{The argument is completely transparent.}\\
+        \mathsf{inactive} &\quad \text{The argument is displayed with grey outline and text.}\\
+        \mathsf{incomplete} &\quad \text{The argument is displayed with a dotted outline.}\\
+        \mathsf{invisible} &\quad \text{The argument node is completely transparent.}\\
         \mathsf{argin} &\quad \text{The argument is displayed with green background color.}\\
         \mathsf{argout} &\quad \text{The argument is displayed with red background color.}\\
         \mathsf{argundec} &\quad \text{The argument is displayed with cyan background color.}\\
     \end{align*}
 
-    Some relevant \tikzname style-parameters are
-    \begin{align*}
+    %Some relevant \tikzname style-parameters are
+    %\begin{align*}
         %\textsf{circle} &\quad \text{the shape of the argument.}\\
-        \textsf{minimum~size=0.75cm} &\quad \text{the minimum size of the circle, to ensure consistent}\\
-        &\quad \text{argument size.}\\
-        \textsf{draw=black} &\quad \text{outline and text color of the argument.}\\
+    %    \textsf{minimum~size=0.75cm} &\quad \text{the minimum size of the circle, to ensure consistent}\\
+    %    &\quad \text{argument size.}\\
+    %    \textsf{draw=black} &\quad \text{outline and text color of the argument.}\\
         %\textsf{thick} &\quad \text{the outline of the circle is rendered in \textsf{thick} mode.}\\
-        \textsf{fill=white} &\quad \text{the background color of the argument.}\\
-        \textsf{font=large} &\quad \text{the font size of the argument name.}\\
+    %    \textsf{fill=white} &\quad \text{the background color of the argument.}\\
+    %    \textsf{font=large} &\quad \text{the font size of the argument name.}\\
         %\textsf{text~centered} &\quad \text{positioning of the argument name inside the circle.}\\
-        \textsf{inner~sep=0} &\quad \text{inner margins of the circle, set to \textsf{0} to optimize space.}
-    \end{align*}
+    %    \textsf{inner~sep=0} &\quad \text{inner margins of the circle, set to \textsf{0} to optimize space.}
+    %\end{align*}
     
 
 \subsection{Attacks}
@@ -361,7 +383,8 @@ While the following commands are intended to be used inside the \texttt{af} envi
 \subsubsection{Attack Styling}
     To customize an attack you can provide additional optional parameters:
     \begin{align*}
-        \mathsf{inactive} &\quad \text{The attack is displayed in grey and with a dotted line.}\\
+        \mathsf{inactive} &\quad \text{The attack is displayed in grey.}\\
+        \mathsf{incomplete} &\quad \text{The attack is displayed with a dotted line.}\\
         \mathsf{invisible} &\quad \text{The attack is completely transparent.}\\
         \mathsf{selfattack} &\quad \text{Use if source and target of the attack are the same node.}\\
         \mathsf{bend~right} &\quad \text{The attack arrow is bent to the right.}\\
@@ -369,7 +392,7 @@ While the following commands are intended to be used inside the \texttt{af} envi
         \mathsf{bend~left} &\quad \text{The attack arrow is bent to the left. Can also provide an angle.}\\
     \end{align*}
     
-    Furthermore, all \textsf{tikz} style parameters can be used here as well.
+    Of course, all \tikzname style parameters can be used here as well.
 
     \begin{example}~
     \begin{verbatim}
@@ -471,6 +494,42 @@ While the following commands are intended to be used inside the \texttt{af} envi
     \end{center}
     \end{example}
 
+\subsection{Annotated Attacks}
+    Many extensions of the original abstract argumentation framework rely on attacks with an associated value.
+    This may, for instance, be probabilities in the case of probabilistic argumentation frameworks or numerical weights in the case of weighted argumentation frameworks.
+    These annotations can be added manually via \tikzname or via the following command\\
+
+    \noindent
+    \verb|\annotatedattack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}{|\opt{value}\verb|}|
+    
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+        \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments and \opt{value} is the number or string that should be annotated to the attack.
+        With this command, the annotation is placed above the attack arrow.
+    \end{list}
+
+    \begin{example}~
+    \begin{verbatim}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+    
+            \annotatedattack{arg1}{arg2}{$x$}
+            \annotatedattack[bend right]{arg2}{arg3}{$0.6$}
+        \end{af}    
+    \end{verbatim}
+
+    \begin{center}
+        \begin{af}
+            \argument{arg1}{a}
+            \argument[right=of arg1]{arg2}{b}
+            \argument[right=of arg2]{arg3}{c}
+    
+            \annotatedattack{arg1}{arg2}{$x$}
+            \annotatedattack[bend right]{arg2}{arg3}{$0.6$}
+        \end{af}    
+    \end{center}
+    \end{example}
 
 \subsection{Further Commands}
     If you want to display an identifier for your argumentation framework in the picture, you can use the command\\
@@ -483,12 +542,24 @@ While the following commands are intended to be used inside the \texttt{af} envi
     Additionally, positioning information can be provided via the optional parameters.
     \end{list}
 
+    \noindent
+    To create an annotation, e.\,g., an acceptance condition or a weight, next to an argument, the following command can be used.\\
+    
+    \noindent
+    \verb|\annotation{|\opt{arg\_id}\verb|}{|\opt{text}\verb|}|
+
+    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
+    \item where \opt{arg\_id} is the identifier of some argument and \opt{text} is the text to be displayed.
+    Additionally, positioning information, via \textsf{xshift} or \textsf{yshift}, can be provided via the optional parameters.
+    \end{list}
+
     \begin{example}~
     \begin{verbatim}
         \begin{af}
             \argument{arg1}{a}
             \argument[right=of arg1]{arg2}{b}
             \afname[left=of arg1]{caption}{$F:$}
+            \annotation[yshift=-0.4cm,xshift=0.4cm]{arg2}{$\neg a$}
     
             \attack{arg1}{arg2}
         \end{af}    
@@ -499,12 +570,16 @@ While the following commands are intended to be used inside the \texttt{af} envi
             \argument{arg1}{a}
             \argument[right=of arg1]{arg2}{b}
             \afname[left=of arg1]{caption}{$F:$}
+            \annotation[yshift=-0.4cm,xshift=0.4cm]{arg2}{$\neg a$}
     
             \support{arg1}{arg2}
         \end{af}    
     \end{center}
     \end{example}
 
+%\section{Style Definitions}
+
+\newpage
 \section{Version History}
 
 \subsection*{[v1.0 2023/11/05]}
@@ -512,10 +587,12 @@ While the following commands are intended to be used inside the \texttt{af} envi
     \item First Version.
 \end{itemize}
 
-\subsection*{[v1.1 2023/11/23]}
+\subsection*{[v1.1 2023/12/03]}
 \begin{itemize}
     \item Adjusted standard styles.
+    \item Added command for creating annotated attacks.
     \item Now only provides one environment, which can be parameterised.
+    \item Changed option management to pgfkeys.
     \item Updated and improved documentation.
 \end{itemize}
 
