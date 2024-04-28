@@ -2,7 +2,7 @@
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.1 [2023/12/03]}
+\date{Version 1.2 [2024/05/03]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[]{argumentation}                    % Main Package
@@ -101,7 +101,7 @@
     \end{figure}
 \end{verbatim}
 
-\section{Documentation for Version 1.1 [2023/12/03]}
+\section{Documentation for Version 1.2 [2024/05/03]}
 In the following, we give an overview over the functionality of the \argumentation package.
 In general, the functionality provided by this package is fully compatible with \tikzname.
 Meaning every command from this package can be used inside the \textsf{tikzpicture} environment and every \tikzname command or option can be used inside the \texttt{af} environment or in context of the argument nodes and attack edges.
@@ -121,7 +121,7 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
         \item The package provides the following \emph{optional} options to customize the look of the argumentation frameworks.
     \end{list}
     \begin{align*}
-        \mathsf{namestyle} &\quad \text{Customizes the font of the argument names.}\\
+        \mathsf{namestyle} &\quad \text{Customizes the font style of the argument names.}\\
         \mathsf{argumentstyle} &\quad \text{Customizes the appearance of the argument nodes.}\\
         \mathsf{attackstyle} &\quad \text{Customizes the appearance of the attack edges.}\\
         \mathsf{supportstyle} &\quad \text{Customizes the appearance of the support edges.}\\
@@ -133,10 +133,13 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
     
     The \textsf{namestyle} parameter accepts three different options
     \begin{align*}
-        \mathsf{normal} &\quad \text{(default) The argument name is rendered normally.}\\
-        \mathsf{italics} &\quad \text{The argument name is rendered in \emph{italics}.}\\
-        \mathsf{bold} &\quad \text{The argument name is rendered in \textbf{bold}.}\\
-        \mathsf{bolditalics} &\quad \text{The argument name is rendered with \textbf{\emph{both}}.}\\
+        \mathsf{normal} &\quad \text{(default) No effect applied to argument name.}\\
+        \mathsf{math} &\quad \text{The argument name is rendered as $math$ text}\\
+        &\quad\quad \text{(name must be given without mathmode).}\\
+        \mathsf{italics} &\quad \text{The argument name is rendered in \textit{italics}}\\
+        &\quad\quad \text{(name must be given in mathmode to apply effect).}\\
+        \mathsf{bold} &\quad \text{The argument name is rendered in $\boldsymbol{bold}$}\\
+        &\quad\quad \text{(name must be given in mathmode to apply effect).}\\
         \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
     \end{align*}
 
@@ -145,10 +148,10 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
     The \textsf{argumentstyle} parameter accepts two options
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
+        \mathsf{large} &\quad \text{Same node size, but larger font.}\\
         %\mathsf{retro} &\quad \text{Thicker outline and slightly larger nodes.}\\
     \end{align*}
 
-\newpage
 \noindent\texttt{attackstyle=}\opt{option}
     
     The \textsf{attackstyle} parameter accepts two options
@@ -166,7 +169,7 @@ Meaning every command from this package can be used inside the \textsf{tikzpictu
         \mathsf{double} &\quad \text{Double arrow line and large flat tip.}\\
     \end{align*}
 
-You can override the \textsf{argumentstyle}, \textsf{attackstyle} and \textsf{supportstyle} parameters and set a custom style via the following commands respectively.
+You can manually override the \textsf{argumentstyle}, \textsf{attackstyle} and \textsf{supportstyle} parameters and set a custom style via the following commands respectively.
 
 \noindent
 \verb|\setargumentstyle{|\opt{style}\verb|}|
@@ -203,12 +206,13 @@ The \argumentation package provides an environment for creating abstract argumen
     If you want to create an argumentation framework with limited space available, you can provide one of the following predefined options for the environment. This is especially useful for two-column layout documents.
     \begin{align*}
         \mathsf{tiny} &\quad \text{\textsf{node distance} is set to $0.35cm$ and nodes are smaller.}\\
-        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.55cm$ and nodes are smaller.}\\
+        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.55cm$ and nodes are smaller.}
+        %TODO:& argument size as parameter
     \end{align*}
 
-    \begin{example}
-        Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{small} and \textsf{tiny} option respectively.
-    \end{example}
+    %\begin{example}
+    %    Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{small} and \textsf{tiny} option respectively.
+    %\end{example}
 \end{list}
 
 \begin{figure}[ht]
@@ -226,7 +230,7 @@ The \argumentation package provides an environment for creating abstract argumen
         \argument[right=of args8]{args9}{i}
         \argument[right=of args9]{args10}{j}
 
-        \afname[left of=args1,yshift=-0.5cm,xshift=-0.2cm]{cap}{\textbf{F:}}
+        \afname[left of=args1,yshift=-0.55cm,xshift=-0.2cm]{cap}{\textbf{F:}}
 
         \selfattack{args1}
         \dualattack[]{args1}{args6}
@@ -262,7 +266,7 @@ The \argumentation package provides an environment for creating abstract argumen
         \argument[right=of args8]{args9}{i}
         \argument[right=of args9]{args10}{j}
 
-        \afname[left of=args1,yshift=-0.5cm,xshift=-0.2cm]{cap}{\textbf{F:}}
+        \afname[left of=args1,yshift=-0.4cm,xshift=-0.2cm]{cap}{\textbf{F:}}
 
         \selfattack{args1}
         \dualattack[]{args1}{args6}
@@ -305,8 +309,8 @@ While the following commands are intended to be used inside the \texttt{af} envi
     \end{list}
 
 \subsubsection{Relative Positioning}    
-    This package supports relative placement of the arguments via the \tikzname-library \textsf{positioning}.
-    The relative positioning information is provided as an optional parameter via\\
+    Placement of argument nodes with the \argumentation package relies on relative placement via the \tikzname-library \textsf{positioning}.
+    The relative positioning information is provided as an optional parameter as follows\\
 
     \noindent
     \verb|\argument[|\opt{dir}\verb|=of |\opt{arg\_id}\verb|]{|\opt{id}\verb|}{|\opt{name}\verb|}|
@@ -582,9 +586,10 @@ While the following commands are intended to be used inside the \texttt{af} envi
 \newpage
 \section{Version History}
 
-\subsection*{[v1.0 2023/11/05]}
+\subsection*{[v1.2 2024/05/03]}
 \begin{itemize}
-    \item First Version.
+    \item bugfix for namestyles.
+    \item added new argumentstyle \textsf{large}.
 \end{itemize}
 
 \subsection*{[v1.1 2023/12/03]}
@@ -594,6 +599,11 @@ While the following commands are intended to be used inside the \texttt{af} envi
     \item Now only provides one environment, which can be parameterised.
     \item Changed option management to pgfkeys.
     \item Updated and improved documentation.
+\end{itemize}
+
+\subsection*{[v1.0 2023/11/05]}
+\begin{itemize}
+    \item First Version.
 \end{itemize}
 
 \end{document}

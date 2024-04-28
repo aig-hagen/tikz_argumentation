@@ -1,0 +1,14 @@
+\documentclass[convert={outext=.png}]{standalone}
+\usepackage[namestyle=bold, attackstyle=large,argumentstyle=large]{argumentation}
+\begin{document}
+    \begin{af}
+        \argument{arg1}{$a_1$}
+        \argument[right=of arg1]{arg2}{$g$}
+        \argument[right=of arg2]{arg3}{$f$}
+        \argument[right=of arg3]{arg4}{$a$}
+
+        \attack{arg1}{arg2}
+        \attack[bend right]{arg2}{arg3}
+        \attack[bend left=10,inactive]{arg3}{arg4}
+    \end{af}
+\end{document}
