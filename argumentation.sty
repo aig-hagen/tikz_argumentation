@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2023/12/03 Argumentation]
+\ProvidesPackage{argumentation}[2024/05/03 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
 % Version:  1.1
@@ -14,73 +14,188 @@
 \usetikzlibrary{arrows.meta}                    % For directed edges / attack arrows
 \usetikzlibrary{arrows}                         % For directed edges / attack arrows
 \usetikzlibrary{decorations.markings}           % For creating the support edge markings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\argstyle}[1]{#1}                   % Defines the font style in which argument names are displayed
+%%%%%%%%%%% Package Tikz Style Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{argument}
+%\newcommand{\argument}{\relax}
+\newcommand{\argstyle}[1]{#1}                               % Defines the font style in which argument names are displayed
+
+%%% Argument Style Definitions
+\tikzset{ % global base styles
+    argument size/.style={minimum size=0.7cm},              % Standard size of argument nodes
+    argument/.style={},                                     % Base style for argument nodes
+    argument standard/.style={circle,draw=black,inner sep=0,outer sep=0, argument size},
+    argument large/.style={circle,draw=black,inner sep=0,outer sep=0, argument size, font=\large},
+    argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, argument size, thick},
+}
+
+%%% Attack/Support Edge Definitions
+\tikzset{ % global base styles
+    attack/.style={},                                                       % Base style for attack arrow
+    attack standard/.style={-{stealth'}},                                   % Standard attack arrow
+    attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
+    attack modern/.style={-{To[sharp,length=0.9mm,line width=0.7pt]}},      % Mordern rightarrow style tip
+    support/.style={},
+    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                   % Standard support arrow
+    support dashed/.style={attack,densely dashed},
+    support double/.style={-{Classical TikZ Rightarrow},double},
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\pgfkeys{/argumentation/argumentstyle/.is choice,
-    /argumentation/argumentstyle/standard/.code={\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0}}},
-    /argumentation/argumentstyle/large/.code={\tikzset{argument/.style={circle,draw=black,inner sep=0,outer sep=0, font=\Large}}},
-    /argumentation/argumentstyle/custom/.code={},
-    /argumentation/argumentstyle=standard,
+%%% Options for style of the argument node itself
+\pgfkeys{/tikz/.cd,
+    argumentstyle/.is choice,
+    argumentstyle/standard/.code={\tikzset{argument/.style={argument standard}}},
+    argumentstyle/large/.code={\tikzset{argument/.style={argument large}}},
+    argumentstyle/thick/.code={\tikzset{argument/.style={argument thick}}},
+}
+\pgfkeys{/argumentation/.cd,
+    .unknown/.code={},
+    argumentstyle/.is choice,
+    argumentstyle/standard/.code={\tikzset{argument/.style={argument standard}}},
+    argumentstyle/large/.code={\tikzset{argument/.style={argument large}}},
+    argumentstyle/thick/.code={\tikzset{argument/.style={argument thick}}},
+    argumentstyle=standard,
 }
 
-\pgfkeys{/argumentation/attackstyle/.is choice,
-    /argumentation/attackstyle/standard/.code={\tikzset{attack/.style={-{stealth'}}}},
-    /argumentation/attackstyle/large/.code={\tikzset{attack/.style={-{Stealth[scale=1.25]}}}},
-    /argumentation/attackstyle=standard,
+%%% Options for the style of the attack edges
+\pgfkeys{/tikz/.cd,
+    attackstyle/.is choice,
+    attackstyle/standard/.code={\tikzset{attack/.style={attack standard}}},
+    attackstyle/large/.code={\tikzset{attack/.style={attack large}}},
+    attackstyle/modern/.code={\tikzset{attack/.style={attack modern}}},
+    attackstyle=standard,
+}
+\pgfkeys{/argumentation/.cd,
+    attackstyle/.is choice,
+    attackstyle/standard/.code={\tikzset{attack/.style={attack standard}}},
+    attackstyle/large/.code={\tikzset{attack/.style={attack large}}},
+    attackstyle/modern/.code={\tikzset{attack/.style={attack modern}}},
+    attackstyle=standard,
 }
 
-\pgfkeys{/argumentation/supportstyle/.is choice,
-    /argumentation/supportstyle/standard/.code={\tikzset{support/.style = {attack,postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}}}},
-    /argumentation/supportstyle/dashed/.code={\tikzset{support/.style = {attack,densely dashed}}},
-    /argumentation/supportstyle/double/.code={\tikzstyle{support}=[-{Classical TikZ Rightarrow},double]},
-    /argumentation/supportstyle=standard,
+%%% Options for the style of the support edges
+\pgfkeys{/tikz/.cd,
+    supportstyle/.is choice,
+    supportstyle/standard/.code={\tikzset{support/.style={support standard}}},
+    supportstyle/dashed/.code={\tikzset{support/.style={support dashed}}},
+    supportstyle/double/.code={\tikzset{support/.style={support double}}},
+    supportstyle=standard,
+}
+\pgfkeys{/argumentation/.cd,
+    supportstyle/.is choice,
+    supportstyle/standard/.code={\tikzset{support/.style={support standard}}},
+    supportstyle/dashed/.code={\tikzset{support/.style={support dashed}}},
+    supportstyle/double/.code={\tikzset{support/.style={support double}}},
+    supportstyle=standard,
 }
 
-\pgfkeys{/argumentation/namestyle/.is choice,
-    /argumentation/namestyle/normal/.code={\relax},
-    /argumentation/namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
-    /argumentation/namestyle/italics/.code={\renewcommand{\argstyle}[1]{\ensuremath{\mathit{##1}}}},
-    /argumentation/namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{\text{##1}}}}},
-    /argumentation/namestyle/monospace/.code={\renewcommand{\argstyle}[1]{\texttt{##1}}},
-    /argumentation/namestyle=normal,
+%%% Options for the automatic text formatting for the argument names
+\pgfkeys{/tikz/.cd,
+    namestyle/.is choice,
+    namestyle/none/.code={\renewcommand{\argstyle}[1]{##1}},
+    namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
+    namestyle/italics/.code={\renewcommand{\argstyle}[1]{\ensuremath{\mathit{\text{##1}}}}},
+    namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{\text{##1}}}}},
+    namestyle/monospace/.code={\renewcommand{\argstyle}[1]{\ensuremath{\mathtt{\text{##1}}}}},
+    namestyle=none,
+}
+\pgfkeys{/argumentation/.cd,
+    namestyle/.is choice,
+    namestyle/none/.code={\renewcommand{\argstyle}[1]{##1}},
+    namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
+    namestyle/italics/.code={\renewcommand{\argstyle}[1]{\ensuremath{\mathit{##1}}}},
+    namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{\text{##1}}}}},
+    namestyle/monospace/.code={\renewcommand{\argstyle}[1]{\ensuremath{\mathtt{##1}}}},
+    namestyle=none,
+}
+
+%%% Options for automatic indexing (and naming) of argument nodes
+\NewDocumentCommand { \argument } {} {\relax}
+\pgfkeys{/argumentation/.cd,
+    indexing/.is choice,
+    indexing/none/.code={
+        \RenewDocumentCommand { \argument } {O{} r() m dat d()} {
+            \IfNoValueTF {##5}{%
+                \node[argument size,argument,##1](##2) {\argstyle{##3}};
+            }{%
+                \node[argument size,argument,##1](##2) at (##5) {\argstyle{##3}};
+            }
+        }
+    },
+    indexing/numeric/.code={
+        \RenewDocumentCommand { \argument } {O{} d() m dat d()} {
+            \stepcounter{argument}
+            \IfNoValueTF {##2}{%
+                \IfNoValueTF {##5}{%
+                    \node[argument size,argument,##1](a\arabic{argument}) {\argstyle{##3}};
+                }{%
+                    \node[argument size,argument,##1](a\arabic{argument}) at (##5) {\argstyle{##3}};
+                }
+            }{%
+                \IfNoValueTF {##5}{%
+                    \node[argument size,argument,##1](##2) {\argstyle{##3}};
+                }{%
+                    \node[argument size,argument,##1](##2) at (##5) {\argstyle{##3}};
+                }
+            }
+        }
+    },
+    indexing/alphabetic/.code={
+        \RenewDocumentCommand { \argument } {O{} d() m dat d()} {
+            \stepcounter{argument}
+            \IfNoValueTF {##2}{%
+                \IfNoValueTF {##5}{%
+                    \node[argument size,argument,##1](\alph{argument}) {\argstyle{##3}};
+                }{%
+                    \node[argument size,argument,##1](\alph{argument}) at (##5) {\argstyle{##3}};
+                }
+            }{%
+                \IfNoValueTF {##5}{%
+                    \node[argument size,argument,##1](##2) {\argstyle{##3}};
+                }{%
+                    \node[argument size,argument,##1](##2) at (##5) {\argstyle{##3}};
+                }
+            }
+        }
+    },
+    indexing/.default=numeric,
+    indexing=numeric,
 }
 
 \ProcessPgfPackageOptions{/argumentation}
-%%%%%%%%%% Package Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Additional AF Style Parameters
 \tikzset{ % global predefined tikz-styles
-    argument size/.style={minimum size=0.7cm},                              % Standard size of argument nodes
     selfattack/.style={loop,min distance=2mm,in=0,out=60,looseness=5},      % Standard style for self-attacks
-    inactive/.style={draw=black!30, text=black!40},                         % Make a node or edge inactive, i.e., greyed out
+    inactive/.style={draw=black!30,text=black!40},                          % Make a node or edge inactive, i.e., greyed out
     incomplete/.style={densely dashed},                                     % Style for displaying incomplete nodes or attacks
-    argin/.style={fill=green},                                              % Color an argument that is labelled in
-    argout/.style={fill=red},                                               % Color an argument that is labelled out
-    argundec/.style={fill=cyan},                                            % Color an argument that is labelled undecided
+    accepted/.style={fill=green},                                              % Color an argument that is labelled in
+    rejected/.style={fill=red},                                               % Color an argument that is labelled out
+    undecided/.style={fill=cyan},                                            % Color an argument that is labelled undecided
     caption/.style={draw=none},                                             % Style for displaying AF name in Figure
     invisible/.style={draw=none,text=black!0},                              % Make a node or edge invisible
-    annotation/.style={above,font=\small},
+    annotation/.style={font=\small},                                  % text annotation style
+    argin/.style={accepted},
+    argout/.style={rejected},
+    argundec/.style={undecided},
 }
 
-% Commands for setting custom tikz-style parameters (experimental)
-\newcommand{\setargumentstyle}[1]{\tikzset{argument/.style={#1}}}
-\newcommand{\setattackstyle}[1]{\tikzset{attack/.style={#1}}}
-\newcommand{\setsupportstyle}[1]{\tikzset{support/.style={#1}}}
-\newcommand{\setannotationstyle}[1]{\tikzset{annotation/.style={#1}}}
-
-%\newcommand{\setloopstyle}[1]{\tikzset{selfattack/.style={#1}}}
-%\newcommand{\adjustargumentstyle}[1]{\tikzset{argument/.append style={#1}}}
-%\newcommand{\adjustattackstyle}[1]{\tikzset{attack/.append style={#1}}}
-
-
-%%%%%%%%%%%%%%% Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\pgfkeys{
-    /tikz/small/.style = {node distance=0.55cm,argument size/.style={minimum size=0.55cm},caption/.append style={font=\small}},
-    /tikz/tiny/.style = {node distance=0.35cm,argument size/.style={font=\small, minimum size=0.4cm},caption/.append style={font=\small}},
+%%% Options for af environment
+\pgfkeys{/tikz/.cd,
+    small/.style = {node distance=0.55cm,argument size/.style={minimum size=0.55cm},caption/.append style={font=\small}},
+    tiny/.style = {node distance=0.35cm,argument size/.style={minimum size=0.4cm,font=\small},caption/.append style={font=\small}},
 }
 
+%%% Initializing the af environment
+\newcounter{af}
 \newenvironment{af}[1][]{
+    \refstepcounter{af}
+    \setcounter{argument}{0}
+    \pgfkeys{/argumentation/.cd, #1}
     \tikzpicture[#1]
 }{%
     \endtikzpicture
@@ -89,12 +204,16 @@
 %%%%%%%%%%%%%%%% Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Creates a node displaying the name of the AF
-\newcommand{\afname}[3][]{\node[caption,#1](#2){#3};}
+\NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {
+    \IfNoValueTF {#5}{%
+        \node[caption,#1](#2){#3};
+    }{%
+        \node[caption,#1](#2) at (#5) {#3};
+    }
+    
+}
 
 \newcommand{\annotation}[3][]{\node[annotation,above of=#2,#1](an_#2){#3};}
-
-% Creates an argument node
-\newcommand{\argument}[3][]{\node[argument,argument size,#1](#2){\argstyle{#3}};}
 
 % Creates an attack edge
 \newcommand{\attack}[3][]{\path(#2) edge [attack,#1] (#3);}
@@ -110,3 +229,14 @@
 
 % Creates a support edge between two arguments
 \newcommand{\support}[3][]{\path(#2) edge [support=0.35,#1] (#3);}
+
+%%% Commands for setting custom tikz-style parameters
+\newcommand{\setargumentstyle}[1]{\tikzset{argument/.style={#1}}}
+\newcommand{\setattackstyle}[1]{\tikzset{attack/.style={#1}}}
+\newcommand{\setsupportstyle}[1]{\tikzset{support/.style={#1}}}
+\newcommand{\setannotationstyle}[1]{\tikzset{annotation/.style={#1}}}
+
+%\newcommand{\setloopstyle}[1]{\tikzset{selfattack/.style={#1}}}
+%\newcommand{\adjustargumentstyle}[1]{\tikzset{argument/.append style={#1}}}
+%\newcommand{\adjustattackstyle}[1]{\tikzset{attack/.append style={#1}}}
+
