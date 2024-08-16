@@ -1,7 +1,14 @@
 \documentclass[]{article}
 \usepackage{argumentation}
+\usepackage[hidelinks]{hyperref}
 
 \begin{document}
+\begin{af}
+    
+\end{af}
+
+\section{Introduction}\label{sec:intro}
+
 \begin{af}
 	\argument[](a1){$a_{1}$} at (0.00, -0.00)
 	\argument[](a2){$a_{2}$} at (1.75, -0.00)
@@ -21,6 +28,28 @@
 	\attack[bend right]{a4}{a5}
 	\attack[bend right]{a5}{a4}
 	\attack[bend right]{a2}{a5}
-	\attack[]{a2}{a3}
+	\annotatedattack[below]{a2}{a3}{abc}
+    \label{af:123}
 \end{af}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c}
+         &  \\
+         & 
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+
+Test~\ref{af:123}
+
+Test \afref{af:123} test
+
+\autoref{af:123}
+
+\autoref{sec:intro}
+
+\autoref{tab:my_label}
+
 \end{document}
