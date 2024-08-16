@@ -9,6 +9,7 @@
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{amsbsy,amsmath}                 % For proper bold letters in math mode
 \RequirePackage{pgfopts}                        % For managing package options
+\RequirePackage{xspace}                         % For dynamic spaces after math commands
 \RequirePackage{tikz}                           % For drawing the argumentation frameworks
 \usetikzlibrary{positioning}                    % For relative node positioning
 \usetikzlibrary{arrows.meta}                    % For directed edges / attack arrows
@@ -200,6 +201,10 @@
 }{%
     \endtikzpicture
 }
+% definitions for referencing
+\def\afautorefname{AF}
+\providecommand{\AF}{\ensuremath{F}\xspace}                     % macro for AF abbreviation
+\newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % to reference an AF
 
 %%%%%%%%%%%%%%%% Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
