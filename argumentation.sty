@@ -201,10 +201,15 @@
 }{%
     \endtikzpicture
 }
+
 % definitions for referencing
 \def\afautorefname{AF}
-\providecommand{\AF}{\ensuremath{F}\xspace}                     % macro for AF abbreviation
+\providecommand{\AF}{\ensuremath{F}\xspace}                     % Macro for AF abbreviation
+\providecommand{\arguments}{\ensuremath{A}\xspace}              % Macro for set of arguments
+\providecommand{\attacks}{\ensuremath{R}\xspace}                % Macro for set of attacks
+\providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Macro for full AF
 \newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % to reference an AF
+\newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Macro for full AF with reference
 
 %%%%%%%%%%%%%%%% Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

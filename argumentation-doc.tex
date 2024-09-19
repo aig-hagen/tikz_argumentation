@@ -37,6 +37,7 @@
         \end{af}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
+    \begin{small}
     \begin{verbatim}
         \begin{af}
             \argument{$a$}
@@ -49,6 +50,7 @@
             \attack[bend right]{a3}{a4}
         \end{af}
     \end{verbatim}
+    \end{small}
 \end{minipage}
 
 
@@ -136,7 +138,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
         %\annotation[right]{a5}{$a\lor b$}
 
-        \afname[left of=a1,yshift=-0.8cm,xshift=-0.2cm]{\textbf{F:}}
+        \afname[left of=a1,yshift=-0.8cm,xshift=-0.2cm]{\afref{af:ex1}:}
 
         \selfattack{a1}
         \dualattack{a1}{a6}
@@ -144,7 +146,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
         
         \attack[inactive]{a8}{a7}
         \attack[inactive]{a7}{a2}
-        \annotatedattack{a3}{a2}{$3$}
+        \annotatedattack[above]{a3}{a2}{$3$}
         \attack[incomplete]{a4}{a5}
         \attack{a5}{a10}
         \attack{a10}{a9}
@@ -152,11 +154,15 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
         \support{a4}{a3}
         \support{a9}{a3}
+        \label{af:ex1}
     \end{af}
-    \caption{An exemplary AF created with the \argumentation package.}
+    \caption{The AF \afref{af:ex1} created with the \argumentation package.}
     \label{fig:example}
 \end{figure}
-\vspace{-0.4cm}
+
+\hspace{-1cm}
+\begin{minipage}[c]{0.99\textwidth}
+\begin{small}
 \begin{verbatim}
     \usepackage{argumentation}
     \begin{figure}[ht]
@@ -173,7 +179,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
             \argument[right=of a8]{i}
             \argument[right=of a9]{j}
     
-            \afname[left of=a1,yshift=-0.8cm,xshift=-0.2cm]{\textbf{F:}}
+            \afname[left of=a1,yshift=-0.8cm,xshift=-0.2cm]{\afref{af:ex1}:}
     
             \selfattack{a1}
             \dualattack{a1}{a6}
@@ -181,7 +187,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
             
             \attack[inactive]{a8}{a7}
             \attack[inactive]{a7}{a2}
-            \annotatedattack{a3}{a2}{$3$}
+            \annotatedattack[above]{a3}{a2}{$3$}
             \attack[incomplete]{a4}{a5}
             \attack{a5}{a10}
             \attack{a10}{a9}
@@ -189,17 +195,21 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
             \support{a4}{a3}
             \support{a9}{a3}
+
+            \label{af:ex1}
         \end{af}
-        \caption{An exemplary AF created with the \argumentation package.}
+        \caption{The AF \afref{af:ex1} created with the \argumentation package.}
         \label{fig:example}
     \end{figure}
 \end{verbatim}
+\end{small}
+\end{minipage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage\section{Documentation for Version 1.2 [2024/06/07]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX documents.
+The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
 It builds on the \tikzname package for drawing the graphs and provides simplified syntax while keeping the same customisation options and keeping full compatibility with all \tikzname commands.
 The package comes with multiple predefined style options for arguments, attacks and supports.
 In the following, we give an overview over the functionality of the \argumentation package.
@@ -921,7 +931,8 @@ While the following commands are intended to be used inside the \texttt{af} envi
 \subsection*{[v1.3 2024/08/16]}
 \begin{itemize}
     \item Added referencing to \texttt{af} environment
-    \item Added command \verb|\afref| to reference AFs
+    \item Added commands \verb|\AF|, \verb|\arguments|, \verb|\attacks| and \verb|\AFcomplete| to allow consistent naming of AFs
+    \item Added commands \verb|\afref| and \verb|\fullafref| to reference AFs
 \end{itemize}
 
 \subsection*{[v1.2 2024/06/07]}
