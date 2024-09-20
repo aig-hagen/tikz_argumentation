@@ -1,16 +1,26 @@
-\documentclass{article}
+\documentclass[headings=normal]{scrartcl}
+%======================================================================================================
+\KOMAoptions{
+    paper=a4,
+    fontsize=10pt,
+    cleardoublepage=empty,
+    footinclude=true
+}
+
+\usepackage[top=1.35in, bottom=1.35in, left=1.35in, right=1.35in]{geometry}
+\usepackage[]{argumentation}                    % Main Package
+\usepackage[T1]{fontenc}                        % Font encoding
+\usepackage[utf8]{inputenc}                     % Input font encoding
+\usepackage[english]{babel}                     % Language
+\usepackage[hidelinks]{hyperref}                % Hyperlinks
+\usepackage{subcaption}                         % For two-part figures
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
 \date{Version 1.2 [2024/06/07]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[]{argumentation}                    % Main Package
-\usepackage{amsmath}                            % For example environment
-\usepackage{xspace}                             % For dynamic spacing after commands
-\usepackage{xcolor}                             % Coloring
-\usepackage[hidelinks]{hyperref}                % Hyperlinks
-\usepackage{subcaption}                         % For two-part figures
+
 
 %%% Various commands used in the document
 \newcommand{\todo}[1]{\textcolor{magenta}{TODO: #1}} % for todos
@@ -62,7 +72,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \noindent
-To create an argumentation framework in your \LaTeX document, you have to import the \argumentation package:\\
+To create an argumentation framework in your \LaTeX-document, you have to import the \argumentation package:\\
 
 \vspace{-0.3cm}
 \verb|\usepackage{argumentation}|\\
@@ -236,13 +246,15 @@ The \argumentation package can be imported via the command
 
     In the following, we list the available options for each of the style parameters.\\
 
-\noindent\texttt{argumentstyle=}\opt{option}
+{\bfseries\sffamily\noindent argumentstyle=\opt{option}}
 
-    The \textsf{argumentstyle} parameter accepts three options
+    The \textsf{argumentstyle} parameter accepts five options
     \begin{align*}
         \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
-        \mathsf{large} &\quad \text{Same node size, but larger font.}\\
-        \mathsf{thick} &\quad \text{Same node size, thicker outline.}\\
+        \mathsf{large} &\quad \text{Larger font.}\\
+        \mathsf{thick} &\quad \text{Thick outline.}\\
+        \mathsf{gray} &\quad \text{Thick gray outline, light gray background.}\\
+        \mathsf{colored} &\quad \text{Thick blue outline, light blue background.}\\
     \end{align*}
 
 \begin{figure}[!h]
@@ -282,12 +294,39 @@ The \argumentation package can be imported via the command
         \caption{\textsf{argumentstyle}=\textit{thick}}
         \label{fig:argumentstyle_thick}
     \end{subfigure}
+
+    \par\bigskip
+
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \begin{af}[argumentstyle=gray]
+            \argument{a}
+            \argument[right=of a1]{b}
+    
+            \attack[]{a1}{a2}
+        \end{af}
+        \caption{\textsf{argumentstyle}=\textit{gray}}
+        \label{fig:argumentstyle_gray}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \begin{af}[argumentstyle=colored]
+            \argument{a}
+            \argument[right=of a1]{b}
+    
+            \attack[]{a1}{a2}
+        \end{af}
+        \caption{\textsf{argumentstyle}=\textit{colored}}
+        \label{fig:argumentstyle_colored}
+    \end{subfigure}
+    
     \caption{The available options for \textsf{argumentstyle}.}
     \label{fig:argumentstyle}
 \end{figure}
 
 \newpage
-\noindent\texttt{attackstyle=}\opt{option}
+{\bfseries\sffamily\noindent attackstyle=\opt{option}}
     
     The \textsf{attackstyle} parameter accepts three options
     \begin{align*}
@@ -336,7 +375,7 @@ The \argumentation package can be imported via the command
     \label{fig:attackstyle}
 \end{figure}
 
-\noindent\texttt{supportstyle=}\opt{option}
+{\bfseries\sffamily\noindent supportstyle=\opt{option}}
     
     The \textsf{supportstyle} parameter accepts three options
     \begin{align*}
@@ -385,25 +424,23 @@ The \argumentation package can be imported via the command
     \label{fig:supportstyle}
 \end{figure}
 
-\newpage
-\noindent\texttt{namestyle=}\opt{option}
+
+{\bfseries\sffamily\noindent namestyle=\opt{option}}
     
-    The \textsf{namestyle} parameter offers five different options
+    The \textsf{namestyle} parameter offers four different options
     \begin{align*}
         \mathsf{none} &\quad \text{(default) No effect applied to argument name.}\\
         \mathsf{math} &\quad \text{The argument name is rendered as $math$ text.}\\
         &\quad\quad \text{(name must be given without mathmode).}\\
-        \mathsf{italics} &\quad \text{The argument name is rendered in \textit{italics}.}\\
-        &\quad\quad \text{(name must be given in mathmode to apply effect).}\\
         \mathsf{bold} &\quad \text{The argument name is rendered in $\boldsymbol{bold}$.}\\
-        &\quad\quad \text{(name must be given in mathmode to apply effect).}\\
+        &\quad\quad \text{(name must be given without mathmode).}\\
         \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
-        &\quad\quad \text{(name must be given in mathmode to apply effect).}\\
+        &\quad\quad \text{(name must be given without mathmode).}\\
     \end{align*}
 
 
-\begin{figure}[!h]
-    \begin{subfigure}{0.3\textwidth}
+\begin{figure}[!ht]
+    \begin{subfigure}{0.49\textwidth}
         \centering
         \begin{af}[namestyle=none]
             \argument{a}
@@ -415,7 +452,7 @@ The \argumentation package can be imported via the command
         \label{fig:namestyle_none}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.3\textwidth}
+    \begin{subfigure}{0.49\textwidth}
         \centering
         \begin{af}[namestyle=math]
             \argument{a}
@@ -427,23 +464,12 @@ The \argumentation package can be imported via the command
         \label{fig:namestyle_math}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.3\textwidth}
-        \centering
-        \begin{af}[namestyle=italics]
-            \argument{$a$}
-            \argument[right=of a1]{$b$}
-    
-            \attack[]{a1}{a2}
-        \end{af}
-        \caption{\textsf{namestyle}=\textit{italics}}
-        \label{fig:namestyle_italics}
-    \end{subfigure}
     \par\bigskip
     \begin{subfigure}{0.49\textwidth}
         \centering
         \begin{af}[namestyle=bold]
-            \argument{$a$}
-            \argument[right=of a1]{$b$}
+            \argument{a}
+            \argument[right=of a1]{b}
     
             \attack[]{a1}{a2}
         \end{af}
@@ -454,8 +480,8 @@ The \argumentation package can be imported via the command
     \begin{subfigure}{0.49\textwidth}
         \centering
         \begin{af}[namestyle=monospace]
-            \argument{$a$}
-            \argument[right=of a1]{$b$}
+            \argument{a}
+            \argument[right=of a1]{b}
     
             \attack[]{a1}{a2}
         \end{af}
@@ -466,6 +492,7 @@ The \argumentation package can be imported via the command
     \label{fig:namestyle}
 \end{figure}
 
+\newpage
 \subsection{The \texttt{af} Environment}\label{sec:af}
 The \argumentation package provides an environment for creating abstract argumentation frameworks and many of its extensions in \LaTeX-documents.\\
 
@@ -485,7 +512,7 @@ The \argumentation package provides an environment for creating abstract argumen
  for examples).
     
     The \texttt{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \texttt{af} environment as well.
-    Furthermore, all options for the \textsf{tikzpicture} environment can be used for the \texttt{af} environment as well, e.\,g the option \verb|node distance|, which is set to \verb|1cm| per default.
+    Furthermore, all options for the \textsf{tikzpicture} environment can be used for the \texttt{af} environment as well, e.\,g the option \verb|node distance|, which is set to \verb|1cm| (\verb|6.6ex|) per default.
 
     If you want to create an argumentation framework with limited space available, you can use one of the following predefined options for the \texttt{af} environment. 
     This is especially useful for two-column layout documents.
@@ -576,7 +603,8 @@ The \argumentation package provides an environment for creating abstract argumen
     \label{fig:mini_afs}
 \end{figure}
 
-While the following commands are intended to be used inside the \texttt{af} environment, they can also be used inside the \textsf{tikzpicture} environment.
+\subsubsection{Referencing}
+\todo{}
 
 \subsection{Creating Arguments}
     Arguments can be created with the \verb|\argument| command.
@@ -595,7 +623,6 @@ While the following commands are intended to be used inside the \texttt{af} envi
         The \opt{id} of an argument is used for referencing, e.\,g., when creating attacks or for the relative positioning of other arguments.
     \end{list}
 
-\newpage
 \begin{example}~
     \begin{verbatim}
         \begin{af}
@@ -675,6 +702,7 @@ While the following commands are intended to be used inside the \texttt{af} envi
         \mathsf{accepted} &\quad \text{The argument is displayed with green background color.}\\
         \mathsf{rejected} &\quad \text{The argument is displayed with red background color.}\\
         \mathsf{undecided} &\quad \text{The argument is displayed with cyan background color.}\\
+        \mathsf{highlight} &\quad \text{The argument is displayed with yellow background color.}\\
     \end{align*}
 
     %Some relevant \tikzname style-parameters are
@@ -928,11 +956,13 @@ While the following commands are intended to be used inside the \texttt{af} envi
 
 \newpage
 \section{Version History}\label{sec:history}
-\subsection*{[v1.3 2024/08/16]}
+\subsection*{[v1.3 2024/09/20]}
 \begin{itemize}
     \item Added referencing to \texttt{af} environment
     \item Added commands \verb|\AF|, \verb|\arguments|, \verb|\attacks| and \verb|\AFcomplete| to allow consistent naming of AFs
     \item Added commands \verb|\afref| and \verb|\fullafref| to reference AFs
+    \item adjusted scaling of nodes and arrows
+    \item added new style options
 \end{itemize}
 
 \subsection*{[v1.2 2024/06/07]}
