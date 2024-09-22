@@ -8,17 +8,18 @@
 }
 
 \usepackage[top=1.35in, bottom=1.33in, left=1.35in, right=1.35in]{geometry}
-\usepackage[]{argumentation}                    % Main Package
+\usepackage{argumentation}                    % Main Package
 \usepackage[T1]{fontenc}                        % Font encoding
 \usepackage[utf8]{inputenc}                     % Input font encoding
 \usepackage[english]{babel}                     % Language
 \usepackage[hidelinks]{hyperref}                % Hyperlinks
 \usepackage{subcaption}                         % Multi-part figures
 \usepackage[breakable,]{tcolorbox}              % Fancier Examples
+\usepackage{booktabs}                           % Fancier tables
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.3 [2024/09/21]}
+\date{Version 1.3 [2024/09/22]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -109,7 +110,7 @@ The \argumentation package offers two easy ways of doing that:\\
 \verb|\argument{|\opt{name}\verb|}| \verb|at (|\opt{posX},\opt{posY}\verb|)|\\
 
 \noindent
-The first instance is \emph{relative position} where \opt{dir} is the direction of placement relative to the argument with the identifier \opt{arg\_id}, with \opt{dir} typically being one of the values: \textsf{right}, \textsf{left}, \textsf{above}, \textsf{below}.
+The first instance is \emph{relative positioning} where \opt{dir} is the direction of placement relative to the argument with the identifier \opt{arg\_id}, with \opt{dir} typically being one of: \textsf{right}, \textsf{left}, \textsf{above}, \textsf{below}.
 
 The second instance is \emph{absolute positioning} where (\opt{posX}, \opt{posY}) is a set of coordinates, for example something like $(2, 0)$, $(0, -2)$ or $(2, 4)$.\\
 
@@ -220,7 +221,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 \end{minipage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage\section{Documentation for Version 1.3 [2024/09/21]}\label{sec:documentation}
+\newpage\section{Documentation for Version 1.3 [2024/09/22]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
@@ -248,10 +249,11 @@ The \argumentation package can be imported via the command
         \mathsf{argumentstyle} &\quad \text{Customizes the appearance of argument nodes.}\\
         \mathsf{attackstyle} &\quad \text{Customizes the appearance of attack edges.}\\
         \mathsf{supportstyle} &\quad \text{Customizes the appearance of support edges.}\\
-        \mathsf{namestyle} &\quad \text{Customizes the font style of the argument names.}\\
+        \mathsf{namestyle} &\quad \text{Customizes the font style of the argument names.}
     \end{align*}
 
-    In the following, we list the available options for each of the style parameters.\\
+    In the following, we list the available options for each of the style parameters.
+    Detailed definitions of each of these style parameters can be found in Section~\ref{sec:style-definitions}.\\
 
 {\bfseries\sffamily\noindent argumentstyle=\opt{option}}
 
@@ -442,11 +444,12 @@ The \argumentation package can be imported via the command
         \mathsf{bold} &\quad \text{The argument name is rendered in $\boldsymbol{bold}$.}\\
         &\quad\quad \text{(name must be given without mathmode).}\\
         \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
-        &\quad\quad \text{(name must be given without mathmode).}
+        &\quad\quad \text{(name must be given without mathmode).}\\
+        \mathsf{monoemph} &\quad \text{The argument name is rendered as {\ttfamily\emph{name}}.}
     \end{align*}
 
 \begin{figure}[!ht]
-    \begin{subfigure}{0.49\textwidth}
+    \begin{subfigure}{0.32\textwidth}
         \centering
         \begin{af}[namestyle=none]
             \argument{a}
@@ -458,7 +461,7 @@ The \argumentation package can be imported via the command
         \label{fig:namestyle_none}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.49\textwidth}
+    \begin{subfigure}{0.32\textwidth}
         \centering
         \begin{af}[namestyle=math]
             \argument{a}
@@ -470,8 +473,7 @@ The \argumentation package can be imported via the command
         \label{fig:namestyle_math}
     \end{subfigure}
     \hfill
-    \par\bigskip
-    \begin{subfigure}{0.49\textwidth}
+    \begin{subfigure}{0.32\textwidth}
         \centering
         \begin{af}[namestyle=bold]
             \argument{a}
@@ -483,6 +485,7 @@ The \argumentation package can be imported via the command
         \label{fig:namestyle_bold}
     \end{subfigure}
     \hfill
+    \par\bigskip
     \begin{subfigure}{0.49\textwidth}
         \centering
         \begin{af}[namestyle=monospace]
@@ -493,6 +496,18 @@ The \argumentation package can be imported via the command
         \end{af}
         \caption{\textsf{namestyle}=\textit{monospace}}
         \label{fig:namestyle_monospace}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \begin{af}[namestyle=monoemph]
+            \argument{a}
+            \argument[right=of a1]{b}
+    
+            \attack[]{a1}{a2}
+        \end{af}
+        \caption{\textsf{namestyle}=\textit{monoemph}}
+        \label{fig:namestyle_monoemph}
     \end{subfigure}
     \caption{Available options for \textsf{namestyle}. You can of course apply any formatting yourself when using the default \textsf{namestyle}=\textit{none}.}
     \label{fig:namestyle}
@@ -668,11 +683,11 @@ You may redefine any of the first four commands if you prefer a different naming
     \begin{minipage}{0.5\textwidth}
     \begin{verbatim}
         \begin{af}
-            \argument{$a$}
-            \argument{$b$} at (1, 1)
-            \argument[right=of a2]{$c$}
-            \argument(argD){$d$} at (-2, 0)
-            \argument[above=of argD]{$e$}
+            \argument{a}
+            \argument{b} at (1, 1)
+            \argument[right=of a2]{c}
+            \argument(argD){d} at (-2, 0)
+            \argument[above=of argD]{e}
         \end{af}
     \end{verbatim}
     \end{minipage}%
@@ -724,9 +739,9 @@ You may redefine any of the first four commands if you prefer a different naming
     Per default, the argument identifiers will be numerical of the form $a1, a2, a3, \dots$ based on their order of creation inside the \texttt{af} environment.
     If you prefer alphabetical identifiers, you can set the package option \textsf{indexing}=\emph{alphabetic} and the argument identifiers will instead be $a, b, c, \dots$.
 
-\subsubsection{Additional Argument Styles}
+\subsubsection{Additional Argument Styling}
     Furthermore, you can provide optional parameters to adjust the style of the argument node.
-    For that you can use all \tikzname-style options and additionally the following predefined style parameters:
+    For that you can use all \tikzname-style options and additionally the following predefined style parameters (Refer to Section~\ref{sec:style-definitions} for a detailed description of these parameters):
     \begin{align*}
         \mathsf{inactive} &\quad \text{The argument is displayed with grey outline and text.}\\
         \mathsf{incomplete} &\quad \text{The argument is displayed with a dotted outline.}\\
@@ -858,9 +873,9 @@ You may redefine any of the first four commands if you prefer a different naming
     \begin{minipage}{0.4\textwidth}
         \begin{center}
         \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[right=of a2]{c}
+            \argument{$a_1$}
+            \argument[right=of a1]{$a_2$}
+            \argument[right=of a2]{$a_3$}
     
             \support{a1}{a2}
             \support[bend right]{a2}{a3}
@@ -870,9 +885,9 @@ You may redefine any of the first four commands if you prefer a different naming
     \begin{minipage}{0.5\textwidth}
         \begin{verbatim}
         \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[right=of a2]{c}
+            \argument{$a_1$}
+            \argument[right=of a1]{$a_2$}
+            \argument[right=of a2]{$a_3$}
     
             \support{a1}{a2}
             \support[bend right]{a2}{a3}
@@ -987,6 +1002,10 @@ You may redefine any of the first four commands if you prefer a different naming
     \end{minipage}%
     \end{example}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Style Definitions}\label{sec:style-definitions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     You can manually override the \textsf{argumentstyle}, \textsf{attackstyle} and \textsf{supportstyle} parameters and set a custom style globally via the following commands respectively.\\
 
     \vspace{-0.3cm}
@@ -1002,22 +1021,65 @@ You may redefine any of the first four commands if you prefer a different naming
     \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
         \item
         where \opt{style} is a list of \tikzname style parameters.
+        For reference, the style parameters provided by this package are listed below.
+        You may use or override them at your own discretion.
+        For instance, one could use them to combine or adapt styles, e.\,g.,
+
+        \noindent
+    \verb|\setargumentstyle{argument large,argument gray,text=white}|
     \end{list}
 
-%\section{Style Definitions}
+    \begin{table}[ht]
+        \centering
+        \ttfamily
+        \begin{tabular}{l|l}
+            \toprule
+            \tikzname-keyword & style parameters \\
+            \midrule
+            \textsf{argument size} & \emph{contains the currently selected argument size}\\
+            \textsf{argument} & \emph{contains the currently selected argument style and size}\\
+            \textsf{argument standard} & circle,inner sep=0,outer sep=0,draw=black\\
+            \textsf{argument large} & circle,inner sep=0,outer sep=0,draw=black,font=\verb|\|large\\
+            \textsf{argument thick} & circle,inner sep=0,outer sep=0,draw=black,line width=0.1em\\
+            \textsf{argument gray} & argument thick,fill=gray!30,draw=gray!65,text=black!80\\
+            \textsf{argument colored} & argument thick,fill=aigblue!40,draw=aigblue!80,text=black!80\\
+            \midrule
+            \textsf{attack} & \emph{contains the currently selected attack style}\\
+            \textsf{attack standard} & -\{stealth'\}\\
+            \textsf{attack large} & -\{Stealth[scale=1.25]\}\\
+            \textsf{attack modern} & -\{To[sharp,length=0.65ex,line width=0.05em]\}\\
+            \textsf{selfattack} & loop,min distance=0.4em,in=0,out=60,looseness=4.5\\
+            \midrule
+            \textsf{support} & \emph{contains the currently selected support style}\\
+            \textsf{support standard} & attack,postaction=\{decorate,decoration=\{\dots\}\}\\
+            \textsf{support dashed} & attack,densely dashed\\
+            \textsf{support double} & -\{Classical TikZ Rightarrow\},double\\
+            \midrule
+            \textsf{inactive} & fill=none,draw=gray!50,text=gray!60\\
+            \textsf{incomplete} & densely dashed\\
+            \textsf{accepted} & fill=green!40\\
+            \textsf{rejected} & fill=red!40\\
+            \textsf{undecided} & fill=cyan!40\\
+            \textsf{highlight} & fill=aigyellow!60\\
+            \textsf{invisible} & draw=none,text=black!0,fill=none\\
+            \bottomrule
+        \end{tabular}
+        \caption{Reference list of \tikzname-style parameters provided by the \argumentation package.}
+        \label{tab:styles}
+    \end{table}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version History}\label{sec:history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{[v1.3 2024/09/21]}
+\subsection*{[v1.3 2024/09/22]}
 \begin{itemize}
-    \item Added referencing to \texttt{af} environment.
+    \item Added support for \verb|\label{ }| and \verb|\ref{ }| to \texttt{af} environment.
     \item Added commands \verb|\AF|, \verb|\arguments|, \verb|\attacks| and \verb|\AFcomplete| to facilitate consistent naming of AFs.
-    \item Added commands \verb|\afref| and \verb|\fullafref| to reference AFs.
+    \item Added commands \verb|\afref{ }| and \verb|\fullafref{ }| to reference AFs.
     \item adjusted scaling of nodes and arrows for larger page sizes.
     \item added new style options for arguments.
-    \item Various minor bugfixes regarding the \textsf{namestyle} package option.
+    \item Various minor fixes and changes regarding the \textsf{namestyle} package option.
 \end{itemize}
 
 \subsection*{[v1.2 2024/06/07]}
