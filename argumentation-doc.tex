@@ -8,7 +8,7 @@
 }
 
 \usepackage[top=1.35in, bottom=1.33in, left=1.35in, right=1.35in]{geometry}
-\usepackage{argumentation}                    % Main Package
+\usepackage[macros]{argumentation}              % Main Package
 \usepackage[T1]{fontenc}                        % Font encoding
 \usepackage[utf8]{inputenc}                     % Input font encoding
 \usepackage[english]{babel}                     % Language
@@ -19,7 +19,7 @@
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.3 [2024/09/22]}
+\date{Version 1.3 [2024/09/25]}
 
 %%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -152,7 +152,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
         \annotation[right,yshift=-0.4cm]{a5}{$a\lor b$}
 
-        \afname{\afref{af:ex1}:} at (-1,-0.9)
+        \afname{$F_{\ref{af:ex1}}:$} at (-1,-0.9)
 
         \selfattack{a1}
         \dualattack{a1}{a6}
@@ -170,7 +170,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
         \support{a9}{a3}
         \label{af:ex1}
     \end{af}
-    \caption{The AF \afref{af:ex1} created with the \argumentation package.}
+    \caption{The AF $F_{\ref{af:ex1}}$ created with the \argumentation package.}
     \label{fig:example}
 \end{figure}
 
@@ -182,38 +182,38 @@ To customize the look of the arguments and attacks and for a detailed overview o
     \begin{figure}[ht]
         \centering
         \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[right=of a2]{c}
-            \argument[rejected,right=of a3]{d}
-            \argument[right=of a4,incomplete]{e}
-            \argument[below=of a1]{f}
-            \argument[inactive,right=of a6]{g}
-            \argument[accepted,right=of a7]{h}
-            \argument[right=of a8]{i}
-            \argument[right=of a9]{j}
-    
-            \annotation[right,yshift=-0.4cm]{a5}{$a\lor b$}
-    
-            \afname{\afref{af:ex1}:} at (-1,-0.9)
-    
-            \selfattack{a1}
-            \dualattack{a1}{a6}
-            \dualattack[inactive]{a6}{a7}
-            
-            \attack[inactive]{a8}{a7}
-            \attack[inactive]{a7}{a2}
-            \annotatedattack[above]{a3}{a2}{$3$}
-            \attack[incomplete]{a4}{a5}
-            \attack{a5}{a10}
-            \attack{a10}{a9}
-            \attack{a9}{a4}
-    
-            \support{a4}{a3}
-            \support{a9}{a3}
-            \label{af:ex1}
-        \end{af}
-        \caption{The AF \afref{af:ex1} created with the \argumentation package.}
+        \argument{a}
+        \argument[right=of a1]{b}
+        \argument[right=of a2]{c}
+        \argument[rejected,right=of a3]{d}
+        \argument[right=of a4,incomplete]{e}
+        \argument[below=of a1]{f}
+        \argument[inactive,right=of a6]{g}
+        \argument[accepted,right=of a7]{h}
+        \argument[right=of a8]{i}
+        \argument[right=of a9]{j}
+
+        \annotation[right,yshift=-0.4cm]{a5}{$a\lor b$}
+
+        \afname{$F_{\ref{af:ex1}}:$} at (-1,-0.9)
+
+        \selfattack{a1}
+        \dualattack{a1}{a6}
+        \dualattack[inactive]{a6}{a7}
+        
+        \attack[inactive]{a8}{a7}
+        \attack[inactive]{a7}{a2}
+        \annotatedattack[above]{a3}{a2}{$3$}
+        \attack[incomplete]{a4}{a5}
+        \attack{a5}{a10}
+        \attack{a10}{a9}
+        \attack{a9}{a4}
+
+        \support{a4}{a3}
+        \support{a9}{a3}
+        \label{af:ex1}
+    \end{af}
+        \caption{The AF $F_{\ref{af:ex1}}$ created with the \argumentation package.}
         \label{fig:example}
     \end{figure}
 \end{verbatim}
@@ -221,7 +221,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 \end{minipage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage\section{Documentation for Version 1.3 [2024/09/22]}\label{sec:documentation}
+\newpage\section{Documentation for Version 1.3 [2024/09/25]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
@@ -631,8 +631,9 @@ The package provides to ability to label the created argumentation frameworks an
 For that, place the command \verb|\label{|\opt{name}\verb|}| anywhere in an \texttt{af}-environment and you can reference to it via \verb|\ref{|\opt{name}\verb|}| anywhere in the document.
 
 Additionally, the following commands are provided to facilitate referencing argumentation frameworks.
+To activate them, add the parameter \textsf{macros=true} when loading the package.
 Most importantly the command \verb|\afref{|\opt{name}\verb|}| which works like the \verb|ref| command but adds the reference number directly into the index of the \verb|\AF| symbol.
-You may redefine any of the first four commands if you prefer a different naming scheme for argumentation frameworks.
+You may redefine any of the first four commands if you prefer a different naming scheme for AFs.
 
 \begin{table}[ht]
     \centering
@@ -1072,10 +1073,10 @@ You may redefine any of the first four commands if you prefer a different naming
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version History}\label{sec:history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{[v1.3 2024/09/22]}
+\subsection*{[v1.3 2024/09/25]}
 \begin{itemize}
     \item Added support for \verb|\label{ }| and \verb|\ref{ }| to \texttt{af} environment.
-    \item Added commands \verb|\AF|, \verb|\arguments|, \verb|\attacks| and \verb|\AFcomplete| to facilitate consistent naming of AFs.
+    \item Added commands \verb|\AF|, \verb|\arguments|, \verb|\attacks| and \verb|\AFcomplete| to facilitate consistent naming of AFs. Have to be loaded with the package option \textsf{macros=true}.
     \item Added commands \verb|\afref{ }| and \verb|\fullafref{ }| to reference AFs.
     \item adjusted scaling of nodes and arrows for larger page sizes.
     \item added new style options for arguments.

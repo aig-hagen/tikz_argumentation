@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2024/09/22 Argumentation]
+\ProvidesPackage{argumentation}[2024/09/25 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
 % Version:  1.3
-% Date:     2024/09/22
+% Date:     2024/09/25
 % License:  LaTeX Project Public License 1.3c
 
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,21 +176,34 @@
     indexing=numeric,
 }
 
+\newif\ifmacros
+\pgfkeys{/argumentation/.cd,
+    macros/.is choice,
+    macros/true/.code={
+        \macrostrue
+    },
+    macros/false/.code={
+        \macrosfalse
+    },
+    macros/.default=true,
+    macros=false,
+}
+
 \ProcessPgfPackageOptions{/argumentation}
 
 %%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Additional AF Style Parameters
 \tikzset{ % global predefined tikz-styles
-    selfattack/.style={loop,min distance=0.4em,in=0,out=60,looseness=4.5},      % Standard style for self-attacks
-    inactive/.style={fill=none,draw=gray!50,text=gray!60},                          % Make a node or edge inactive, i.e., greyed out
-    incomplete/.style={densely dashed},                                     % Style for displaying incomplete nodes or attacks
-    accepted/.style={fill=green!40},                                              % Color an argument that is labelled in
-    rejected/.style={fill=red!40},                                               % Color an argument that is labelled out
-    undecided/.style={fill=cyan!40},                                            % Color an argument that is labelled undecided
-    highlight/.style={fill=aigyellow!60},
-    caption/.style={draw=none},                                             % Style for displaying AF name in Figure
-    invisible/.style={draw=none,text=black!0,fill=none},                              % Make a node or edge invisible
-    annotation/.style={font=\small},                                  % text annotation style
+    selfattack/.style={loop,min distance=0.4em,in=0,out=60,looseness=4.5},  % Self-attack
+    inactive/.style={fill=none,draw=gray!50,text=gray!60},                  % Inactive argument or edge (reduct)
+    incomplete/.style={densely dashed},                                     % incomplete argument or edge
+    accepted/.style={fill=green!40},                                        % Accepted argument (in)
+    rejected/.style={fill=red!40},                                          % Rejected argument (out)
+    undecided/.style={fill=cyan!40},                                        % Undecided Argument (undec)
+    highlight/.style={fill=aigyellow!60},                                   % Highlighted argument
+    caption/.style={draw=none},                                             % Caption or text
+    invisible/.style={draw=none,text=black!0,fill=none},                    % Invisible argument or edge
+    annotation/.style={font=\small},                                        % Argument annotation
     argin/.style={accepted},
     argout/.style={rejected},
     argundec/.style={undecided},
@@ -203,6 +216,18 @@
     tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},
 }
 
+
+\ifmacros
+%%% Definitions for referencing
+\providecommand{\AF}{\ensuremath{F}\xspace}                     % AF abbreviation
+\providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
+\providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
+\providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Full AF
+\newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % Reference an AF
+\newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Full AF with reference
+\else\relax
+\fi
+
 %%% Initializing the af environment
 \newcounter{af}
 \newenvironment{af}[1][]{
@@ -213,15 +238,6 @@
 }{%
     \endtikzpicture
 }
-
-%%% Definitions for referencing
-%\def\afautorefname{AF}
-\providecommand{\AF}{\ensuremath{F}\xspace}                     % AF abbreviation
-\providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
-\providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
-\providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Full AF
-\newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % Reference an AF
-\newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Full AF with reference
 
 %%%%%%%%%%%%%%%% Additional Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
