@@ -9,6 +9,7 @@
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{amsbsy,amsmath}                 % Proper bold letters in math mode
 \RequirePackage{pgfopts}                        % Managing package options
+\RequirePackage{etoolbox}                       % Internal list handling
 \RequirePackage{xspace}                         % Dynamic spaces after math commands
 \RequirePackage{xcolor}                         % Defining colors
 \RequirePackage{tikz}                           % Drawing the argumentation frameworks
@@ -191,6 +192,15 @@
     macros=false,
 }
 
+\newif\ifbeamer
+\pgfkeys{/argumentation/.cd,
+    beamer/.is choice,
+    beamer/true/.code={\beamertrue},
+    beamer/false/.code={\beamerfalse},
+    beamer/.default=true,
+    beamer=false
+}
+
 \ProcessPgfPackageOptions{/argumentation}
 
 %%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -232,15 +242,29 @@
 \fi
 
 %%% Initializing the af environment
+
+\makeatletter
 \newcounter{af}
-\newenvironment{af}[1][]{
-    \refstepcounter{af}
+\newenvironment{af*}[1][]{
     \setcounter{argument}{0}
-    \pgfkeys{/argumentation/.cd, #1}
+    \pgfkeys{/argumentation/.cd, #1}                                    % Apply style keys defined in package
     \tikzpicture[standard,af,#1]
 }{%
     \endtikzpicture
 }
+
+\newenvironment{af}[1][]{
+    \refstepcounter{af}                                                 % Initialize counter for AFs
+    \ifbeamer
+    \global\expandafter\def\csname @arguments@\alph{af}\endcsname{}       % Initialize list of arguments of the AF
+    \global\expandafter\def\csname @attacks@\alph{af}\endcsname{}         % Initialize list of attacks of the AF
+    \fi
+    \begin{af*}[#1]                                        % Open tikzpicture environment with given style parameters
+}{%
+    \end{af*}                                                     % End tikzpucture environment
+}
+\makeatother
+
 
 %%%%%%%%%%%%%%%% Additional Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -254,16 +278,20 @@
     
 }
 
+\NewDocumentCommand{ \attack } {O{} m m} {
+    \path(#2) edge [attack,#1] (#3);
+}
+
 \newcommand{\annotation}[3][]{\node[annotation,above of=#2,#1](an_#2){#3};}
 
-% Basic attack edge
-\newcommand{\attack}[3][]{\path(#2) edge [attack,#1] (#3);}
-
 % Self-attack edge
-\newcommand{\selfattack}[2][]{\path(#2) edge [attack,selfattack,#1] (#2);}
+\newcommand{\selfattack}[2][]{\attack[selfattack,#1]{#2}{#2}}
 
 % Symmetric attack edges between two arguments
-\newcommand{\dualattack}[3][]{\path(#2) edge [attack, bend right,#1] (#3);\path(#3) edge [attack, bend right,#1] (#2);}
+\newcommand{\dualattack}[3][]{
+    \attack[bend right,#1]{#2}{#3}
+    \attack[bend right,#1]{#3}{#2}
+}
 
 % Attack edge with value
 \newcommand{\annotatedattack}[4][]{\path(#2) edge [attack,#1] node[annotation](p_#2_#3){#4} (#3);}
@@ -279,7 +307,94 @@
 \newcommand{\setsupportstyle}[1]{\tikzset{support/.style={#1}}}
 \newcommand{\setannotationstyle}[1]{\tikzset{annotation/.style={#1}}}
 
-%\newcommand{\setloopstyle}[1]{\tikzset{selfattack/.style={#1}}}
-%\newcommand{\adjustargumentstyle}[1]{\tikzset{argument/.append style={#1}}}
-%\newcommand{\adjustattackstyle}[1]{\tikzset{attack/.append style={#1}}}
 
+%%%%%%%%%%%% Beamer & Auxilliary Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifbeamer
+\makeatletter
+\RenewDocumentCommand { \argument } {O{} r() m dat d()} {
+    \stepcounter{argument}                                              % Increase counter for argument ID
+    \@make@argument{#1}{#2}{#3}{#4}{#5}{\alph{af}}                           % Use given ID and create unique command
+    \csname @af@\alph{af}@arg@#2\endcsname{}                            % Call unique command to create argument in TikZ
+}
+
+\NewDocumentCommand{ \showaf } {O{} m m} {%
+    \@showaf{#1}{\@arg@convert{#2}}{#3}
+}
+
+% Command for creating attacks
+\RenewDocumentCommand{ \attack } {O{} m m} {
+    \@make@attack{#1}{#2}{#3}{\alph{af}}
+    \csname @af@\alph{af}@att@#2#3\endcsname{}
+}
+
+% Auxilliary command for creating arguments
+\NewDocumentCommand{ \@make@argument } {mmmmmm} {
+    \expandafter\listgadd\csname @arguments@#6\endcsname{#2}          % Add this argument to the list of arguments of the AF
+    \expandafter\global\expandafter\def\csname @af@#6@arg@#2\endcsname##1{  % Create a unique global command to create a specific argument of an AF
+        \@create@argument{#1}{##1}{#2}{#3}{#5}                            % Create the argument in TikZ
+    }
+}
+
+% Auxilliary command for creating arguments
+\NewDocumentCommand { \@create@argument } {mmmmm} {
+    \IfNoValueTF {#5}{%                                                 % Find out positioning type
+        \node[argument size,argument,#1,#2](#3) {\argstyle{#4}};        % Relative or no positioning
+    }{%
+        \node[argument size,argument,#1,#2](#3) at (#5) {\argstyle{#4}};% Absolute positioning
+    }
+}
+
+\NewDocumentCommand{ \@make@attack } {mmmm} {
+    \expandafter\global\expandafter\def\csname @af@#4@att@#2#3\endcsname##1{
+        \expandafter\listgadd\csname @attacks@#4\endcsname{#2,#3}
+        \@create@attack{#1}{##1}{#2}{#3}
+    }
+}
+
+\NewDocumentCommand{ \@create@attack } {mmmm} {
+    \path(#3) edge [attack,#1,#2] (#4);
+}
+
+\NewDocumentCommand{ \@showaf } {mmm} {%
+    \begin{af*}[#1]
+        \def\@active@arguments{}                                        % Define a new internal list
+        \forcsvlist{\listadd\@active@arguments}{#3}                     % Convert given list of arguments into an internal list
+
+        \renewcommand*{\do}[1]{
+            \ifinlist{##1}{\@active@arguments}{%                        % Check if argument is in given argument list
+                \csname @af@#2@arg@##1\endcsname{}                  % If yes, print argument normally
+            }{%
+                \csname @af@#2@arg@##1\endcsname{inactive}          % If no, only print as inactive
+            }
+        }
+        \dolistcsloop{@arguments@#2}                              % Loop over arguments applying above defined function
+
+        \renewcommand*{\do}[1]{
+            \expandafter\@split@pair##1\relax                     % split the given attack into two parts
+            \xifinlist{\@attacker}{\@active@arguments}{                         % Check if attacker is in given active argument list
+                \xifinlist{\@attacked}{\@active@arguments}{                     % Check if attacked is in given active argument list
+                    \csname @af@#2@att@\@attacker\@attacked\endcsname{}             % If both, display attack normally
+                }{
+                    \csname @af@#2@att@\@attacker\@attacked\endcsname{inactive}     % If not, display as inactive
+                }
+            }{
+                \csname @af@#2@att@\@attacker\@attacked\endcsname{inactive}         % If not, display as inactive
+            }
+        }
+        \dolistcsloop{@attacks@#2}                                % Loop over all attacks applying the above defined function
+    \end{af*}
+}
+
+% Auxilliary command for splitting a given pair x,y into two macros
+\def\@split@pair#1,#2\relax{%
+  \def\@attacker{#1}%
+  \def\@attacked{#2}%
+}
+
+\def\@arg@convert#1{%
+    \ifcase#1\or a\or b\or c\or d\or e\or f\or g\or h\or i\or j\or
+    k\or l\or m\or n\or o\or p\or q\or r\or s\or t\or u\or v\or w\or x\or
+    y\or z\else\@ctrerr\fi
+}
+\makeatother
+\fi
