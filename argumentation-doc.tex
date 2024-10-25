@@ -1,12 +1,11 @@
 \documentclass[headings=normal]{scrartcl}
-%======================================================================================================
 \KOMAoptions{
     paper=a4,
     fontsize=10pt,
     cleardoublepage=empty,
     footinclude=true
 }
-
+%%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[top=1.35in, bottom=1.33in, left=1.35in, right=1.35in]{geometry}
 \usepackage[macros]{argumentation}              % Main Package
 \usepackage[T1]{fontenc}                        % Font encoding
@@ -19,10 +18,7 @@
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.3 [2024/09/25]}
-
-%%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\date{Version 1.4 [2024/10/24]}
 
 %%% Various commands used in the document
 \newcommand{\todo}[1]{\textcolor{magenta}{TODO: #1}} % for todos
@@ -221,7 +217,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 \end{minipage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage\section{Documentation for Version 1.3 [2024/09/25]}\label{sec:documentation}
+\newpage\section{Documentation for Version 1.4 [2024/10/24]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
@@ -517,7 +513,8 @@ The \argumentation package can be imported via the command
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The \texttt{af} Environment}\label{sec:af}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{mentioned starred version; afstyle command}
+\todo{REWORK: mentioned starred version; afstyle command; structure}
+
 The \argumentation package provides an environment for creating abstract argumentation frameworks and many of its extensions in \LaTeX-documents.\\
 
 \vspace{-0.2cm}
@@ -653,6 +650,8 @@ You may redefine any of the first four commands if you prefer a different naming
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Creating Arguments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \todo{UPDATE: struture, 3.3.1}
+
     Arguments can be created with the \verb|\argument| command.
     The full command is defined as follows\\
     
@@ -756,8 +755,10 @@ You may redefine any of the first four commands if you prefer a different naming
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Creating Attacks}
+\subsection{Creating Attacks (and other Edges)}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \todo{UPDATE: structure, more brief on support and annotatedattack}
+
     Attacks between two arguments can be created with the command\\
 
     \noindent
@@ -858,7 +859,7 @@ You may redefine any of the first four commands if you prefer a different naming
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Creating Support Relations}
+\subsubsection{Creating Support Relations}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     You can create a support relation between two arguments with the command\\
 
@@ -900,7 +901,7 @@ You may redefine any of the first four commands if you prefer a different naming
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Annotated Attacks}
+\subsubsection{Annotated Attacks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Many extensions of the original abstract argumentation framework rely on attacks with an associated value.
     This may, for instance, be probabilities in the case of probabilistic argumentation frameworks or numerical weights in the case of weighted argumentation frameworks.
@@ -946,6 +947,8 @@ You may redefine any of the first four commands if you prefer a different naming
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Further Commands}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \todo{more brief}
+
     If you want to display an name (or some other text) for your argumentation framework in the picture, you can use the \verb|\afname| command.
     Just like the \verb|\argument| command it can include an optional identifier and supports both relative and absolute positioning.
     Some example usages:\\
@@ -1082,9 +1085,12 @@ You may redefine any of the first four commands if you prefer a different naming
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{[v1.4 2024/10/24]}
 \begin{itemize}
-    \item Added environment \verb|af*| for argumentation frameworks that are unlabeled.
+    \item Added functions \verb|\labeling|, \verb|\reduct| and \verb|\restrictedaf| that recreate (parts of) previously created argumentation frameworks. Can be enabled via the package option \textsf{beamer=true}.
+    \item Added internal storage of arguments and attacks of an argumentation framework to enable further computations.
+    \item Added environment \verb|af*| for argumentation frameworks that are unlabeled/uncounted.
     \item Added command \verb|\setargumentcolorscheme{ }{ }| to change color scheme of the \textsf{colored} argument style.
     \item Added command \verb|\setafstyle{ }| to set global style options for the AFs.
+    \item Various minor changes to internal functions, naming scheme and comments.
 \end{itemize}
 \subsection*{[v1.3 2024/09/25]}
 \begin{itemize}
