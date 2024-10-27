@@ -14,7 +14,8 @@
 \usepackage[hidelinks]{hyperref}                % Hyperlinks
 \usepackage{subcaption}                         % Multi-part figures
 \usepackage[breakable,]{tcolorbox}              % Fancier Examples
-\usepackage{booktabs}                           % Fancier tables
+\usepackage{booktabs}                           % Fancier Tables
+\usepackage{enumitem}                           % Fancier Enumeration
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
@@ -27,6 +28,23 @@
 \newcommand{\opt}[2][red]{\ensuremath{\textcolor{#1}{\langle #2\rangle}}}
 \newtheorem{example}{Example}
 \tcolorboxenvironment{example}{colframe=aigblue,colback=aigyellow!30,breakable,before skip=10pt,after skip=10pt}
+
+\newcommand{\makecmd}[1]{\textbackslash\hspace{-1ex}#1}
+\newenvironment{command}[1]{
+    \medskip\medskip
+    \hspace{-1.5cm}{\ttfamily \makecmd{#1}}
+    \begin{description}[labelindent=1.5cm,labelsep=0.5em, align=right]
+}{%
+    \end{description}
+    \medskip
+}
+\newenvironment{command*}[1]{
+    \medskip\medskip
+    \hspace{-1.5cm}{\ttfamily \makecmd{#1}}
+    \medskip
+    
+}{}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -78,6 +96,7 @@ To create an argumentation framework in your \LaTeX-document, you have to import
 
 \noindent
 You can then create a new \texttt{af} environment in which the argumentation framework can then be built:\\
+\todo{add label and explain}
 
 \vspace{-0.3cm}
 \verb|\begin{af}|
@@ -515,22 +534,19 @@ The \argumentation package can be imported via the command
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \todo{REWORK: mentioned starred version; afstyle command; structure}
 
-The \argumentation package provides an environment for creating abstract argumentation frameworks and many of its extensions in \LaTeX-documents.\\
+The \argumentation package provides an environment for creating abstract argumentation frameworks and many of its extensions in \LaTeX-documents.
 
-\vspace{-0.2cm}
-\noindent
-\verb|\begin{af}[|\opt{options}\verb|]|
+\begin{command}{
+    begin\{af\}[\opt{options}]\\
+        \opt[green]{environment~content}\\
+    \textbackslash\hspace{-0.1ex}end\{af\}
+}
+    \item[\opt{options}] (optional) \todo{}
+\end{command}
 
-\opt[green]{environment~content}
 
-\noindent
-\verb|\end{af}|
-
-\begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item
     The above described style options can be set locally for each instance of the \texttt{af} environment by setting the respective parameters in the options of the environment.
-    Local settings override the defaults and globally set values (See Section~\ref{sec:style} 
- for examples).
+    Local settings override the defaults and globally set values (See Section~\ref{sec:style} for examples).
     
     The \texttt{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \texttt{af} environment as well.
     Furthermore, all options for the \textsf{tikzpicture} environment can be used for the \texttt{af} environment as well, e.\,g the option \verb|node distance|, which is set to \verb|1cm| (\verb|6.6ex|) per default.
@@ -539,14 +555,11 @@ The \argumentation package provides an environment for creating abstract argumen
     This is especially useful for two-column layout documents.
     \begin{align*}
         \mathsf{tiny} &\quad \text{\textsf{node distance} is set to $0.35cm$ and nodes are smaller.}\\
-        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.55cm$ and nodes are smaller.}
+        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.55cm$ and nodes are smaller.}\\
+        \todo{standard}&
         %TODO:& argument size as parameter
     \end{align*}
 
-    %\begin{example}
-    %    Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{small} and \textsf{tiny} option respectively.
-    %\end{example}
-\end{list}
 
 \begin{figure}[ht]
     \begin{subfigure}{0.48\textwidth}
@@ -633,6 +646,8 @@ To activate them, add the parameter \textsf{macros=true} when loading the packag
 Most importantly the command \verb|\afref{|\opt{name}\verb|}| which works like the \verb|ref| command but adds the reference number directly into the index of the \verb|\AF| symbol.
 You may redefine any of the first four commands if you prefer a different naming scheme for AFs.
 
+\todo{move table to another section Additional Features}
+
 \begin{table}[ht]
     \centering
     \begin{tabular}{lll}
@@ -647,26 +662,26 @@ You may redefine any of the first four commands if you prefer a different naming
     \label{tab:referencing}
 \end{table}
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Creating Arguments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \todo{UPDATE: struture, 3.3.1}
 
     Arguments can be created with the \verb|\argument| command.
-    The full command is defined as follows\\
-    
-    \noindent
-    \verb|\argument[|\opt{options}\verb|](|\opt{id}\verb|){|\opt{name}\verb|}| \verb|at| (\opt{posX}, \opt{posY})
+    The full command is defined as follows
 
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item\opt{options}~ (optional) a list of \tikzname style parameters and/or relative positioning information (see Section~\ref{sec:relpos}).
-        \item\opt{id}~ (optional) the identifier of the new argument. When omitted, arguments will automatically be assigned an identifier of the form: $a1, a2, a3,...$
-        \item\opt{name}~ the displayed name of the argument.
-        \item\opt{posX}, \opt{posY}~ (optional) the coordinates where the argument is placed. Should be omitted if relative positioning is used.
+    \begin{command}{
+        argument[\opt{options}](\opt{id})\{\opt{name}\} at (\opt{posX}, \opt{posY})
+    }
+        \item[\opt{options}] (optional) a list of \tikzname style parameters and/or relative positioning information (see Section~\ref{sec:relpos}).
+        \item[\opt{id}] (optional) the identifier of the new argument. When omitted, arguments will automatically be assigned an identifier of the form: $a1, a2, a3,...$.
+        \item[\opt{name}] the displayed name of the argument.
+        \item[\opt{posX},\opt{posY}] (optional) the coordinates where the argument is placed. Should be omitted if relative positioning is used.
+    \end{command}
         
-        \item When creating an argument you only have to provide the \opt{name}, all other parameters are optional.
-        The \opt{id} of an argument is used for referencing, e.\,g., when creating attacks or for the relative positioning of other arguments.
-    \end{list}
+    When creating an argument you only have to provide the \opt{name}, all other parameters are optional.
+    The \opt{id} of an argument is used for referencing, e.\,g., when creating attacks or for the relative positioning of other arguments.
 
 \begin{example}~
 
@@ -698,16 +713,17 @@ You may redefine any of the first four commands if you prefer a different naming
     Placement of argument nodes with the \argumentation package relies on relative placement via the \tikzname-library \textsf{positioning}.
     The relative positioning information is provided as an optional parameter as follows\\
 
-    \noindent
-    \verb|\argument[|\opt{dir}\verb|=of |\opt{arg\_id}\verb|](|\opt{id}\verb|){|\opt{name}\verb|}|
-    
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item\opt{dir}~ has to be one of: \emph{right}, \emph{left}, \emph{below} and \emph{above} 
-        \item\opt{arg\_id}~ is the identifier of another argument
-        \item Additionally, you can adjust the horizontal/vertical position of an argument via the options \verb|xshift=|\opt{v} and \verb|yshift=|\opt{v}.
-        The value \opt{v} is the horizontal/vertical offset, e.\,g., \verb|-6.6ex| or \verb|1cm|.
-    \end{list}
+    \begin{command}{
+        argument[\opt{dir}=of \opt{argId}](\opt{id})\{\opt{name}\}
+    }
+        \item[\opt{dir}] has to be one of: \emph{right}, \emph{left}, \emph{below} and \emph{above}.
+        \item[\opt{argId}] is the identifier of another argument
+        \item[\opt{id}] todo
+        \item[\opt{name}] todo
+    \end{command}
 
+    Additionally, you can adjust the horizontal/vertical position of an argument via the options \verb|xshift=|\opt{v} and \verb|yshift=|\opt{v}.
+        The value \opt{v} is the horizontal/vertical offset, e.\,g., \verb|-6.6ex| or \verb|1cm|.
 
     \begin{example}~
 
@@ -755,19 +771,31 @@ You may redefine any of the first four commands if you prefer a different naming
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Creating Attacks (and other Edges)}
+\subsection{Creating Attacks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \todo{UPDATE: structure, more brief on support and annotatedattack}
 
-    Attacks between two arguments can be created with the command\\
+    Attacks between two arguments can be created with the command
 
-    \noindent
-    \verb|\attack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|
+    \begin{command}{
+        attack\{\opt{arg1}\}\{\opt{arg2}\}
+    }
+        \item[\opt{arg1}] Identifier of the attacking argument.
+        \item[\opt{arg2}] Identifier of the attacked argument.
+    \end{command}
 
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments.
-    \end{list}
+    \begin{command}{
+        dualattack\{\opt{arg1}\}\{\opt{arg2}\}
+    }
+        \item[\opt{arg1}] Identifier of the first argument.
+        \item[\opt{arg2}] Identifier of the second argument.
+    \end{command}
 
+    \begin{command}{
+        selfattack\{\opt{arg1}\}
+    }
+        \item[\opt{arg1}] Identifier of the self-attacking argument.
+    \end{command}
     
 \subsubsection{Additional Attack Styles}
     To customize an attack you can provide additional optional parameters:
@@ -783,7 +811,8 @@ You may redefine any of the first four commands if you prefer a different naming
     
     Of course, all \tikzname style parameters can be used here as well.
 
-    \newpage
+
+    \todo{one big example}
     \begin{example}~
 
     \begin{minipage}{0.32\textwidth}
@@ -817,20 +846,6 @@ You may redefine any of the first four commands if you prefer a different naming
     
     \end{example}
 
-    Additionally, there is a shortcut for creating a symmetric attack between two arguments with
-
-    \noindent
-    \verb|\dualattack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|\\
-
-    \noindent
-    and a shortcut for a self-attack for an argument with
-
-    \noindent
-    \verb|\selfattack{|\opt{arg1}\verb|}|\\
-
-    \noindent
-    For both commands, you can use the same optional parameters as for the \verb|\attack| command.
-
     \begin{example}~
 
     \begin{minipage}{0.4\textwidth}
@@ -859,18 +874,34 @@ You may redefine any of the first four commands if you prefer a different naming
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Creating Support Relations}
+\subsubsection{Other Edges}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    You can create a support relation between two arguments with the command\\
+    You can create a support relation between two arguments with the command
 
-    \noindent
-    \verb|\support{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|
+    \begin{command}{
+        support\{\opt{arg1}\}\{\opt{arg2}\}
+    }
+        \item[\opt{arg1}] Identifier of the supporting argument.
+        \item[\opt{arg2}] Identifier of the supported argument.
+    \end{command}
 
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments.
     The support arrow use the same tip as the attack arrows, but have a perpendicular mark to distinguish them from attacks.
     Supports can be customized in the same way as attacks.
-    \end{list}
+
+    Many extensions of the original abstract argumentation framework rely on attacks with an associated value.
+    This may, for instance, be probabilities in the case of probabilistic argumentation frameworks or numerical weights in the case of weighted argumentation frameworks.
+    These annotations can be added manually via \tikzname or via the following command
+
+    \begin{command}{
+        annotatedattack[\opt{position}]\{\opt{arg1}\}\{\opt{arg2}\}\{\opt{value}\}
+    }
+        \item[\opt{position}] Specifies where the annotation should be placed relative to the attack arrow and should be one of: \textsf{above}, \textsf{below}, \textsf{left}, \textsf{right}.
+        \item[\opt{arg1}] Identifier of the attacking argument.
+        \item[\opt{arg2}] Identifier of the attacked argument.
+        \item[\opt{value}] The text that is annotated.
+    \end{command}
+    
+    \todo{unify example}
     \begin{example}~
 
     \begin{minipage}{0.4\textwidth}
@@ -898,22 +929,6 @@ You may redefine any of the first four commands if you prefer a different naming
         \end{verbatim}
     \end{minipage}
     \end{example}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Annotated Attacks}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Many extensions of the original abstract argumentation framework rely on attacks with an associated value.
-    This may, for instance, be probabilities in the case of probabilistic argumentation frameworks or numerical weights in the case of weighted argumentation frameworks.
-    These annotations can be added manually via \tikzname or via the following command\\
-    
-    \noindent
-    \verb|\annotatedattack[|\opt{position}\verb|]{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}{|\opt{value}\verb|}|
-    
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments and \opt{value} is the text or number that should be annotated to the attack.
-        \opt{position} specifies where the annotation should be placed relative to the attack arrow and should be one of: \textsf{above}, \textsf{below}, \textsf{left}, \textsf{right}.
-    \end{list}
 
     \begin{example}~
 
@@ -944,8 +959,14 @@ You may redefine any of the first four commands if you prefer a different naming
     \end{example}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Beamer}\label{sec:beamer}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\todo{explain beamer functionality}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Further Commands}
+\subsection{Other Commands}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \todo{more brief}
 
@@ -1008,37 +1029,27 @@ You may redefine any of the first four commands if you prefer a different naming
     \end{example}
 
 
+\appendix
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Beamer}\label{sec:beamer}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{explain beamer functionality}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Style Definitions}\label{sec:style-definitions}
+\section{Style Definitions}\label{sec:style-definitions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     You can manually override the \textsf{argumentstyle}, \textsf{attackstyle} and \textsf{supportstyle} parameters and set a custom style globally via the following commands respectively.\\
 
-    \vspace{-0.3cm}
-    \noindent
-    \verb|\setargumentstyle{|\opt{style}\verb|}|
+    \begin{command*}{setargumentstyle\{\opt{style}\}}
+    \end{command*}
+    \begin{command*}{setattackstyle\{\opt{style}\}}
+    \end{command*}
+    \begin{command*}{setsupportstyle\{\opt{style}\}}
+    \end{command*}
     
-    \noindent
-    \verb|\setattackstyle{|\opt{style}\verb|}|
-    
-    \noindent
-    \verb|\setsupportstyle{|\opt{style}\verb|}|
-    
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item
-        where \opt{style} is a list of \tikzname style parameters.
-        For reference, the style parameters provided by this package are listed below.
-        You may use or override them at your own discretion.
-        For instance, one could use them to combine or adapt styles, e.\,g.,
+    where \opt{style} is a list of \tikzname style parameters.
+    For reference, the style parameters provided by this package are listed below.
+    You may use or override them at your own discretion.
+    For instance, one could use them to combine or adapt styles, e.\,g.,\\
 
-        \noindent
+    \noindent
     \verb|\setargumentstyle{argument large,argument gray,text=white}|
-    \end{list}
 
     \begin{table}[ht]
         \centering
@@ -1090,6 +1101,7 @@ You may redefine any of the first four commands if you prefer a different naming
     \item Added environment \verb|af*| for argumentation frameworks that are unlabeled/uncounted.
     \item Added command \verb|\setargumentcolorscheme{ }{ }| to change color scheme of the \textsf{colored} argument style.
     \item Added command \verb|\setafstyle{ }| to set global style options for the AFs.
+    \item Major revision of the documentation.
     \item Various minor changes to internal functions, naming scheme and comments.
 \end{itemize}
 \subsection*{[v1.3 2024/09/25]}

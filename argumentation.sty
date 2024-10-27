@@ -6,6 +6,7 @@
 % Date:     2024/10/24
 % License:  LaTeX Project Public License 1.3c
 
+
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{amsbsy,amsmath}                 % Proper bold letters in math mode
 \RequirePackage{pgfopts}                        % Managing package options
@@ -18,7 +19,6 @@
 \usetikzlibrary{arrows.meta}                    % Directed edges / attack arrows
 \usetikzlibrary{arrows}                         % Directed edges / attack arrows
 \usetikzlibrary{decorations.markings}           % Creating the support edge markings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%% Package Style Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,31 +27,31 @@
 \definecolor{aigblue}{RGB}{0,76,151}            % Node color
 
 %%% Argument Style Definitions
-\tikzset{ % global base styles
-    argument size/.style={},                    % Size of argument nodes
-    argument/.style={},                         % Base style for argument nodes
-    argument standard/.style={circle,draw=black,inner sep=0,outer sep=0},
-    argument large/.style={circle,draw=black,inner sep=0,outer sep=0, font=\large},
-    argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, line width=0.1em},
-    argument gray/.style={argument thick,fill=gray!30,draw=gray!65,text=black!80},
-    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80,text=black!80},
+\tikzset{
+    argument size/.style={},                                                                    % Size of argument nodes
+    argument/.style={},                                                                         % Base style for argument nodes
+    argument standard/.style={circle,draw=black,inner sep=0,outer sep=0},                       % Standard argument style
+    argument large/.style={circle,draw=black,inner sep=0,outer sep=0, font=\large},             % Large argument style
+    argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, line width=0.1em},        % Thick outline argument style
+    argument gray/.style={argument thick,fill=gray!30,draw=gray!65,text=black!80},              % Gray argument style
+    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80,text=black!80},     % Colored argument stlye
 }
 
 %%% Attack/Support Edge Definitions
-\tikzset{ % global base styles
-    attack width/.style={},                     % Width of attack arrows
-    attack/.style={},                           % Base style for attack arrow
+\tikzset{
+    attack width/.style={},                                                 % Width of attack arrows
+    attack/.style={},                                                       % Base style for attack arrow
     attack standard/.style={-{stealth'}},                                   % Standard attack arrow
     attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
     attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Mordern rightarrow style tip
-    support/.style={},
-    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                % Standard support arrow
+    support/.style={},                                                      % Base style for support
+    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                         % Standard support arrow
     support dashed/.style={attack,densely dashed},                          % Dashed Support arrow
     support double/.style={-{Classical TikZ Rightarrow},double},            % double-line support arrow
 }
 
-%%% Additional AF Style Parameters
-\tikzset{ % global predefined tikz-styles
+%%% Additional Style Parameters
+\tikzset{
     selfattack/.style={loop,min distance=0.4em,in=0,out=60,looseness=4.5},  % Self-attack
     inactive/.style={fill=none,draw=gray!50,text=gray!60},                  % Inactive argument or edge (reduct)
     incomplete/.style={densely dashed},                                     % incomplete argument or edge
@@ -66,13 +66,40 @@
     argout/.style={rejected},
     argundec/.style={undecided},
 }
-%%%%%%%%%% Internal utility functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Style-Options for af environment
+\pgfkeys{/tikz/.cd,
+    af/.style={},                                                                % Base style for af
+    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em},},                       % Standard size style for af
+    small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},      % Small size style for af
+    tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},                                                        % Tiny size style for af
+}
+
+
+%%%%%%%%%% Internal Utility Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifmacros
 \newif\ifbeamer
 \newif\ifnumericidx
 \newif\ifalphaidx
 \newif\ifinsideaf
-\newcommand{\argstyle}[1]{#1}   % Defines the font style in which argument names are displayed
+
+%%% Defines the font style in which argument names are displayed
+\newcommand{\argstyle}[1]{#1}
+
+\makeatletter
+%%% Auxilliary command for splitting a given pair x,y into two macros
+\def\@split@pair#1,#2\relax{%
+  \def\@attacker{#1}%
+  \def\@attacked{#2}%
+}
+
+%%% Auxilliary command for converting a number into a letter
+\def\@arg@convert#1{%
+    \ifcase#1\or a\or b\or c\or d\or e\or f\or g\or h\or i\or j\or
+    k\or l\or m\or n\or o\or p\or q\or r\or s\or t\or u\or v\or w\or x\or
+    y\or z\else\@ctrerr\fi
+}
+\makeatother
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Options for style of the argument node itself
@@ -147,7 +174,7 @@
     namestyle=none,
 }
 
-% Options for automatic indexing of arguments
+%%% Option for automatic indexing of arguments
 \pgfkeys{/argumentation/.cd,
     indexing/.is choice,
     indexing/numeric/.code={\numericidxtrue},
@@ -157,7 +184,7 @@
     indexing=numeric,
 }
 
-% Option for enabling additional macros
+%%% Option for enabling additional macros
 \pgfkeys{/argumentation/.cd,
     macros/.is choice,
     macros/true/.code={\macrostrue},
@@ -166,7 +193,7 @@
     macros=false,
 }
 
-% Option for enabling beamer functionality
+%%% Option for enabling beamer functionality
 \pgfkeys{/argumentation/.cd,
     beamer/.is choice,
     beamer/true/.code={\beamertrue},
@@ -177,90 +204,168 @@
 
 \ProcessPgfPackageOptions{/argumentation}
 
+
 %%%%%%%%%%%%%%% Arguments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcounter{argument}
-\NewDocumentCommand { \argument } {} {\relax}
 \makeatletter
-\ifalphaidx
-    \RenewDocumentCommand { \argument } {O{} d() m dat d()} {
-        \stepcounter{argument}
-        \IfNoValueTF {#2}{%
-            \@create@argument{#1}{}{\alph{argument}}{#3}{#5}
-        }{%
-            \@create@argument{#1}{}{#2}{#3}{#5}
-        }
-    }
-\else\ifnumericidx
-    \RenewDocumentCommand { \argument } {O{} d() m dat d()} {
-        \stepcounter{argument}
-        \IfNoValueTF {#2}{%
-            \@create@argument{#1}{}{a\arabic{argument}}{#3}{#5}
-        }{%
-            \@create@argument{#1}{}{#2}{#3}{#5}
-        }
-    }
-\else
-    \RenewDocumentCommand { \argument } {O{} r() m dat d()} {
-        \@create@argument{#1}{}{#2}{#3}{#5}
-    }
-\fi\fi
+% Internal counter for argument IDs
+\newcounter{@argument}
 
-% Auxilliary command for creating arguments
-\NewDocumentCommand { \@create@argument } {mmmmm} {
+%%% Command for creating arguments
+%   #1 TikZ parameters (optional)
+%   #2 unique argument ID (optional)
+%   #3 argument display name
+%   #4 ignored
+%   #5 absolute positioning values (optional)
+\NewDocumentCommand { \argument } {O{} d() m dat d()} {%
+    \stepcounter{@argument}
+    \IfNoValueTF {#2}{%
+        \ifalphaidx
+            \edef\@argid{\alph{@argument}}
+        \else\ifnumericidx
+            \edef\@argid{a\arabic{@argument}}
+        \else
+            \PackageError{argumentation}{Missing argument ID}{Must either provide argument ID inside () or activate auto-indexing}
+        \fi\fi
+    }{%
+        \edef\@argid{#2}
+    }
+    \ifbeamer
+        \ifinsideaf
+            \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\alph{af}}
+            \csname @af@\alph{af}@arg@\@argid\endcsname{}
+        \else
+            \@create@argument{#1}{}{\@argid}{#3}{#5}
+        \fi
+    \else
+        \@create@argument{#1}{}{\@argid}{#3}{#5}
+    \fi
+}
+
+%%% Auxilliary command for creating arguments
+%   #1 TikZ parameters (optional)
+%   #2 TikZ parameters (optional)
+%   #3 unique argument ID (optional)
+%   #4 argument display name
+%   #5 absolute positioning value (optional)
+\NewDocumentCommand { \@create@argument } {mmmmm} {%
     \IfNoValueTF {#5}{%
         \node[argument size,argument,#1,#2](#3) {\argstyle{#4}};
     }{%
         \node[argument size,argument,#1,#2](#3) at (#5) {\argstyle{#4}};
     }
 }
+
+\ifbeamer
+%%% Auxilliary command for creating unique argument macros
+%   #1 TikZ parameters
+%   #2 unique argument ID
+%   #3 argument display name
+%   #4 ignored
+%   #5 absolute positioning values
+%   #6 unique AF ID
+\NewDocumentCommand { \@make@argument } {mmmmmm} {%
+    %\typeout{CREATED NEW MACRO @af@#6@arg#2}
+    \expandafter\listxadd\csname @arguments@#6\endcsname{#2}
+    \expandafter\global\expandafter\edef\csname @af@#6@arg@#2\endcsname##1{%
+        %\typeout{RECALLING MACRO @af@#6@arg#2}
+        \@create@argument{#1}{##1}{#2}{#3}{#5}
+    }
+}
+\fi
 \makeatother
 
 
 %%%%%%%%%%%%%%% Attacks & Support %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
-% Command for creating an attack edge
-\NewDocumentCommand{ \attack } {O{} m m} {
-    \@create@attack{#1}{}{#2}{#3}
+%%% Command for creating attacks
+%   #1 TikZ parameters (optional)
+%   #2 attacking argument ID
+%   #3 attacked argument ID
+%   #4 annotation text (optional)
+\NewDocumentCommand { \attack } {O{} m m d()} {%
+    \ifbeamer
+        \ifinsideaf
+            \@make@attack{#1}{#2}{#3}{#4}{\alph{af}}
+            \csname @af@\alph{af}@att@#2#3\endcsname{}
+        \else
+            \@create@attack{#1}{}{#2}{#3}{#4}
+        \fi
+    \else
+        \@create@attack{#1}{}{#2}{#3}{#4}
+    \fi
 }
 
-% Internal command for creating the attack in TikZ
-\NewDocumentCommand{ \@create@attack } {mmmm} {
-    \path(#3) edge [attack,#1,#2] (#4);
+%%% Internal command for creating the attack in TikZ
+%   #1 TikZ parameters (optional)
+%   #2 TikZ parameters (optional)
+%   #3 attacking argument ID
+%   #4 attacked argument ID
+%   #5 annotation text
+\NewDocumentCommand { \@create@attack } {mmmmm} {%
+    \IfNoValueTF{#5}{%
+        \path(#3) edge [attack,#1,#2] (#4);
+    }{%
+        \path(#3) edge [attack,#1,#2] node[annotation](p_#3_#4){#5} (#4);
+    }
 }
-\makeatother
 
-% Self-attack edge
-\newcommand{\selfattack}[2][]{\attack[selfattack,#1]{#2}{#2}}
+\ifbeamer
+%%% Auxilliary command for creating unique attack macros
+%   #1 TikZ parameters
+%   #2 attacking argument ID
+%   #3 attacked argument ID
+%   #4 annotation text
+%   #5 unique AF ID
+\NewDocumentCommand { \@make@attack } {mmmmm} {%
+    \expandafter\listgadd\csname @attacks@#5\endcsname{#2,#3}
+    \expandafter\global\expandafter\edef\csname @af@#5@att@#2#3\endcsname##1{
+        \@create@attack{#1}{##1}{#2}{#3}{#4}
+    }
+}
+\fi
 
-% Symmetric attack edges between two arguments
-\newcommand{\dualattack}[3][]{
+%%% Self-attack edge
+%   #1 TikZ parameters (optional)
+%   #2 argument ID
+\NewDocumentCommand { \selfattack } {O{} m} {%
+    \attack[selfattack,#1]{#2}{#2}
+}
+
+%%% Symmetric attack edges between two arguments
+%   #1 TikZ parameters (optional)
+%   #2 first argument ID
+%   #3 second argument ID
+\NewDocumentCommand { \dualattack } {O{} m m} {%
     \attack[bend right,#1]{#2}{#3}
     \attack[bend right,#1]{#3}{#2}
 }
 
-% Attack edge with value
-\newcommand{\annotatedattack}[4][]{\path(#2) edge [attack,#1] node[annotation](p_#2_#3){#4} (#3);}
+%%% Create attack edge with value (DEPRECATED as of v1.4)
+%   #1 TikZ parameters (optional)
+%   #2 attacking argument ID
+%   #3 attacked argument ID
+%   #4 annotation text
+\NewDocumentCommand{ \annotatedattack } {O{}mmm} {%
+    \attack[#1]{#2}{#3}(#4)
+}
 
-% Support edge
-\newcommand{\support}[3][]{\path(#2) edge [support=0.35,#1] (#3);}
+%%% Support edge
+%   #1 TikZ parameters (optional)
+%   #2 supporting argument ID
+%   #3 supported argument ID
+\NewDocumentCommand { \support } {O{} m m} {%
+    \path(#2) edge [support=0.35,#1] (#3);
+}
+\makeatother
 
 
 %%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcounter{af}
 
-%%% Style-Options for af environment
-\pgfkeys{/tikz/.cd,
-    af/.style={},
-    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em},},
-    small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},
-    tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},
-}
-
 %%% Uncounted version of the environment
 \makeatletter
-\newenvironment{af*}[1][]{
-    \setcounter{argument}{0}
+\NewDocumentEnvironment {af*} {O{}} {%
+    \setcounter{@argument}{0}
     \pgfkeys{/argumentation/.cd, #1}
     \tikzpicture[standard,af,#1]
 }{%
@@ -268,7 +373,7 @@
 }
 
 %%% Standard version of af environment
-\newenvironment{af}[1][]{
+\NewDocumentEnvironment {af} {O{}} {%
     \refstepcounter{af}
     \ifbeamer
         \global\expandafter\def\csname @arguments@\alph{af}\endcsname{}
@@ -295,7 +400,7 @@
 \fi
 
 % Creates a node displaying the name of the AF
-\NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {
+\NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {%
     \IfNoValueTF {#5}{%
         \node[caption,#1](#2){#3};
     }{%
@@ -304,7 +409,9 @@
 }
 
 %%% Create a text annotation next to another node
-\newcommand{\annotation}[3][]{\node[annotation,above of=#2,#1](an_#2){#3};}
+\NewDocumentCommand { \annotation } {O{} m m} {%
+    \node[annotation,above of=#2,#1](an_#2){#3};
+}
 
 %%% Commands for setting custom tikz-style parameters
 \newcommand{\setafstyle}[1]{\tikzset{af/.style={#1}}}
@@ -315,16 +422,28 @@
 \newcommand{\setannotationstyle}[1]{\tikzset{annotation/.style={#1}}}
 
 
-%%%%%%%%%%%% Beamer & Auxilliary Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% Beamer Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifbeamer
 \makeatletter
+%%% Prints an extension of an AF for the given list of accepted arguments
+%   #1 unique ID of an AF
+%   #2 a comma-separated list of argument IDs
+\NewDocumentCommand { \extension } {mm} {%
+    \@prepare@af{#1}
+    % Collect accepted arguments in list
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
+
+    % render the af with the given information
+    \@render@af{\@afid}{accepted}{}{}{}{}
+}
+
 %%% Prints a labeling of an AF for the given list of accepted arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand{ \labeling } {mm} {%
+\NewDocumentCommand { \labeling } {mm} {%
     \@prepare@af{#1}
     % Collect accepted arguments in list
-    \forcsvlist{\listadd\@accepted@arguments}{#2}
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
 
     % Collect rejected arguments in list
     \renewcommand*{\do}[1]{
@@ -352,10 +471,10 @@
 %%% Prints the reduct of an AF wrt. the given list of arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand{ \reduct } {mm} {
+\NewDocumentCommand { \reduct } {mm} {%
     \@prepare@af{#1}
-    \forcsvlist{\listadd\@accepted@arguments}{#2}
-    \forcsvlist{\listadd\@inactive@arguments}{#2}
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
+    \forcsvlist{\listeadd\@inactive@arguments}{#2}
     
     \renewcommand*{\do}[1]{
         \expandafter\@split@pair##1\relax
@@ -372,13 +491,13 @@
 %%% Prints an AF restricted to the given list of arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand{ \restrictedaf } {mm} {%
+\NewDocumentCommand { \restrictedaf } {mm} {%
     \@prepare@af{#1}
-    \forcsvlist{\listadd\@accepted@arguments}{#2}
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
 
     \renewcommand*{\do}[1]{%
         \ifinlist{##1}{\@accepted@arguments}{}{
-            \listadd\@inactive@arguments{##1}
+            \listeadd\@inactive@arguments{##1}
         }
     }
     \dolistcsloop{@arguments@\@afid}
@@ -388,21 +507,21 @@
 
 %%% Prepares recreation of an AF. Parses AF label to letter ID and defines lists to partition arguments
 %   #1 unique ID of the AF to recreate
-\NewDocumentCommand{ \@prepare@af } {m} {%
-    \def\@afid{\@arg@convert{\getrefnumber{#1}}}
+\NewDocumentCommand { \@prepare@af } {m} {%
+    \edef\@afid{\@arg@convert{\getrefnumber{#1}}}
     \def\@accepted@arguments{}
     \def\@rejected@arguments{}
     \def\@undecided@arguments{}
     \def\@inactive@arguments{}
 }
 
-%%%% name of innermost af environment
+%%% name of innermost af environment
 \def\@afenvname{af*}
 
-%%%% Prepares recreation of AF by making sure we are inside an af environment
+%%% Prepares recreation of AF by making sure we are inside an af environment
 %   #1 unique ID of the AF to recreate
 %   #2-#6 style parameters (see \@render@afdo)
-\NewDocumentCommand{ \@render@af } {mmmmmm} {%
+\NewDocumentCommand { \@render@af } {mmmmmm} {%
     \ifx\@currenvir\@afenvname
         \@render@afdo{#1}{#2}{#3}{#4}{#5}{#6}
     \else
@@ -420,22 +539,22 @@
 %   #4 style of undecided arguments
 %   #5 style of inactive arguments/attacks
 %   #6 style of normal attacks
-\NewDocumentCommand{ \@render@afdo } {mmmmmm} {%
+\NewDocumentCommand { \@render@afdo } {mmmmmm} {%
     % handle arguments for rendering
     \renewcommand*{\do}[1]{%
         \ifinlist{##1}{\@accepted@arguments}{
-            \csname @af@#1@arg##1\endcsname{#2}
+            \csname @af@#1@arg@##1\endcsname{#2}
         }{%
             \ifinlist{##1}{\@rejected@arguments}{%
-                \csname @af@#1@arg##1\endcsname{#3}
+                \csname @af@#1@arg@##1\endcsname{#3}
             }{%
                 \ifinlist{##1}{\@undecided@arguments}{%
-                    \csname @af@#1@arg##1\endcsname{#4}
+                    \csname @af@#1@arg@##1\endcsname{#4}
                 }{%
                     \ifinlist{##1}{\@inactive@arguments}{%
-                        \csname @af@#1@arg##1\endcsname{#5}
+                        \csname @af@#1@arg@##1\endcsname{#5}
                     }{%
-                        \csname @af@#1@arg##1\endcsname{}
+                        \csname @af@#1@arg@##1\endcsname{}
                     }
                 }
             }
@@ -457,87 +576,6 @@
         }
     }
     \dolistcsloop{@attacks@#1}
-}
-
-%%% Adjusted \argument command for active beamer-mode
-%   #1 TikZ parameters (optional)
-%   #2 unique argument ID (optional)
-%   #3 argument display name
-%   #4 ignored
-%   #5 absolute positioning values (optional)
-\RenewDocumentCommand { \argument } {O{} d() m dat d()} {
-    \stepcounter{argument}
-    \IfNoValueTF {#2}{%
-        \ifalphaidx
-            \gdef\@argid{\alph{argument}}
-        \else\ifnumericidx
-            \gdef\@argid{a\arabic{argument}}
-        \else
-            \PackageError{argumentation}{auto-indexing error}{Must either provide argument id or active one of the auto-indexing modes}
-        \fi\fi
-    }{%
-        \gdef\@argid{#2}
-    }
-    \ifinsideaf
-        \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\alph{af}}
-        \csname @af@\alph{af}@arg\@argid\endcsname{}
-    \else
-        \@create@argument{#1}{}{\@argid}{#3}{#5}
-    \fi
-}
-
-%%% Adjusted \attack command for active beamer-mode
-%   #1 TikZ parameters (optional)
-%   #2 attacking argument ID
-%   #3 attacked argument ID
-\RenewDocumentCommand{ \attack } {O{} m m} {
-    \ifinsideaf
-        \@make@attack{#1}{#2}{#3}{\alph{af}}
-        \csname @af@\alph{af}@att@#2#3\endcsname{}
-    \else
-        \@create@attack{#1}{}{#2}{#3}
-    \fi
-}
-
-%%% Auxilliary command for creating unique argument macros
-%   #1 TikZ parameters
-%   #2 unique argument ID
-%   #3 argument display name
-%   #4 ignored
-%   #5 absolute positioning values
-%   #6 unique AF ID
-\NewDocumentCommand{ \@make@argument } {mmmmmm} {%
-    %\typeout{CREATED NEW MACRO @af@#6@arg#2}
-    \expandafter\listxadd\csname @arguments@#6\endcsname{#2}
-    \expandafter\global\expandafter\edef\csname @af@#6@arg#2\endcsname##1{%
-        %\typeout{RECALLING MACRO @af@#6@arg#2}
-        \@create@argument{#1}{##1}{#2}{#3}{#5}
-    }
-}
-
-%%% Auxilliary command for creating unique attack macros
-%   #1 TikZ parameters
-%   #2 attacking argument ID
-%   #3 attacked argument ID
-%   #4 unique AF ID
-\NewDocumentCommand{ \@make@attack } {mmmm} {
-    \expandafter\listgadd\csname @attacks@#4\endcsname{#2,#3}
-    \expandafter\global\expandafter\edef\csname @af@#4@att@#2#3\endcsname##1{
-        \@create@attack{#1}{##1}{#2}{#3}
-    }
-}
-
-%%%% Auxilliary command for splitting a given pair x,y into two macros
-\def\@split@pair#1,#2\relax{%
-  \def\@attacker{#1}%
-  \def\@attacked{#2}%
-}
-
-%%%% Auxilliary command for converting a number into a letter
-\newcommand{\@arg@convert}[1]{%
-    \ifcase#1\or a\or b\or c\or d\or e\or f\or g\or h\or i\or j\or
-    k\or l\or m\or n\or o\or p\or q\or r\or s\or t\or u\or v\or w\or x\or
-    y\or z\else\@ctrerr\fi
 }
 \makeatother
 \fi
