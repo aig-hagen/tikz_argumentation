@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2024/10/24 Argumentation]
+\ProvidesPackage{argumentation}[2024/10/31 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
 % Version:  1.4
-% Date:     2024/10/24
+% Date:     2024/10/31
 % License:  LaTeX Project Public License 1.3c
 
 
@@ -70,7 +70,7 @@
 %%% Style-Options for af environment
 \pgfkeys{/tikz/.cd,
     af/.style={},                                                                % Base style for af
-    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em},},                       % Standard size style for af
+    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em}},                       % Standard size style for af
     small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},      % Small size style for af
     tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},                                                        % Tiny size style for af
 }
@@ -231,8 +231,8 @@
     }
     \ifbeamer
         \ifinsideaf
-            \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\alph{af}}
-            \csname @af@\alph{af}@arg@\@argid\endcsname{}
+            \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\arabic{af}}
+            \csname @af@\arabic{af}@arg@\@argid\endcsname{}
         \else
             \@create@argument{#1}{}{\@argid}{#3}{#5}
         \fi
@@ -285,8 +285,8 @@
 \NewDocumentCommand { \attack } {O{} m m d()} {%
     \ifbeamer
         \ifinsideaf
-            \@make@attack{#1}{#2}{#3}{#4}{\alph{af}}
-            \csname @af@\alph{af}@att@#2#3\endcsname{}
+            \@make@attack{#1}{#2}{#3}{#4}{\arabic{af}}
+            \csname @af@\arabic{af}@att@#2#3\endcsname{}
         \else
             \@create@attack{#1}{}{#2}{#3}{#4}
         \fi
@@ -376,8 +376,8 @@
 \NewDocumentEnvironment {af} {O{}} {%
     \refstepcounter{af}
     \ifbeamer
-        \global\expandafter\def\csname @arguments@\alph{af}\endcsname{}
-        \global\expandafter\def\csname @attacks@\alph{af}\endcsname{}
+        \global\expandafter\def\csname @arguments@\arabic{af}\endcsname{}
+        \global\expandafter\def\csname @attacks@\arabic{af}\endcsname{}
     \fi
     \insideaftrue
     \begin{af*}[#1]
@@ -389,8 +389,8 @@
 
 
 %%%%%%%%%%%%%%%% Additional Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Definitions for referencing
 \ifmacros
-    %%% Definitions for referencing
     \providecommand{\AF}{\ensuremath{F}\xspace}                     % AF abbreviation
     \providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
     \providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
@@ -399,7 +399,7 @@
     \newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Full AF with reference
 \fi
 
-% Creates a node displaying the name of the AF
+%%% Creates a node displaying the name of the AF
 \NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {%
     \IfNoValueTF {#5}{%
         \node[caption,#1](#2){#3};
@@ -428,7 +428,7 @@
 %%% Prints an extension of an AF for the given list of accepted arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \extension } {mm} {%
+\NewDocumentCommand { \afextension } {mm} {%
     \@prepare@af{#1}
     % Collect accepted arguments in list
     \forcsvlist{\listeadd\@accepted@arguments}{#2}
@@ -440,7 +440,7 @@
 %%% Prints a labeling of an AF for the given list of accepted arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \labeling } {mm} {%
+\NewDocumentCommand { \aflabeling } {mm} {%
     \@prepare@af{#1}
     % Collect accepted arguments in list
     \forcsvlist{\listeadd\@accepted@arguments}{#2}
@@ -471,7 +471,7 @@
 %%% Prints the reduct of an AF wrt. the given list of arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \reduct } {mm} {%
+\NewDocumentCommand { \afreduct } {mm} {%
     \@prepare@af{#1}
     \forcsvlist{\listeadd\@accepted@arguments}{#2}
     \forcsvlist{\listeadd\@inactive@arguments}{#2}
@@ -491,7 +491,7 @@
 %%% Prints an AF restricted to the given list of arguments
 %   #1 unique ID of an AF
 %   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \restrictedaf } {mm} {%
+\NewDocumentCommand { \afrestriction } {mm} {%
     \@prepare@af{#1}
     \forcsvlist{\listeadd\@accepted@arguments}{#2}
 
@@ -508,7 +508,7 @@
 %%% Prepares recreation of an AF. Parses AF label to letter ID and defines lists to partition arguments
 %   #1 unique ID of the AF to recreate
 \NewDocumentCommand { \@prepare@af } {m} {%
-    \edef\@afid{\@arg@convert{\getrefnumber{#1}}}
+    \edef\@afid{\getrefnumber{#1}}
     \def\@accepted@arguments{}
     \def\@rejected@arguments{}
     \def\@undecided@arguments{}
