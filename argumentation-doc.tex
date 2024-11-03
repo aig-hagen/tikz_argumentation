@@ -1,5 +1,22 @@
-\documentclass[headings=normal]{scrartcl}
-%======================================================================================================
+\documentclass{scrartcl}
+
+\usepackage[top=1.35in, bottom=1.33in, left=1.35in, right=1.35in]{geometry}
+\usepackage[macros,beamer]{argumentation}       % Main Package
+\usepackage[T1]{fontenc}                        % Font Encoding
+\usepackage[utf8]{inputenc}                     % Input font encoding
+\usepackage[english]{babel}                     % Language
+\usepackage{subcaption}                         % Multi-part Figures
+\usepackage[nohyperref]{doc}                    % Showing Commands (must load before tcolorbox)
+\usepackage[breakable]{tcolorbox}               % Fancier Examples
+\usepackage{booktabs}                           % Fancier Tables
+\usepackage{enumitem}                           % Fancier Enumeration
+\usepackage[hidelinks,                          % Setting Meta-Data and hyperlinks
+            pdfauthor={Lars Bengel},
+            pdftitle={The argumentation LaTeX-package},
+            pdfsubject={Documentation of the argumentation LaTeX-package},
+            pdfkeywords={argumentation,tikz,graphs}]{hyperref}
+
+%%% Document settings
 \KOMAoptions{
     paper=a4,
     fontsize=10pt,
@@ -7,31 +24,25 @@
     footinclude=true
 }
 
-\usepackage[top=1.35in, bottom=1.33in, left=1.35in, right=1.35in]{geometry}
-\usepackage[macros]{argumentation}              % Main Package
-\usepackage[T1]{fontenc}                        % Font encoding
-\usepackage[utf8]{inputenc}                     % Input font encoding
-\usepackage[english]{babel}                     % Language
-\usepackage[hidelinks]{hyperref}                % Hyperlinks
-\usepackage{subcaption}                         % Multi-part figures
-\usepackage[breakable,]{tcolorbox}              % Fancier Examples
-\usepackage{booktabs}                           % Fancier tables
-
-\title{The \argumentation Package}
-\author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.3 [2024/09/25]}
-
-%%%%%%%%% IMPORTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 %%% Various commands used in the document
 \newcommand{\todo}[1]{\textcolor{magenta}{TODO: #1}} % for todos
 \newcommand{\tikzname}{Ti\emph{k}Z\xspace}
 \newcommand{\argumentation}{\texttt{argumentation}\xspace}
-\newcommand{\opt}[2][red]{\ensuremath{\textcolor{#1}{\langle #2\rangle}}}
 \newtheorem{example}{Example}
 \tcolorboxenvironment{example}{colframe=aigblue,colback=aigyellow!30,breakable,before skip=10pt,after skip=10pt}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\mopt}[2][red]{\textcolor{#1}{\ttfamily \meta{#2}}}
+\newcommand{\oopt}[2][orange]{\textcolor{#1}{\ttfamily \meta{#2}}}
+\newcommand{\popt}[2][magenta]{\textcolor{#1}{\ttfamily \meta{#2}}}
+\newcommand{\sopt}[2][green]{\textcolor{#1}{\ttfamily \meta{#2}}}
+
+%%% Taken from ltxdoc-class
+\def\cmd#1{\cs{\expandafter\cmd@to@cs\string#1}}
+\def\cmd@to@cs#1#2{\char\number`#2\relax}
+\DeclareRobustCommand\cs[2][-1.6cm]{\hspace{#1}\texttt{\char`\\#2}}
+
+\title{The \argumentation Package}
+\author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
+\date{Version 1.4 [2024/11/03]}
 
 \begin{document}
 \maketitle
@@ -47,6 +58,7 @@
             \attack{a1}{a2}
             \attack{a2}{a3}
             \attack[bend right]{a3}{a4}
+            \label{af:example}
         \end{af}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
@@ -61,6 +73,7 @@
             \attack{a1}{a2}
             \attack{a2}{a3}
             \attack[bend right]{a3}{a4}
+            \label{af:example}
         \end{af}
     \end{verbatim}
     \end{small}
@@ -70,72 +83,108 @@
 \tableofcontents
 \newpage
 
+%\sffamily
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Quick Guide}\label{sec:quick}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \noindent
-To create an argumentation framework in your \LaTeX-document, you have to import the \argumentation package:\\
+To create an argumentation framework in your \LaTeX-document, you first have to import the \argumentation package in the preamble:\\
 
-\vspace{-0.3cm}
-\verb|\usepackage{argumentation}|\\
+\noindent\cs[0cm]{usepackage\{argumentation\}}\\
 
-\noindent
 You can then create a new \texttt{af} environment in which the argumentation framework can then be built:\\
 
-\vspace{-0.3cm}
-\verb|\begin{af}|
+\noindent\cs[0cm]{begin\{af\}}
 
-\quad\opt[green]{environment~content}
+\quad\sopt{environment~contents}
 
-\verb|\end{af}|\\
+\noindent\cs[0cm]{end\{af\}}\\
 
-\noindent
 You may want to wrap the \texttt{af} environment in a \texttt{figure} environment in order to add a caption and reference label.
+You can also add a label inside the \texttt{af} environment via \verb|\label{|\sopt{label}\verb|}|.
+Anywhere in your document, you can then reference the af with \verb|\ref{|\sopt{label}\verb|}|.
 
-The easiest way to create an argument in the argumentation framework is:\\
+Inside the \texttt{af} environment, you can then add an argument as follows:\\
 
-\vspace{-0.3cm}
-\verb|\argument{|\opt{name}\verb|}|\\
+\noindent\cs[0cm]{argument\{\mopt{name}\}}\\
 
-\noindent
-Here, \opt{name} is the name of the argument displayed in the graph and the argument is automatically assigned an \emph{identifier} of the form: $a1$, $a2$, \dots.
+Here, \mopt{name} is the name of the argument displayed in the graph and the argument is automatically assigned an \emph{identifier} of the form: $a1$, $a2$, \dots.
 
 To properly add further arguments, you also need to specify a position.
 The \argumentation package offers two easy ways of doing that:\\
 
-\vspace{-0.3cm}
-\verb|\argument[|\opt{dir}\verb|=of |\opt{arg\_id}\verb|]{|\opt{name}\verb|}|
+\noindent\cs[0cm]{argument[\mopt{dir}=of \mopt{argId}]\{\mopt{name}\}}\\
 
-\verb|\argument{|\opt{name}\verb|}| \verb|at (|\opt{posX},\opt{posY}\verb|)|\\
+\noindent\cs[0cm]{argument\{\mopt{name}\} at (\popt{posX},\popt{posY})}\\
 
-\noindent
-The first instance is \emph{relative positioning} where \opt{dir} is the direction of placement relative to the argument with the identifier \opt{arg\_id}, with \opt{dir} typically being one of: \textsf{right}, \textsf{left}, \textsf{above}, \textsf{below}.
+The first instance is \emph{relative positioning} where \mopt{dir} is the direction of placement relative to the argument with the identifier \mopt{argId}, with \mopt{dir} typically being one of: \textsf{right}, \textsf{left}, \textsf{above}, \textsf{below}.
 
-The second instance is \emph{absolute positioning} where (\opt{posX}, \opt{posY}) is a set of coordinates, for example something like $(2, 0)$, $(0, -2)$ or $(2, 4)$.\\
+The second instance is \emph{absolute positioning} where \texttt{(\popt{posX}, \popt{posY})} is a set of coordinates, for example something like $\texttt{(2, 0)}$, $\texttt{(0, -2)}$ or $\texttt{(-1, 3.5)}$.
 
-\noindent
-To create an attack between two arguments, you simply use the command:\\
+The next step is adding attacks.
+For that you can simply use the following command:\\
 
-\vspace{-0.3cm}
-\verb|\attack{|\opt{a1}\verb|}{|\opt{a2}\verb|}|\\
+\noindent\cs[0cm]{attack\{\mopt{a1}\}\{\mopt{a2}\}}\\
 
 \noindent
-Substitute \opt{a1} and \opt{a2} with the identifier of the two arguments.
+Substitute \mopt{a1} and \mopt{a2} with the identifier of the two arguments.
 Alternatively, you can also directly create bidirectional attacks and self-attacks with the following two commands:\\
 
-\vspace{-0.3cm}
-\verb|\dualattack{|\opt{a1}\verb|}{|\opt{a2}\verb|}|
+\noindent\cs[0cm]{dualattack\{\mopt{a1}\}\{\mopt{a2}\}}\\
+\noindent\cs[0cm]{selfattack\{\mopt{a1}\}}\\
 
-\verb|\selfattack{|\opt{a1}\verb|}|\\
 
-\noindent
 To customize the look of the arguments and attacks and for a detailed overview over all options and commands provided by this package, please refer to the following example or to the full documentation in Section~\ref{sec:documentation}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage\section{Example}\label{sec:example}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example Usage}\label{sec:example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-0.5cm}
+\begin{figure}[ht]
+    \centering
+    \begin{af}[namestyle=math]
+        \argument{a}
+        \argument[right=of a1]{b}
+        \argument[right=of a2]{c}
+        \argument[rejected,right=of a3]{d}
+        \argument[right=of a4,incomplete]{e}
+        \argument[below=of a1]{f}
+        \argument[inactive,right=of a6]{g}
+        \argument[accepted,right=of a7]{h}
+        \argument[right=of a8]{i}
+        \argument[right=of a9]{j}
+
+        \annotation[right,yshift=-0.4cm]{a5}{$a\lor b$}
+
+        \afname{$F_{\ref{af:ex2}}$} at (-1,-1)
+
+        \selfattack{a1}
+        \dualattack{a1}{a6}
+        \dualattack[inactive]{a6}{a7}
+        
+        \attack[inactive]{a8}{a7}
+        \attack[inactive]{a7}{a2}
+        \annotatedattack[above]{a3}{a2}{$3$}
+        \annotatedattack[below,incomplete]{a4}{a5}{$x$}
+        \attack{a5}{a10}
+        \attack{a10}{a9}
+        \attack{a9}{a4}
+
+        \support{a4}{a3}
+        \support{a9}{a3}
+        \label{af:ex2}
+    \end{af}
+    \caption{The AF $F_{\ref{af:ex2}}$ created with the \argumentation package.}
+    \label{fig:example}
+\end{figure}
+
+\begin{verbatim}
+\usepackage[namestyle=math]{argumentation}
+...
+\begin{document}
+...
 \begin{figure}[ht]
     \centering
     \begin{af}
@@ -151,8 +200,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
         \argument[right=of a9]{j}
 
         \annotation[right,yshift=-0.4cm]{a5}{$a\lor b$}
-
-        \afname{$F_{\ref{af:ex1}}:$} at (-1,-0.9)
+        \afname{$F_{\ref{af:ex2}}$} at (-1,-1)
 
         \selfattack{a1}
         \dualattack{a1}{a6}
@@ -160,111 +208,567 @@ To customize the look of the arguments and attacks and for a detailed overview o
         
         \attack[inactive]{a8}{a7}
         \attack[inactive]{a7}{a2}
-        \annotatedattack[above]{a3}{a2}{$3$}
-        \attack[incomplete]{a4}{a5}
         \attack{a5}{a10}
         \attack{a10}{a9}
         \attack{a9}{a4}
 
+        \annotatedattack[above]{a3}{a2}{$3$}
+        \annotatedattack[below,incomplete]{a4}{a5}{$x$}
         \support{a4}{a3}
         \support{a9}{a3}
-        \label{af:ex1}
+        \label{af:ex2}
     \end{af}
-    \caption{The AF $F_{\ref{af:ex1}}$ created with the \argumentation package.}
+    \caption{The AF $F_{\ref{af:ex2}}$ created with the \argumentation package.}
     \label{fig:example}
 \end{figure}
-
-\hspace{-1.2cm}
-\begin{minipage}[c]{0.99\textwidth}
-%\begin{small}
-\begin{verbatim}
-    \usepackage{argumentation}
-    \begin{figure}[ht]
-        \centering
-        \begin{af}
-        \argument{a}
-        \argument[right=of a1]{b}
-        \argument[right=of a2]{c}
-        \argument[rejected,right=of a3]{d}
-        \argument[right=of a4,incomplete]{e}
-        \argument[below=of a1]{f}
-        \argument[inactive,right=of a6]{g}
-        \argument[accepted,right=of a7]{h}
-        \argument[right=of a8]{i}
-        \argument[right=of a9]{j}
-
-        \annotation[right,yshift=-0.4cm]{a5}{$a\lor b$}
-
-        \afname{$F_{\ref{af:ex1}}:$} at (-1,-0.9)
-
-        \selfattack{a1}
-        \dualattack{a1}{a6}
-        \dualattack[inactive]{a6}{a7}
-        
-        \attack[inactive]{a8}{a7}
-        \attack[inactive]{a7}{a2}
-        \annotatedattack[above]{a3}{a2}{$3$}
-        \attack[incomplete]{a4}{a5}
-        \attack{a5}{a10}
-        \attack{a10}{a9}
-        \attack{a9}{a4}
-
-        \support{a4}{a3}
-        \support{a9}{a3}
-        \label{af:ex1}
-    \end{af}
-        \caption{The AF $F_{\ref{af:ex1}}$ created with the \argumentation package.}
-        \label{fig:example}
-    \end{figure}
+...
+\end{document}
 \end{verbatim}
-%\end{small}
-\end{minipage}
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage\section{Documentation for Version 1.3 [2024/09/25]}\label{sec:documentation}
+\section{Documentation for Version 1.4 [2024/11/03]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in non-monotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
+It builds on the \tikzname package for drawing the argumentation graphs.
+The \argumentation package provides simplified syntax while keeping the same customisation options and keeping full compatibility with all \tikzname features.
+In addition to that, the \argumentation package provides the ability to label and reference the created argumentation frameworks as well as some other additional features.
 
-The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
-It builds on the \tikzname package for drawing the graphs and provides simplified syntax while keeping the same customisation options and keeping full compatibility with all \tikzname commands.
-The package comes with multiple predefined style options for arguments, attacks and supports.
+The \argumentation package can be imported via the command\\
+
+\noindent\cs{usepackage[\oopt{options}]\{argumentation\}}\\
+
+\vspace{-0.2cm}
 In the following, we give an overview over the functionality of the \argumentation package.
-The \argumentation package can be imported via the command
+Most importantly, that includes the \texttt{af} environment to encapsulate the created argumentation frameworks, the command \verb|\argument{ }| to create argument nodes and the \verb|attack{ }{ }| command to create attack edges.
+Options to customise the appearance of arguments and attacks are described in Section~\ref{sec:options}.
+
+\vspace{-0.2cm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The \texttt{af} Environment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \argumentation package provides an environment for creating argumentation frameworks in \LaTeX-documents.\\
+
+\noindent\cs{begin\{af\} [\oopt{options}]}
+
+    \hspace{-1cm}\sopt{environment~contents}
     
-    \verb|\usepackage{argumentation}|
+\noindent\cs[-1.6cm]{end\{af\}}\\
+
+\vspace{-0.2cm}
+The \texttt{af} environment supports referencing.
+For that add the command \cs[0cm]{label\{\sopt{label}\}} anywhere inside an \texttt{af} environment.
+The AFs are automatically numbered in ascending order of occurrence.
+The \sopt{label} allows you to reference the corresponding AF via \cs[0cm]{ref\{\sopt{label}\}} anywhere in the document.
+
+If you want to create an AF that is excluded from the automatic numbering, the \argumentation package provides the \texttt{af*} version of the environment, which has the same functionality otherwise:\\
+
+\noindent\cs{begin\{af*\} [\oopt{options}]}
+
+    \hspace{-1cm}\sopt{environment~contents}
+    
+\noindent\cs[-1.6cm]{end\{af*\}}\\
+
+\vspace{-0.2cm}
+The \texttt{af} (and \texttt{af*}) environment also accepts the package style options (see Section~\ref{sec:options}).
+Locally set style options override defaults and the values set globally with the package import.
+
+In general, the \texttt{af} environment extends the \texttt{tikzpicture} environment, meaning all \tikzname commands and parameters can be used for the \texttt{af} environment.
+The \argumentation package also provides the options \textsf{small} or \textsf{tiny} for the \texttt{af} environment to create smaller AFs.
+This is especially useful for two-column layout documents.
+
+
+\begin{figure}[!ht]
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af}[small,namestyle=math]
+            \label{af:small}
+            \argument{a}
+            \argument[right=of a1]{b}
+            \argument[right=of a2]{c}
+            \argument[right=of a3]{d}
+            \argument[right=of a4]{e}
+            \argument[below=of a1]{f}
+            \argument[inactive,right=of a6]{g}
+            \argument[inactive,argin,right=of a7]{h}
+            \argument[right=of a8]{i}
+            \argument[right=of a9]{j}
+    
+            \afname[left of=a1,yshift=-0.55cm,xshift=-0.2cm]{\afref{af:small}}
+    
+            \selfattack{a1}
+            \dualattack[]{a1}{a6}
+            \dualattack[inactive]{a6}{a7}
+            \attack[inactive]{a8}{a7}
+    
+            \attack[inactive]{a7}{a2}
+            \attack[]{a3}{a2}
+    
+            \support[]{a4}{a3}
+            \support[]{a9}{a3}
+    
+            \attack[]{a4}{a5}
+            \attack[]{a5}{a10}
+            \attack[]{a10}{a9}
+            \attack[]{a9}{a4}
+        \end{af}
+        \caption{An AF created with the \textsf{small} option set.}
+        \label{fig:example_small}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af}[tiny,namestyle=math]
+            \label{af:tiny}
+            \argument{a}
+            \argument[right=of a1]{b}
+            \argument[right=of a2]{c}
+            \argument[right=of a3]{d}
+            \argument[right=of a4]{e}
+            \argument[below=of a1]{f}
+            \argument[inactive,right=of a6]{g}
+            \argument[inactive,argin,right=of a7]{h}
+            \argument[right=of a8]{i}
+            \argument[right=of a9]{j}
+    
+            \afname[left of=a1,yshift=-0.4cm,xshift=-0.2cm]{\afref{af:tiny}}
+    
+            \selfattack{a1}
+            \dualattack[]{a1}{a6}
+            \dualattack[inactive]{a6}{a7}
+            \attack[inactive]{a8}{a7}
+    
+            \attack[inactive]{a7}{a2}
+            \attack[]{a3}{a2}
+    
+            \support[]{a4}{a3}
+            \support[]{a9}{a3}
+    
+            \attack[]{a4}{a5}
+            \attack[]{a5}{a10}
+            \attack[]{a10}{a9}
+            \attack[]{a9}{a4}
+        \end{af}
+        \caption{An AF created with the \textsf{tiny} option set.}
+        \label{fig:example_tiny}
+    \end{subfigure}
+    \caption{Argumentation frameworks using the \textsf{small} and \textsf{tiny} option of the \texttt{af} environment.}
+    \label{fig:mini_afs}
+\end{figure}
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Creating Arguments}\label{sec:arguments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Inside an \texttt{af} (or \texttt{af*}) environment, you can create argument nodes for the argumentation framework with the following command\\
+
+\noindent\cs{argument [\oopt{options}] (\popt{id}) \{\mopt{name}\} at (\popt{posX},\popt{posY})}
+
+\begin{description}
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters and/or relative positioning information.
+    \item[\popt{id}] (optional) the identifier of the new argument. Per default, when omitted, arguments will automatically be assigned an identifier of the form: $a1, a2, a3,...$.
+    \item[\mopt{name}] the displayed name of the argument.
+    \item[\popt{posX},\popt{posY}] (optional) the coordinates where the argument is placed. Must be omitted if relative positioning is used.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Positioning}\label{sec:positioning}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \argumentation package also provides the ability to use \emph{relative positioning} instead of absolute positioning via coordinates.
+For that, it relies on relative placement via the \tikzname-library \textsf{positioning}.
+The relative positioning information is provided as an optional parameter via \texttt{[\oopt{options}]} as follows\\
+
+\noindent\cs{argument[\mopt{dir}=of \mopt{argId}]\{\mopt{name}\}}
+
+\begin{description}
+    \item[\mopt{dir}] The direction of placement relative to the argument \mopt{argId}. Typically one of: \textsf{above}, \textsf{right}, \textsf{left} or \textsf{below}.
+    \item[\mopt{argId}] The identifier of another argument.
+    \item[\mopt{name}] The displayed name of the argument.
+\end{description}
+
+Additionally, you can adjust the horizontal/vertical position of an argument by adding \verb|xshift=|\mopt{v} or \verb|yshift=|\mopt{v} inside the \texttt{[...]}.
+The value \mopt{v} is hereby the horizontal/vertical offset, e.\,g., \verb|-6.6ex| or \verb|1cm|.
+
+In the following, we list some useful style options for the \verb|\argument| command, provided by the\argumentation package:
+
+\vspace{-0.15cm}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{ll}
+        \textsf{inactive} &\quad \text{The argument is displayed with grey outline and text.}\\
+        \textsf{incomplete} &\quad \text{The argument is displayed with a dotted outline.}\\
+        \textsf{invisible} &\quad \text{The argument node is completely transparent.}\\
+        \textsf{accepted} &\quad \text{The argument is displayed with green background color.}\\
+        \textsf{rejected} &\quad \text{The argument is displayed with red background color.}\\
+        \textsf{undecided} &\quad \text{The argument is displayed with cyan background color.}\\
+        \textsf{highlight} &\quad \text{The argument is displayed with yellow background color.}\\
+    \end{tabular}
+    \caption{Some style options for the \cs[0cm]{argument} command (for exact definition see Section~\ref{sec:parameters}).}
+    \label{tab:argument_style}
+\end{table}
+
+\vspace{-0.4cm}
+\begin{example}~
+
+    \vspace{-0.2cm}
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{af}[namestyle=math]
+            \argument{a}
+            \argument{b} at (1,0)
+            \argument[below=of a1,accepted](c){c}
+            \argument(x){d} at (1,-1)
+            \argument[right=of x,yshift=0.5cm]{e}
+            \argument[inactive]{f} at (2,-1.5)
+        \end{af}
+    \end{minipage}%
+    \begin{minipage}{0.7\textwidth}
+        \begin{small}
+        \begin{verbatim}
+            \begin{af}[namestyle=math]
+                \argument{a}
+                \argument{b} at (1,0)
+                \argument[below=of a1,accepted](c){c}
+                \argument(x){d} at (1,-1)
+                \argument[right=of x,yshift=0.5cm]{e}
+                \argument[inactive]{f} at (2,-1.5)
+            \end{af}
+        \end{verbatim}
+        \end{small}
+    \end{minipage}
+    \vspace{-0.3cm}
+\end{example}
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Creating Attacks}\label{sec:attacks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To create an directed attack between two argument nodes, you can use the following command.
+The parameters \mopt{arg1} and \mopt{arg2} are the identifiers of the two arguments.\\
+
+\noindent\cs{attack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\}}
+\begin{description}
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\mopt{arg1}] Identifier of the attacking argument.
+    \item[\mopt{arg2}] Identifier of the attacked argument.\\
+\end{description}
+
+To simplify creating special types of attacks, like bidirectional attacks or self-attacks, the following two commands are provided.\\
+
+\noindent\cs{dualattack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\}}
+\begin{description}
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\mopt{arg1}] Identifier of the first argument.
+    \item[\mopt{arg2}] Identifier of the second argument.
+\end{description}
+
+\noindent\cs{selfattack [\oopt{options}] \{\mopt{argId}\}}
+\begin{description}
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\mopt{arg1}] Identifier of the self-attacking argument.
+\end{description}
+
+For \verb|\selfattack| you might want to specify the position of the attack loop.
+For that, you should provide the start and end point of the attack-edge (as a degree from \verb|0| to \verb|360|) via the optional \tikzname-parameters \texttt{in=\oopt{degree1}} and \texttt{out=\oopt{degree2}}.
+The default values are \texttt{in=0} and \texttt{out=60}.\\
+
+If you want to attach a value to an attack edge, you may use the following command.\\
+
+\noindent\cs{annotatedattack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\} \{\mopt{value}\}}
+\begin{description}
+    \item[\oopt{options}] Optional \tikzname parameters. Must also include one of the following parameters to specify placement of the annotation relative to the attack arrow: \textsf{above}, \textsf{below}, \textsf{left}, \textsf{right}.
+    \item[\mopt{arg1}] Identifier of the attacking argument.
+    \item[\mopt{arg2}] Identifier of the attacked argument.
+    \item[\mopt{value}] The text that is annotated.\\
+\end{description}
+
+As an alternative to the standard attack arrow, you can use the following command.\\
+
+\noindent\cs{support [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\}}
+\begin{description}
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\mopt{arg1}] Identifier of the supporting argument.
+    \item[\mopt{arg2}] Identifier of the supported argument.\\
+\end{description}
+
+\newpage
+Some useful style options for the attacks (and other edges) are listed below:
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{ll}
+        \textsf{inactive} &\quad \text{The attack is displayed in grey.}\\
+        \textsf{incomplete} &\quad \text{The attack is displayed with a dotted line.}\\
+        \textsf{invisible} &\quad \text{The attack is completely transparent.}\\
+        \textsf{selfattack} &\quad \text{Use if source and target of the attack are the same node.}\\
+        \textsf{bend~right} &\quad \text{The attack arrow is bent to the right.}\\
+        &\quad \text{Can additionally provide the angle, e.\,g., \textsf{bend~right=40}.}\\
+        \textsf{bend~left} &\quad \text{The attack arrow is bent to the left. Can also provide an angle.}
+    \end{tabular}
+    \caption{Some useful style options for the \cs[0cm]{attack} (and related) commands. For the exact definition see Section~\ref{sec:parameters}.}
+    \label{tab:attack_style}
+\end{table}
+
+\begin{example}~
+
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{af}[namestyle=math]
+            \argument{a}
+            \argument[right=of a1]{b}
+            \argument[below=of a1]{c}
+            \argument[right=of a3]{d}
+
+            \attack{a3}{a1}
+            \selfattack[incomplete]{a3}
+            \dualattack{a1}{a2}
+            \annotatedattack[right]{a2}{a4}{$x$}
+            \support[bend left]{a4}{a3}
+        \end{af}
+    \end{minipage}%
+    \begin{minipage}{0.7\textwidth}
+        \begin{verbatim}
+            \begin{af}[namestyle=math]
+                ...
+    
+                \attack{a3}{a1}
+                \selfattack[incomplete]{a3}
+                \dualattack{a1}{a2}
+                \annotatedattack[right]{a2}{a4}{$x$}
+                \support[bend left]{a4}{a3}
+            \end{af}
+        \end{verbatim}
+    \end{minipage}
+\end{example}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Beamer}\label{sec:beamer}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If you want to reuse (parts of) previously created argumentation frameworks in some form, the \argumentation package provides some useful commands that can be enabled via the package option $\textsf{beamer}{=}\textsf{true}$.
+While primarily intended for the use inside the $\textsf{beamer}$ document class when creating presentations, the commands also work in any other document class.
+Each command required the label of some argumentation framework and a list of argument IDs of that framework and then creates a copy of that framework, with some changes depending on the command.\\
+
+\noindent\cs{aflabeling \{\mopt{af-label}\} \{\mopt{argument list}\}}
 
     \noindent
-    Alternatively, one can also adjust the appearance by providing some package options via
+    Applies the style parameter \textsf{accepted} to all arguments in \mopt{argument list}, the parameter \textsf{rejected} to those attacked by arguments in \mopt{argument list} and \textsf{undecided} to all other arguments.\\
 
-    \verb|\usepackage[|\opt{options}\verb|]{argumentation}|
+\noindent\cs{afextension \{\mopt{af-label}\} \{\mopt{argument list}\}}
+
+    \noindent
+    Applies the style parameter \textsf{accepted} to all arguments in \mopt{argument list}.\\
+
+\noindent\cs{afreduct \{\mopt{af-label}\} \{\mopt{argument list}\}}
+
+    \noindent
+    Applies the style parameter \textsf{inactive} to all arguments in \mopt{argument list} and those attacked by them.
+    All attacks involving at least one such argument also receive the parameter \textsf{inactive}.\\
+
+\noindent\cs{afrestriction \{\mopt{af-label}\} \{\mopt{argument list}\}}
+
+    \noindent
+    Applies the style parameter \textsf{invisible} to all arguments \emph{not} in \mopt{argument list}.
+    All attacks involving at least one such argument also receive the parameter \textsf{invisible}.\\
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Style Options}\label{sec:style}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item The \argumentation package provides the following options to customize the look of the argumentation frameworks. They can both be set globally (as an option for the \emph{usepackage} command) and also locally for each \texttt{af} environment (see Section~\ref{sec:af}).
-    \end{list}
-    \vspace{-0.3cm}
-    \begin{align*}
-        \mathsf{argumentstyle} &\quad \text{Customizes the appearance of argument nodes.}\\
-        \mathsf{attackstyle} &\quad \text{Customizes the appearance of attack edges.}\\
-        \mathsf{supportstyle} &\quad \text{Customizes the appearance of support edges.}\\
-        \mathsf{namestyle} &\quad \text{Customizes the font style of the argument names.}
-    \end{align*}
+See Figure~\ref{fig:beamer} for some examples.
 
-    In the following, we list the available options for each of the style parameters.
-    Detailed definitions of each of these style parameters can be found in Section~\ref{sec:style-definitions}.\\
+\begin{figure}[!ht]
+    %\setafstyle{small}
+    \setargumentstyle{argument thick}
+    %\centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af*}[namestyle=monospace]
+            \aflabeling{af:example}{a1}
+        \end{af*}
+        \caption{Result of \cs[0cm]{aflabeling\{af:example\}\{a1\}}.}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af*}[namestyle=monospace]
+            \afextension{af:example}{a1,a3}
+        \end{af*}
+        \caption{Result of \cs[0cm]{afextension\{af:example\}\{a1,a3\}}.}
+    \end{subfigure}
 
-{\bfseries\sffamily\noindent argumentstyle=\opt{option}}
+    \par\bigskip
+    
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af*}[namestyle=monospace]
+            \afreduct{af:example}{a2}
+        \end{af*}
+        \caption{Result of \cs[0cm]{afreduct\{af:example\}\{a2\}}.}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{af*}[namestyle=monospace]
+            \afrestriction{af:example}{a3,a4}
+        \end{af*}
+        \caption{Result of \cs[0cm]{afrestriction\{af:example\}\{a3,a4\}}.}
+    \end{subfigure}
+    \caption{Example usage of the four commands provided by the \textsf{beamer} package option.}
+    \label{fig:beamer}
+\end{figure}
 
-    The \textsf{argumentstyle} parameter accepts five options
-    \begin{align*}
-        \mathsf{standard} &\quad \text{(default) Standard style for the argument nodes.}\\
-        \mathsf{large} &\quad \text{Larger font.}\\
-        \mathsf{thick} &\quad \text{Thick outline.}\\
-        \mathsf{gray} &\quad \text{Thick gray outline, light gray background.}\\
-        \mathsf{colored} &\quad \text{Thick blue outline, light blue background.}
-    \end{align*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Other Commands}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The \argumentation package also provides some additional features.
+The following command can be used to create a text annotation next to an argument node in the argumentation framework.
+The annotation we be placed above the argument node, to adjust its position you should use \texttt{xshift} and \texttt{yshift}.\\
+
+\noindent\cs{annotation [\oopt{options}] \{\mopt{argId}\} \{\mopt{value}\}}
+\begin{description}
+    \item[\oopt{options}] Optional \tikzname style parameters.
+    \item[\mopt{argId}] Identifier of the argument.
+    \item[\mopt{value}] The annotation text.\\
+\end{description}
+
+The command \cs[0cm]{afname} can be used to create a simple text node inside the AF.
+Mainly intended to add the name of the AF into the picture, you can generally put any text there.
+The command behaves essentially exactly like the \cs[0cm]{argument} command.\\
+
+\noindent\cs{afname [\oopt{options}] (\popt{id}) \{\mopt{name}\} at (\popt{posX}, \popt{posY})}
+\begin{description}
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters and/or relative positioning parameters.
+    \item[\popt{id}] (optional) Identifier of the text node. If omitted the identifier will be \textsf{caption}.
+    \item[\mopt{text}] Text to be displayed.
+    \item[\popt{posX},\popt{posY}] (optional) the coordinates for placement. Omit if using relative positioning.
+\end{description}
+
+If you want to define your own style for arguments, attacks or supports, you may use one of the following commands to override the package-wide settings to your liking.
+For that you may also reuse some of the pre-defined parameters of the \argumentation package (see Section~\ref{sec:parameters}).\\
+
+\noindent\cs{setargumentstyle \{\mopt{style parameters}\}}
+
+\noindent\cs{setatackstyle \{\mopt{style parameters}\}}
+
+\noindent\cs{setsupportstyle \{\mopt{style parameters}\}}\\
+
+Similarly, you can also use the following command to override the default settings of the \texttt{af} environment, e.\,g., the \texttt{node distance}.\\
+
+\noindent\cs{setafstyle \{\mopt{style parameters}\}}\\
+
+Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option, you may use the following command to set the color scheme.\\
+
+\noindent\cs{setargumentcolorscheme \{\mopt{outer color}\} \{\mopt{inner color}\}}
+
+\begin{example}~
+
+    \begin{minipage}{0.22\textwidth}
+        \centering
+        \setargumentstyle{argument thick,text=blue}
+        \setafstyle{node distance=0.75cm}
+        \begin{af}
+            \label{af:8}
+            \argument{a}
+            \argument[right=of a1]{b}
+            \argument[below=of a1]{c}
+            \argument[right=of a3]{d}
+
+            \annotation[yshift=-0.2cm]{a4}{$\top$}
+            \afname{$F_{\ref{af:8}}$} at (-1,-0.75)
+
+            \attack{a1}{a2}
+            \dualattack{a1}{a3}
+            \attack{a4}{a3}
+        \end{af}
+    \end{minipage}%
+    \begin{minipage}{0.7\textwidth}
+        \begin{verbatim}
+            \setargumentstyle{argument thick,text=blue}
+            \setafstyle{node distance=0.75cm}
+            \begin{af}\label{af:8}
+                ...
+        
+                \annotation[yshift=-0.2cm]{a4}{$\top$}
+                \afname{$F_{\ref{af:8}}$} at (-1,-0.75)
+            \end{af}
+        \end{verbatim}
+    \end{minipage}
+\end{example}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Argumentation Macros}\label{sec:macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+To facilitate referencing argumentation frameworks and working with them in general, the \argumentation package provides some additional macros that can be enabled with the package option \textsf{macros=true}.
+Most importantly, there is the macro \verb|\afref{|\sopt{label}\verb|}| which works like the \verb|ref| command but adds the reference number directly into the index of the \verb|\AF| symbol.
+You may redefine any of the first four commands if you prefer a different naming scheme for AFs.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lll}
+        \verb|\AF|&& \AF \\
+        \verb|\arguments|&& \arguments\\
+        \verb|\attacks|&&\attacks\\
+        \verb|\AFcomplete|&&\AFcomplete\\
+        \verb|\afref{af:example}|&&\afref{af:example}\\
+        \verb|\fullafref{af:example}|&\qquad\qquad\qquad&\fullafref{af:example}
+    \end{tabular}
+    \caption{Macros provided by the package option \textsf{macros=true} and their respective output.}
+    \label{tab:macros}
+\end{table}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Package Options}\label{sec:options}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \argumentation package comes with some package options to customize the appearance of the created argumentation frameworks as well as some additional features.
+All style package options can both be set globally when importing the package and also locally for each \texttt{af} environment.
+To import the \argumentation package, use the following command in the preamble of your \LaTeX-document:\\
+
+\noindent\cs[0cm]{usepackage[\oopt{options}]\{argumentation\}}\\
+
+The following package options are currently available:
+
+\begin{description}
+    \item[argumentstyle] (default \texttt{standard}) Globally sets the appearance of the argument nodes.
+    The \argumentation package provides five options: \texttt{standard}, \texttt{large}, \texttt{thick}, \texttt{gray} and \texttt{colored}.
+    Detailed descriptions of these options can be found below.
+    
+    \item[attackstyle] (default \texttt{standard}) Globally sets the appearance of the attack edges.
+    The package comes with three available options: \texttt{standard}, \texttt{large} and \texttt{modern}.
+    Detailed descriptions of these options can be found below.
+    
+    \item[supportstyle] (default \texttt{standard}) Globally sets the appearance of the support edges.
+    The package comes with three available options: \texttt{standard}, \texttt{dashed} and \texttt{double}.
+    Detailed descriptions of these options can be found below.
+    
+    \item[namestyle] (default \texttt{none}) Sets the text formatting applied to the argument names in the document.
+    The package comes with five available options: \texttt{none}, \texttt{math}, \texttt{bold}, \texttt{monospace} and \texttt{monoemph}.
+    Detailed descriptions of these options can be found below.
+    
+    \item[indexing]  (default \texttt{numeric}) Enables or disables automatic generation of \tikzname node-IDs for the created arguments.
+    The available options are: \texttt{none}, \texttt{numeric} and \texttt{alphabetic}.
+    Under the default numeric indexing the generated argument IDs are of the form $a1, a2, \dots$.
+    With alphabetic indexing the IDs will simply be letters: $a,b,\dots$.
+    If \texttt{none} is selected, no IDs will be generated and you are required to provide them for each argument via the parameter \texttt{(\popt{id})} of the \verb|\argument| command.
+    
+    \item[macros] Boolean (default \texttt{false}) When enabled provides additional macros for naming and referencing argumentation frameworks (see Table~\ref{tab:macros}).
+    \item[beamer] Boolean (default \texttt{false}) When enabled, provides the commands for recreating argumentations frameworks described in Section~\ref{sec:beamer}.
+\end{description}
+
+In the following we give an overview of the different options for the style parameters that can be used to customise the created argumentation frameworks.
+For the exact definitions of these parameters, refer to Section~\ref{sec:parameters}.
+
+\newpage
+\paragraph{\sffamily argumentstyle=\mopt{option}}
+\begin{align*}
+    \mathsf{standard} &\quad \text{Circular argument node with normal size argument name.}\\
+    \mathsf{large} &\quad \text{Larger font of the argument name.}\\
+    \mathsf{thick} &\quad \text{Thick black outline and normal size argument name.}\\
+    \mathsf{gray} &\quad \text{Thick gray outline, light gray background.}\\
+    \mathsf{colored} &\quad \text{Thick blue outline, light blue background.}
+\end{align*}
 
 \begin{figure}[!h]
     \begin{subfigure}{0.32\textwidth}
@@ -334,15 +838,14 @@ The \argumentation package can be imported via the command
     \label{fig:argumentstyle}
 \end{figure}
 
-\newpage
-{\bfseries\sffamily\noindent attackstyle=\opt{option}}
+
+\paragraph{\sffamily attackstyle=\mopt{option}}
     
-    The \textsf{attackstyle} parameter accepts three options
-    \begin{align*}
-        \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
-        \mathsf{large} &\quad \text{Arrow tip is larger and sharper.}\\
-        \mathsf{modern} &\quad \text{\tikzname ModernCS arrow tip.}
-    \end{align*}
+\begin{align*}
+    \mathsf{standard} &\quad \text{Standard 'stealth' \tikzname arrow tip.}\\
+    \mathsf{large} &\quad \text{Arrow tip is larger and sharper.}\\
+    \mathsf{modern} &\quad \text{\tikzname ModernCS arrow tip.}
+\end{align*}
 
 \begin{figure}[!h]
     \begin{subfigure}{0.32\textwidth}
@@ -384,14 +887,14 @@ The \argumentation package can be imported via the command
     \label{fig:attackstyle}
 \end{figure}
 
-{\bfseries\sffamily\noindent supportstyle=\opt{option}}
+
+\paragraph{\sffamily supportstyle=\mopt{option}}
     
-    The \textsf{supportstyle} parameter accepts three options
-    \begin{align*}
-        \mathsf{standard} &\quad \text{(default) Standard style for the attack arrow tips.}\\
-        \mathsf{dashed} &\quad \text{Dashed arrow line, same tip.}\\
-        \mathsf{double} &\quad \text{Double arrow line and large flat tip.}
-    \end{align*}
+\begin{align*}
+    \mathsf{standard} &\quad \text{Same tip as attack arrow, perpendicular mark on arrow line.}\\
+    \mathsf{dashed} &\quad \text{Dashed arrow line and same tip as attack arrow.}\\
+    \mathsf{double} &\quad \text{Double arrow line and large flat tip.}
+\end{align*}
 
 \begin{figure}[!h]
     \begin{subfigure}{0.32\textwidth}
@@ -434,19 +937,18 @@ The \argumentation package can be imported via the command
 \end{figure}
 
 
-{\bfseries\sffamily\noindent namestyle=\opt{option}}
+\paragraph{\sffamily namestyle=\mopt{option}}
     
-    The \textsf{namestyle} parameter offers four different options
-    \begin{align*}
-        \mathsf{none} &\quad \text{(default) No effect applied to argument name.}\\
-        \mathsf{math} &\quad \text{The argument name is rendered as $math$ text.}\\
-        &\quad\quad \text{(name must be given without mathmode).}\\
-        \mathsf{bold} &\quad \text{The argument name is rendered in $\boldsymbol{bold}$.}\\
-        &\quad\quad \text{(name must be given without mathmode).}\\
-        \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
-        &\quad\quad \text{(name must be given without mathmode).}\\
-        \mathsf{monoemph} &\quad \text{The argument name is rendered as {\ttfamily\emph{name}}.}
-    \end{align*}
+\begin{align*}
+    \mathsf{none} &\quad \text{No effect applied to argument name.}\\
+    \mathsf{math} &\quad \text{The argument name is rendered as $math$ text.}\\
+    &\quad\quad \text{(name must be given without mathmode).}\\
+    \mathsf{bold} &\quad \text{The argument name is rendered in $\boldsymbol{bold}$.}\\
+    &\quad\quad \text{(name must be given without mathmode).}\\
+    \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
+    &\quad\quad \text{(name must be given without mathmode).}\\
+    \mathsf{monoemph} &\quad \text{The argument name is rendered as {\ttfamily\emph{name}}.}
+\end{align*}
 
 \begin{figure}[!ht]
     \begin{subfigure}{0.32\textwidth}
@@ -513,524 +1015,14 @@ The \argumentation package can be imported via the command
     \label{fig:namestyle}
 \end{figure}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The \texttt{af} Environment}\label{sec:af}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The \argumentation package provides an environment for creating abstract argumentation frameworks and many of its extensions in \LaTeX-documents.\\
-
-\vspace{-0.2cm}
-\noindent
-\verb|\begin{af}[|\opt{options}\verb|]|
-
-\opt[green]{environment~content}
-
-\noindent
-\verb|\end{af}|
-
-\begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item
-    The above described style options can be set locally for each instance of the \texttt{af} environment by setting the respective parameters in the options of the environment.
-    Local settings override the defaults and globally set values (See Section~\ref{sec:style} 
- for examples).
-    
-    The \texttt{af} environment extends the \textsf{tikzpicture} environment, meaning all \tikzname commands can be used inside the \texttt{af} environment as well.
-    Furthermore, all options for the \textsf{tikzpicture} environment can be used for the \texttt{af} environment as well, e.\,g the option \verb|node distance|, which is set to \verb|1cm| (\verb|6.6ex|) per default.
-
-    If you want to create an argumentation framework with limited space available, you can use one of the following predefined options for the \texttt{af} environment. 
-    This is especially useful for two-column layout documents.
-    \begin{align*}
-        \mathsf{tiny} &\quad \text{\textsf{node distance} is set to $0.35cm$ and nodes are smaller.}\\
-        \mathsf{small} &\quad \text{\textsf{node distance} is set to $0.55cm$ and nodes are smaller.}
-        %TODO:& argument size as parameter
-    \end{align*}
-
-    %\begin{example}
-    %    Consider the two AFs in Figure~\ref{fig:mini_afs} created with the \textsf{small} and \textsf{tiny} option respectively.
-    %\end{example}
-\end{list}
-
-\begin{figure}[ht]
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \begin{af}[small]
-        \argument{a}
-        \argument[right=of a1]{b}
-        \argument[right=of a2]{c}
-        \argument[right=of a3]{d}
-        \argument[right=of a4]{e}
-        \argument[below=of a1]{f}
-        \argument[inactive,right=of a6]{g}
-        \argument[inactive,argin,right=of a7]{h}
-        \argument[right=of a8]{i}
-        \argument[right=of a9]{j}
-
-        \afname[left of=a1,yshift=-0.55cm,xshift=-0.2cm]{\textbf{F:}}
-
-        \selfattack{a1}
-        \dualattack[]{a1}{a6}
-        \dualattack[inactive]{a6}{a7}
-        \attack[inactive]{a8}{a7}
-
-        \attack[inactive]{a7}{a2}
-        \attack[]{a3}{a2}
-
-        \support[]{a4}{a3}
-        \support[]{a9}{a3}
-
-        \attack[]{a4}{a5}
-        \attack[]{a5}{a10}
-        \attack[]{a10}{a9}
-        \attack[]{a9}{a4}
-        \end{af}
-        \caption{An exemplary AF created with the \textsf{small} option set.}
-        \label{fig:example_small}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \begin{af}[tiny]
-        \argument{a}
-        \argument[right=of a1]{b}
-        \argument[right=of a2]{c}
-        \argument[right=of a3]{d}
-        \argument[right=of a4]{e}
-        \argument[below=of a1]{f}
-        \argument[inactive,right=of a6]{g}
-        \argument[inactive,argin,right=of a7]{h}
-        \argument[right=of a8]{i}
-        \argument[right=of a9]{j}
-
-        \afname[left of=a1,yshift=-0.4cm,xshift=-0.2cm]{\textbf{F:}}
-
-        \selfattack{a1}
-        \dualattack[]{a1}{a6}
-        \dualattack[inactive]{a6}{a7}
-        \attack[inactive]{a8}{a7}
-
-        \attack[inactive]{a7}{a2}
-        \attack[]{a3}{a2}
-
-        \support[]{a4}{a3}
-        \support[]{a9}{a3}
-
-        \attack[]{a4}{a5}
-        \attack[]{a5}{a10}
-        \attack[]{a10}{a9}
-        \attack[]{a9}{a4}
-        \end{af}
-        \caption{An exemplary AF created with the \textsf{tiny} option set.}
-        \label{fig:example_tiny}
-    \end{subfigure}
-    \caption{Two AFs with smaller nodes, created by using the \textsf{small} and \textsf{tiny} options of the \texttt{af} environment.}
-    \label{fig:mini_afs}
-\end{figure}
-
-\subsubsection{Referencing}
-The package provides to ability to label the created argumentation frameworks and reference them via the \verb|\ref| command.
-For that, place the command \verb|\label{|\opt{name}\verb|}| anywhere in an \texttt{af}-environment and you can reference to it via \verb|\ref{|\opt{name}\verb|}| anywhere in the document.
-
-Additionally, the following commands are provided to facilitate referencing argumentation frameworks.
-To activate them, add the parameter \textsf{macros=true} when loading the package.
-Most importantly the command \verb|\afref{|\opt{name}\verb|}| which works like the \verb|ref| command but adds the reference number directly into the index of the \verb|\AF| symbol.
-You may redefine any of the first four commands if you prefer a different naming scheme for AFs.
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Style Parameter Reference}\label{sec:parameters}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For reference, the style parameters provided by this package are listed below.
+You may use or redefine them at your own discretion.
 
 \begin{table}[ht]
-    \centering
-    \begin{tabular}{lll}
-        \verb|\AF|&& \AF \\
-        \verb|\arguments|&& \arguments\\
-        \verb|\attacks|&&\attacks\\
-        \verb|\AFcomplete|&&\AFcomplete\\
-        \verb|\afref{af:ex1}|&&\afref{af:ex1}\\
-        \verb|\fullafref{af:ex1}|&\qquad\qquad\qquad&\fullafref{af:ex1}
-    \end{tabular}
-    \caption{Commands and their respective output.}
-    \label{tab:referencing}
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Creating Arguments}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Arguments can be created with the \verb|\argument| command.
-    The full command is defined as follows\\
-    
-    \noindent
-    \verb|\argument[|\opt{options}\verb|](|\opt{id}\verb|){|\opt{name}\verb|}| \verb|at| (\opt{posX}, \opt{posY})
-
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item\opt{options}~ (optional) a list of \tikzname style parameters and/or relative positioning information (see Section~\ref{sec:relpos}).
-        \item\opt{id}~ (optional) the identifier of the new argument. When omitted, arguments will automatically be assigned an identifier of the form: $a1, a2, a3,...$
-        \item\opt{name}~ the displayed name of the argument.
-        \item\opt{posX}, \opt{posY}~ (optional) the coordinates where the argument is placed. Should be omitted if relative positioning is used.
-        
-        \item When creating an argument you only have to provide the \opt{name}, all other parameters are optional.
-        The \opt{id} of an argument is used for referencing, e.\,g., when creating attacks or for the relative positioning of other arguments.
-    \end{list}
-
-\begin{example}~
-
-    \begin{minipage}{0.35\textwidth}
-    \begin{center}
-        \begin{af}
-            \argument{a}
-            \argument{b} at (1, 1)
-            \argument[right=of a2]{c}
-            \argument(argD){d} at (-2, 0)
-            \argument[above=of argD]{e}
-        \end{af}
-    \end{center}
-    \end{minipage}
-    \begin{minipage}{0.5\textwidth}
-    \begin{verbatim}
-        \begin{af}
-            \argument{a}
-            \argument{b} at (1, 1)
-            \argument[right=of a2]{c}
-            \argument(argD){d} at (-2, 0)
-            \argument[above=of argD]{e}
-        \end{af}
-    \end{verbatim}
-    \end{minipage}%
-\end{example}
-
-\subsubsection{Relative Positioning}\label{sec:relpos}
-    Placement of argument nodes with the \argumentation package relies on relative placement via the \tikzname-library \textsf{positioning}.
-    The relative positioning information is provided as an optional parameter as follows\\
-
-    \noindent
-    \verb|\argument[|\opt{dir}\verb|=of |\opt{arg\_id}\verb|](|\opt{id}\verb|){|\opt{name}\verb|}|
-    
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item\opt{dir}~ has to be one of: \emph{right}, \emph{left}, \emph{below} and \emph{above} 
-        \item\opt{arg\_id}~ is the identifier of another argument
-        \item Additionally, you can adjust the horizontal/vertical position of an argument via the options \verb|xshift=|\opt{v} and \verb|yshift=|\opt{v}.
-        The value \opt{v} is the horizontal/vertical offset, e.\,g., \verb|-6.6ex| or \verb|1cm|.
-    \end{list}
-
-
-    \begin{example}~
-
-    \begin{minipage}{0.25\textwidth}
-        \begin{center}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1,yshift=0.75cm]{b}
-            \argument[below=of a2,xshift=-2ex]{c}
-            \argument[right=of a3,yshift=5.5ex]{d}
-        \end{af}
-        \end{center}
-    \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
-        \begin{verbatim}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1,yshift=0.75cm]{b}
-            \argument[below=of a2,xshift=-2ex]{c}
-            \argument[right=of a3,yshift=5.5ex]{d}
-        \end{af}
-        \end{verbatim}
-    \end{minipage}%
-    \end{example}
-
-
-\subsubsection{Argument Identifiers}
-    When creating an argument, it is automatically assigned an identifier for the sake of simplicity.
-    You can override this identifier by giving another identifier in parenthesis to the \verb|\argument| command.
-    Per default, the argument identifiers will be numerical of the form $a1, a2, a3, \dots$ based on their order of creation inside the \texttt{af} environment.
-    If you prefer alphabetical identifiers, you can set the package option \textsf{indexing}=\emph{alphabetic} and the argument identifiers will instead be $a, b, c, \dots$.
-
-\subsubsection{Additional Argument Styling}
-    Furthermore, you can provide optional parameters to adjust the style of the argument node.
-    For that you can use all \tikzname-style options and additionally the following predefined style parameters (Refer to Section~\ref{sec:style-definitions} for a detailed description of these parameters):
-    \begin{align*}
-        \mathsf{inactive} &\quad \text{The argument is displayed with grey outline and text.}\\
-        \mathsf{incomplete} &\quad \text{The argument is displayed with a dotted outline.}\\
-        \mathsf{invisible} &\quad \text{The argument node is completely transparent.}\\
-        \mathsf{accepted} &\quad \text{The argument is displayed with green background color.}\\
-        \mathsf{rejected} &\quad \text{The argument is displayed with red background color.}\\
-        \mathsf{undecided} &\quad \text{The argument is displayed with cyan background color.}\\
-        \mathsf{highlight} &\quad \text{The argument is displayed with yellow background color.}\\
-    \end{align*}
-    
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Creating Attacks}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Attacks between two arguments can be created with the command\\
-
-    \noindent
-    \verb|\attack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|
-
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments.
-    \end{list}
-
-    
-\subsubsection{Additional Attack Styles}
-    To customize an attack you can provide additional optional parameters:
-    \begin{align*}
-        \mathsf{inactive} &\quad \text{The attack is displayed in grey.}\\
-        \mathsf{incomplete} &\quad \text{The attack is displayed with a dotted line.}\\
-        \mathsf{invisible} &\quad \text{The attack is completely transparent.}\\
-        \mathsf{selfattack} &\quad \text{Use if source and target of the attack are the same node.}\\
-        \mathsf{bend~right} &\quad \text{The attack arrow is bent to the right.}\\
-        &\quad \text{Can additionally provide the angle, e.\,g., \textsf{bend~right=40}.}\\
-        \mathsf{bend~left} &\quad \text{The attack arrow is bent to the left. Can also provide an angle.}
-    \end{align*}
-    
-    Of course, all \tikzname style parameters can be used here as well.
-
-    \newpage
-    \begin{example}~
-
-    \begin{minipage}{0.32\textwidth}
-    \begin{center}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[right=of a2]{c}
-            \argument[right=of a3]{d}
-    
-            \attack{a1}{a2}
-            \attack[bend right]{a2}{a3}
-            \attack[bend left=10,inactive]{a3}{a4}
-        \end{af}
-    \end{center}
-    \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
-    \begin{verbatim}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[right=of a2]{c}
-            \argument[right=of a3]{d}
-    
-            \attack{a1}{a2}
-            \attack[bend right]{a2}{a3}
-            \attack[bend left=10,inactive]{a3}{a4}
-        \end{af}
-    \end{verbatim}
-    \end{minipage}%
-    
-    \end{example}
-
-    Additionally, there is a shortcut for creating a symmetric attack between two arguments with
-
-    \noindent
-    \verb|\dualattack{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|\\
-
-    \noindent
-    and a shortcut for a self-attack for an argument with
-
-    \noindent
-    \verb|\selfattack{|\opt{arg1}\verb|}|\\
-
-    \noindent
-    For both commands, you can use the same optional parameters as for the \verb|\attack| command.
-
-    \begin{example}~
-
-    \begin{minipage}{0.4\textwidth}
-        \begin{center}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-    
-            \selfattack{a2}
-            \dualattack{a1}{a2}
-        \end{af}
-        \end{center}
-    \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
-        \begin{verbatim}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-    
-            \selfattack{a2}
-            \dualattack{a1}{a2}
-        \end{af}  
-        \end{verbatim}
-    \end{minipage}
-    \end{example}
-    
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Creating Support Relations}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    You can create a support relation between two arguments with the command\\
-
-    \noindent
-    \verb|\support{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}|
-
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments.
-    The support arrow use the same tip as the attack arrows, but have a perpendicular mark to distinguish them from attacks.
-    Supports can be customized in the same way as attacks.
-    \end{list}
-    \begin{example}~
-
-    \begin{minipage}{0.4\textwidth}
-        \begin{center}
-        \begin{af}
-            \argument{$a_1$}
-            \argument[right=of a1]{$a_2$}
-            \argument[right=of a2]{$a_3$}
-    
-            \support{a1}{a2}
-            \support[bend right]{a2}{a3}
-        \end{af}    
-        \end{center}
-    \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
-        \begin{verbatim}
-        \begin{af}
-            \argument{$a_1$}
-            \argument[right=of a1]{$a_2$}
-            \argument[right=of a2]{$a_3$}
-    
-            \support{a1}{a2}
-            \support[bend right]{a2}{a3}
-        \end{af}
-        \end{verbatim}
-    \end{minipage}
-    \end{example}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Annotated Attacks}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Many extensions of the original abstract argumentation framework rely on attacks with an associated value.
-    This may, for instance, be probabilities in the case of probabilistic argumentation frameworks or numerical weights in the case of weighted argumentation frameworks.
-    These annotations can be added manually via \tikzname or via the following command\\
-    
-    \noindent
-    \verb|\annotatedattack[|\opt{position}\verb|]{|\opt{arg1}\verb|}{|\opt{arg2}\verb|}{|\opt{value}\verb|}|
-    
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item where \opt{arg1} and \opt{arg2} are the identifiers of two previously defined arguments and \opt{value} is the text or number that should be annotated to the attack.
-        \opt{position} specifies where the annotation should be placed relative to the attack arrow and should be one of: \textsf{above}, \textsf{below}, \textsf{left}, \textsf{right}.
-    \end{list}
-
-    \begin{example}~
-
-    \begin{minipage}{0.18\textwidth}
-        \begin{center}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[below=of a2]{c}
-    
-            \annotatedattack[below]{a1}{a2}{$x$}
-            \annotatedattack[left,bend right]{a2}{a3}{$0.6$}
-        \end{af}
-        \end{center}
-    \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
-        \begin{verbatim}
-        \begin{af}
-            \argument{a}
-            \argument[right=of a1]{b}
-            \argument[below=of a2]{c}
-    
-            \annotatedattack[below]{a1}{a2}{$x$}
-            \annotatedattack[left,bend right]{a2}{a3}{$0.6$}
-        \end{af}
-        \end{verbatim}
-    \end{minipage}% 
-    \end{example}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Further Commands}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    If you want to display an name (or some other text) for your argumentation framework in the picture, you can use the \verb|\afname| command.
-    Just like the \verb|\argument| command it can include an optional identifier and supports both relative and absolute positioning.
-    Some example usages:\\
-
-    \vspace{-0.25cm}
-    \noindent\verb|\afname{|\opt{name}\verb|}|
-
-    \noindent\verb|\afname(|\opt{id}\verb|){|\opt{name}\verb|}|
-
-    \noindent\verb|\afname[|\opt{relPos}\verb|]{|\opt{name}\verb|}|
-
-    \noindent\verb|\afname{|\opt{name}\verb|}| \verb|at (|\opt{posX},\opt{posY}\verb|)|
-
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item where \opt{id} is an (optional) identifier for the created node (if omitted, the default identifier will be \textit{cap}) and \opt{name} is the text displayed in the picture.
-    Additional positioning information, via \textsf{xshift} or \textsf{yshift}, can be provided via the optional parameters.
-    \end{list}
-
-    \noindent
-    To create an annotation, e.\,g., an acceptance condition or a weight, next to an argument, the following command can be used.\\
-    
-    \noindent
-    \verb|\annotation[|\opt{optional}\verb|]{|\opt{arg\_id}\verb|}{|\opt{text}\verb|}|
-
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-    \item where \opt{arg\_id} is the identifier of some argument and \opt{text} is the text to be displayed.
-    Additionally, positioning information, via \textsf{xshift} or \textsf{yshift}, can be provided via the optional parameters.
-    \end{list}
-
-    \newpage
-    \begin{example}~
-
-    \begin{minipage}{0.11\textwidth}
-        \begin{center}
-        \begin{af}
-            \argument{a}
-            \argument[below=of a1]{b}
-            \afname{$F:$} at (-1,-1)
-            \annotation[yshift=-0.5cm,xshift=0.4cm]{a2}{$\neg a$}
-    
-            \support{a1}{a2}
-        \end{af}
-        \end{center}
-    \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
-        \begin{verbatim}
-        \begin{af}
-            \argument{a}
-            \argument[below=of a1]{b}
-            \afname{$F:$} at (-1,-1)
-            \annotation[yshift=-0.5cm,xshift=0.4cm]{a2}{$\neg a$}
-    
-            \support{a1}{a2}
-        \end{af}
-        \end{verbatim}
-    \end{minipage}%
-    \end{example}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Style Definitions}\label{sec:style-definitions}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    You can manually override the \textsf{argumentstyle}, \textsf{attackstyle} and \textsf{supportstyle} parameters and set a custom style globally via the following commands respectively.\\
-
-    \vspace{-0.3cm}
-    \noindent
-    \verb|\setargumentstyle{|\opt{style}\verb|}|
-    
-    \noindent
-    \verb|\setattackstyle{|\opt{style}\verb|}|
-    
-    \noindent
-    \verb|\setsupportstyle{|\opt{style}\verb|}|
-    
-    \begin{list}{}{\leftmargin=\parindent\rightmargin=0pt}
-        \item
-        where \opt{style} is a list of \tikzname style parameters.
-        For reference, the style parameters provided by this package are listed below.
-        You may use or override them at your own discretion.
-        For instance, one could use them to combine or adapt styles, e.\,g.,
-
-        \noindent
-    \verb|\setargumentstyle{argument large,argument gray,text=white}|
-    \end{list}
-
-    \begin{table}[ht]
         \centering
         \ttfamily
         \begin{tabular}{l|l}
@@ -1062,21 +1054,33 @@ You may redefine any of the first four commands if you prefer a different naming
             \textsf{rejected} & fill=red!40\\
             \textsf{undecided} & fill=cyan!40\\
             \textsf{highlight} & fill=aigyellow!60\\
-            \textsf{invisible} & draw=none,text=black!0,fill=none\\
+            \textsf{invisible} & draw=none,fill=none,opacity=0.0\\
+            \midrule
+            \textsf{standard}       & node distance=6.6ex,argument size/.style={minimum size=4.5ex},\\
+                                    & attack width/.style={line width=0.05em}\\
+            \textsf{small}          & node distance=3.5ex,argument size/.style={minimum size=3.4ex},\\
+                                    & attack width/.style={line width=0.045em}\\
+            \textsf{tiny}           & node distance=2.3ex,argument size/.style={minimum size=2.6ex,}\\
+                                    & attack width/.style={line width=0.03em},font=\verb|\small|\\
             \bottomrule
         \end{tabular}
         \caption{Reference list of \tikzname-style parameters provided by the \argumentation package.}
         \label{tab:styles}
     \end{table}
-
 \newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version History}\label{sec:history}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{[v1.4 2024/10/07]}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{[v1.4 2024/10/31]}
 \begin{itemize}
+    \item Added functions \verb|\aflabeling|, \verb|\afextension|, \verb|\afreduct| and \verb|\afrestriction| that recreate (parts of) previously created argumentation frameworks. Can be enabled via the package option \textsf{beamer=true}.
+    \item Added internal storage of arguments and attacks of an argumentation framework to enable further computations.
+    \item Added environment \verb|af*| for argumentation frameworks that are unlabeled/uncounted.
     \item Added command \verb|\setargumentcolorscheme{ }{ }| to change color scheme of the \textsf{colored} argument style.
     \item Added command \verb|\setafstyle{ }| to set global style options for the AFs.
+    \item Added optional parameter (\popt{value}) to \verb|\attack| command to add a label to the attack edge (undocumented for now).
+    \item Major revision of the documentation.
+    \item Various minor changes to internal functions, naming scheme and comments.
 \end{itemize}
 \subsection*{[v1.3 2024/09/25]}
 \begin{itemize}

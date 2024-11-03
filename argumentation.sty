@@ -1,14 +1,17 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2024/09/25 Argumentation]
+\ProvidesPackage{argumentation}[2024/11/03 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
-% Version:  1.3
-% Date:     2024/09/25
+% Version:  1.4
+% Date:     2024/11/03
 % License:  LaTeX Project Public License 1.3c
+
 
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{amsbsy,amsmath}                 % Proper bold letters in math mode
 \RequirePackage{pgfopts}                        % Managing package options
+\RequirePackage{etoolbox}                       % Internal list handling
+\RequirePackage{refcount}                       % Expandable ref-counter value
 \RequirePackage{xspace}                         % Dynamic spaces after math commands
 \RequirePackage{xcolor}                         % Defining colors
 \RequirePackage{tikz}                           % Drawing the argumentation frameworks
@@ -16,39 +19,80 @@
 \usetikzlibrary{arrows.meta}                    % Directed edges / attack arrows
 \usetikzlibrary{arrows}                         % Directed edges / attack arrows
 \usetikzlibrary{decorations.markings}           % Creating the support edge markings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%% Package Style Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcounter{argument}                           % Counter for arguments in the af-environment
-\newcommand{\argstyle}[1]{#1}                   % Defines the font style in which argument names are displayed
+%%% Color definitions
 \definecolor{aigyellow}{RGB}{210,149,81}        % Highlight color
 \definecolor{aigblue}{RGB}{0,76,151}            % Node color
 
 %%% Argument Style Definitions
-\tikzset{ % global base styles
-    argument size/.style={},                    % Size of argument nodes
-    argument/.style={},                         % Base style for argument nodes
-    argument standard/.style={circle,draw=black,inner sep=0,outer sep=0},
-    argument large/.style={circle,draw=black,inner sep=0,outer sep=0, font=\large},
-    argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, line width=0.1em},
-    argument gray/.style={argument thick,fill=gray!30,draw=gray!65,text=black!80},
-    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80,text=black!80},
+\tikzset{
+    argument size/.style={},                                                                    % Size of argument nodes
+    argument/.style={},                                                                         % Base style for argument nodes
+    argument standard/.style={circle,draw=black,inner sep=0,outer sep=0},                       % Standard argument style
+    argument large/.style={circle,draw=black,inner sep=0,outer sep=0, font=\large},             % Large argument style
+    argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, line width=0.1em},        % Thick outline argument style
+    argument gray/.style={argument thick,fill=gray!30,draw=gray!65,text=black!80},              % Gray argument style
+    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80},                   % Colored argument stlye
 }
 
 %%% Attack/Support Edge Definitions
-\tikzset{ % global base styles
-    attack width/.style={},                     % Width of attack arrows
-    attack/.style={},                           % Base style for attack arrow
+\tikzset{
+    attack width/.style={},                                                 % Width of attack arrows
+    attack/.style={},                                                       % Base style for attack arrow
     attack standard/.style={-{stealth'}},                                   % Standard attack arrow
     attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
     attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Mordern rightarrow style tip
-    support/.style={},
-    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                % Standard support arrow
+    support/.style={},                                                      % Base style for support
+    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                                             % Standard support arrow
     support dashed/.style={attack,densely dashed},                          % Dashed Support arrow
     support double/.style={-{Classical TikZ Rightarrow},double},            % double-line support arrow
 }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Additional Style Parameters
+\tikzset{
+    selfattack/.style={loop,min distance=0.4em,in=0,out=60,looseness=4.5},  % Self-attack
+    inactive/.style={fill=none,draw=gray!50,text=gray!60},                  % Inactive argument or edge (reduct)
+    incomplete/.style={densely dashed},                                     % incomplete argument or edge
+    accepted/.style={fill=green!40},                                        % Accepted argument (in)
+    rejected/.style={fill=red!40},                                          % Rejected argument (out)
+    undecided/.style={fill=cyan!40},                                        % Undecided Argument (undec)
+    highlight/.style={fill=aigyellow!60},                                   % Highlighted argument
+    caption/.style={draw=none},                                             % Caption or text
+    invisible/.style={draw=none,fill=none,opacity=0.0},                     % Invisible argument or edge
+    annotation/.style={font=\small},                                        % Argument annotation
+    argin/.style={accepted},
+    argout/.style={rejected},
+    argundec/.style={undecided},
+}
+
+%%% Style-Options for af environment
+\pgfkeys{/tikz/.cd,
+    af/.style={},                                               % Base style for af
+    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em}},                                                                % Standard size style for af
+    small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},        % Small size style for af
+    tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},         % Tiny size style for af
+}
+
+
+%%%%%%%%%% Internal Utility Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\newif\ifmacros
+\newif\ifbeamer
+\newif\if@numericidx
+\newif\if@alphaidx
+\newif\if@insideaf
+
+%%% Defines the font style in which argument names are displayed
+\newcommand{\@arg@style}[1]{#1}
+
+%%% Auxilliary command for splitting a given pair x,y into two macros
+\def\@split@pair#1,#2\relax{%
+  \def\@attacker{#1}%
+  \def\@attacked{#2}%
+}
+\makeatother
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Options for style of the argument node itself
@@ -104,182 +148,430 @@
 }
 
 %%% Options for the automatic text formatting for the argument names
+\makeatletter
 \pgfkeys{/tikz/.cd,
     namestyle/.is choice,
-    namestyle/none/.code={\renewcommand{\argstyle}[1]{##1}},
-    namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
-    namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{##1}}}},
-    namestyle/monospace/.code={\renewcommand{\argstyle}[1]{{\ttfamily##1}}},
-    namestyle/monoemph/.code={\renewcommand{\argstyle}[1]{{\ttfamily\itshape##1}}},
+    namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
+    namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{##1}}},
+    namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{##1}}}},
+    namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily##1}}},
+    namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
     namestyle=none,
 }
 \pgfkeys{/argumentation/.cd,
     namestyle/.is choice,
-    namestyle/none/.code={\renewcommand{\argstyle}[1]{##1}},
-    namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
-    namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{##1}}}},
-    namestyle/monospace/.code={\renewcommand{\argstyle}[1]{{\ttfamily##1}}},
-    namestyle/monoemph/.code={\renewcommand{\argstyle}[1]{{\ttfamily\itshape##1}}},
+    namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
+    namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{##1}}},
+    namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{##1}}}},
+    namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily##1}}},
+    namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
     namestyle=none,
 }
 
-%%% Options for automatic indexing (and naming) of argument nodes
-\NewDocumentCommand { \argument } {} {\relax}
+
+%%% Option for automatic indexing of arguments
 \pgfkeys{/argumentation/.cd,
     indexing/.is choice,
-    indexing/none/.code={ % No auto-indexing, node identifier required
-        \RenewDocumentCommand { \argument } {O{} r() m dat d()} {
-            \IfNoValueTF {##5}{%
-                \node[argument size,argument,##1](##2) {\argstyle{##3}};
-            }{%
-                \node[argument size,argument,##1](##2) at (##5) {\argstyle{##3}};
-            }
-        }
-    },
-    indexing/numeric/.code={ % Numeric auto-indexing: a1,a2,...
-        \RenewDocumentCommand { \argument } {O{} d() m dat d()} {
-            \stepcounter{argument}
-            \IfNoValueTF {##2}{%
-                \IfNoValueTF {##5}{%
-                    \node[argument size,argument,##1](a\arabic{argument}) {\argstyle{##3}};
-                }{%
-                    \node[argument size,argument,##1](a\arabic{argument}) at (##5) {\argstyle{##3}};
-                }
-            }{%
-                \IfNoValueTF {##5}{%
-                    \node[argument size,argument,##1](##2) {\argstyle{##3}};
-                }{%
-                    \node[argument size,argument,##1](##2) at (##5) {\argstyle{##3}};
-                }
-            }
-        }
-    },
-    indexing/alphabetic/.code={ % Alphabetic auto-indexing: a,b,...
-        \RenewDocumentCommand { \argument } {O{} d() m dat d()} {
-            \stepcounter{argument}
-            \IfNoValueTF {##2}{%
-                \IfNoValueTF {##5}{%
-                    \node[argument size,argument,##1](\alph{argument}) {\argstyle{##3}};
-                }{%
-                    \node[argument size,argument,##1](\alph{argument}) at (##5) {\argstyle{##3}};
-                }
-            }{%
-                \IfNoValueTF {##5}{%
-                    \node[argument size,argument,##1](##2) {\argstyle{##3}};
-                }{%
-                    \node[argument size,argument,##1](##2) at (##5) {\argstyle{##3}};
-                }
-            }
-        }
-    },
+    indexing/numeric/.code={\@numericidxtrue},
+    indexing/alphabetic/.code={\@alphaidxtrue},
+    indexing/none/.code={\@numericidxfalse\@alphaidxfalse},
     indexing/.default=numeric,
     indexing=numeric,
 }
+\makeatother
 
-\newcommand{\setargumentcolorscheme}[2]{\tikzset{argument colored/.style={argument thick,fill=#2,draw=#1,text=black!80}}}
-
-\newif\ifmacros
+%%% Option for enabling additional macros
 \pgfkeys{/argumentation/.cd,
     macros/.is choice,
-    macros/true/.code={
-        \macrostrue
-    },
-    macros/false/.code={
-        \macrosfalse
-    },
+    macros/true/.code={\macrostrue},
+    macros/false/.code={\macrosfalse},
     macros/.default=true,
     macros=false,
 }
 
+%%% Option for enabling beamer functionality
+\pgfkeys{/argumentation/.cd,
+    beamer/.is choice,
+    beamer/true/.code={\beamertrue},
+    beamer/false/.code={\beamerfalse},
+    beamer/.default=true,
+    beamer=false,
+}
+
 \ProcessPgfPackageOptions{/argumentation}
 
-%%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Additional AF Style Parameters
-\tikzset{ % global predefined tikz-styles
-    selfattack/.style={loop,min distance=0.4em,in=0,out=60,looseness=4.5},  % Self-attack
-    inactive/.style={fill=none,draw=gray!50,text=gray!60},                  % Inactive argument or edge (reduct)
-    incomplete/.style={densely dashed},                                     % incomplete argument or edge
-    accepted/.style={fill=green!40},                                        % Accepted argument (in)
-    rejected/.style={fill=red!40},                                          % Rejected argument (out)
-    undecided/.style={fill=cyan!40},                                        % Undecided Argument (undec)
-    highlight/.style={fill=aigyellow!60},                                   % Highlighted argument
-    caption/.style={draw=none},                                             % Caption or text
-    invisible/.style={draw=none,text=black!0,fill=none},                    % Invisible argument or edge
-    annotation/.style={font=\small},                                        % Argument annotation
-    argin/.style={accepted},
-    argout/.style={rejected},
-    argundec/.style={undecided},
+
+%%%%%%%%%%%%%%% Arguments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+% Internal counter for argument IDs
+\newcounter{@argument}
+
+%%% Command for creating arguments
+%   #1 TikZ parameters (optional)
+%   #2 unique argument ID (optional)
+%   #3 argument display name
+%   #4 ignored
+%   #5 absolute positioning values (optional)
+\NewDocumentCommand { \argument } {O{} d() m dat d()} {%
+    \stepcounter{@argument}
+    \IfNoValueTF {#2}{%
+        \if@alphaidx
+            \edef\@argid{\alph{@argument}}
+        \else\if@numericidx
+            \edef\@argid{a\arabic{@argument}}
+        \else
+            \PackageError{argumentation}{Missing argument ID}{Must either provide argument ID inside () or activate auto-indexing}
+        \fi\fi
+    }{%
+        \edef\@argid{#2}
+    }
+    \ifbeamer
+        \if@insideaf
+            \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\arabic{af}}
+            \csname @af@\arabic{af}@arg@\@argid\endcsname{}
+        \else
+            \@create@argument{#1}{}{\@argid}{#3}{#5}
+        \fi
+    \else
+        \@create@argument{#1}{}{\@argid}{#3}{#5}
+    \fi
 }
 
-%%% Style-Options for af environment
-\pgfkeys{/tikz/.cd,
-    af/.style={},
-    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em},},
-    small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},
-    tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},
+%%% Auxilliary command for creating arguments
+%   #1 TikZ parameters (optional)
+%   #2 TikZ parameters (optional)
+%   #3 unique argument ID (optional)
+%   #4 argument display name
+%   #5 absolute positioning value (optional)
+\NewDocumentCommand { \@create@argument } {mmmmm} {%
+    \IfNoValueTF {#5}{%
+        \node[argument size,argument,#1,#2](#3) {\@arg@style{#4}};
+    }{%
+        \node[argument size,argument,#1,#2](#3) at (#5) {\@arg@style{#4}};
+    }
 }
 
+\ifbeamer
+%%% Auxilliary command for creating unique argument macros
+%   #1 TikZ parameters
+%   #2 unique argument ID
+%   #3 argument display name
+%   #4 ignored
+%   #5 absolute positioning values
+%   #6 unique AF ID
+\NewDocumentCommand { \@make@argument } {mmmmmm} {%
+    %\typeout{CREATED NEW MACRO @af@#6@arg#2}
+    \expandafter\listxadd\csname @arguments@#6\endcsname{#2}
+    \expandafter\global\expandafter\edef\csname @af@#6@arg@#2\endcsname##1{%
+        %\typeout{RECALLING MACRO @af@#6@arg#2}
+        \@create@argument{#1}{##1}{#2}{#3}{#5}
+    }
+}
+\fi
+\makeatother
 
-\ifmacros
-%%% Definitions for referencing
-\providecommand{\AF}{\ensuremath{F}\xspace}                     % AF abbreviation
-\providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
-\providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
-\providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Full AF
-\newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % Reference an AF
-\newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Full AF with reference
-\else\relax
+
+%%%%%%%%%%%%%%% Attacks & Support %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+%%% Command for creating attacks
+%   #1 TikZ parameters (optional)
+%   #2 attacking argument ID
+%   #3 attacked argument ID
+%   #4 annotation text (optional)
+\NewDocumentCommand { \attack } {O{} m m d()} {%
+    \ifbeamer
+        \if@insideaf
+            \@make@attack{#1}{#2}{#3}{#4}{\arabic{af}}
+            \csname @af@\arabic{af}@att@#2#3\endcsname{}
+        \else
+            \@create@attack{#1}{}{#2}{#3}{#4}
+        \fi
+    \else
+        \@create@attack{#1}{}{#2}{#3}{#4}
+    \fi
+}
+
+%%% Internal command for creating the attack in TikZ
+%   #1 TikZ parameters (optional)
+%   #2 TikZ parameters (optional)
+%   #3 attacking argument ID
+%   #4 attacked argument ID
+%   #5 annotation text
+\NewDocumentCommand { \@create@attack } {mmmmm} {%
+    \IfNoValueTF{#5}{%
+        \path(#3) edge [attack,#1,#2] (#4);
+    }{%
+        \path(#3) edge [attack,#1,#2] node[annotation](p_#3_#4){#5} (#4);
+    }
+}
+
+\ifbeamer
+%%% Auxilliary command for creating unique attack macros
+%   #1 TikZ parameters
+%   #2 attacking argument ID
+%   #3 attacked argument ID
+%   #4 annotation text
+%   #5 unique AF ID
+\NewDocumentCommand { \@make@attack } {mmmmm} {%
+    \expandafter\listgadd\csname @attacks@#5\endcsname{#2,#3}
+    \expandafter\global\expandafter\edef\csname @af@#5@att@#2#3\endcsname##1{
+        \@create@attack{#1}{##1}{#2}{#3}{#4}
+    }
+}
 \fi
 
-%%% Initializing the af environment
+%%% Self-attack edge
+%   #1 TikZ parameters (optional)
+%   #2 argument ID
+\NewDocumentCommand { \selfattack } {O{} m} {%
+    \attack[selfattack,#1]{#2}{#2}
+}
+
+%%% Symmetric attack edges between two arguments
+%   #1 TikZ parameters (optional)
+%   #2 first argument ID
+%   #3 second argument ID
+\NewDocumentCommand { \dualattack } {O{} m m} {%
+    \attack[bend right,#1]{#2}{#3}
+    \attack[bend right,#1]{#3}{#2}
+}
+
+%%% Create attack edge with value (DEPRECATED as of v1.4)
+%   #1 TikZ parameters (optional)
+%   #2 attacking argument ID
+%   #3 attacked argument ID
+%   #4 annotation text
+\NewDocumentCommand{ \annotatedattack } {O{}mmm} {%
+    \attack[#1]{#2}{#3}(#4)
+}
+
+%%% Support edge
+%   #1 TikZ parameters (optional)
+%   #2 supporting argument ID
+%   #3 supported argument ID
+\NewDocumentCommand { \support } {O{} m m} {%
+    \path(#2) edge [support=0.35,#1] (#3);
+}
+\makeatother
+
+
+%%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcounter{af}
-\newenvironment{af}[1][]{
-    \refstepcounter{af}
-    \setcounter{argument}{0}
+
+%%% Uncounted version of the environment
+\makeatletter
+\NewDocumentEnvironment {af*} {O{}} {%
+    \setcounter{@argument}{0}
     \pgfkeys{/argumentation/.cd, #1}
     \tikzpicture[standard,af,#1]
 }{%
     \endtikzpicture
 }
 
-%%%%%%%%%%%%%%%% Additional Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Standard version of af environment
+\NewDocumentEnvironment {af} {O{}} {%
+    \refstepcounter{af}
+    \ifbeamer
+        \global\expandafter\def\csname @arguments@\arabic{af}\endcsname{}
+        \global\expandafter\def\csname @attacks@\arabic{af}\endcsname{}
+    \fi
+    \@insideaftrue
+    \begin{af*}[#1]
+}{%
+    \end{af*}
+    \@insideaffalse
+}
+\makeatother
 
-% Creates a node displaying the name of the AF
-\NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {
+
+%%%%%%%%%%%%%%%% Additional Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Definitions for referencing
+\ifmacros
+    \providecommand{\AF}{\ensuremath{F}\xspace}                     % AF abbreviation
+    \providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
+    \providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
+    \providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Full AF
+    \newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % Reference an AF
+    \newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Full AF with reference
+\fi
+
+%%% Creates a node displaying the name of the AF
+\NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {%
     \IfNoValueTF {#5}{%
         \node[caption,#1](#2){#3};
     }{%
         \node[caption,#1](#2) at (#5) {#3};
     }
-    
 }
 
-\newcommand{\annotation}[3][]{\node[annotation,above of=#2,#1](an_#2){#3};}
-
-% Basic attack edge
-\newcommand{\attack}[3][]{\path(#2) edge [attack,#1] (#3);}
-
-% Self-attack edge
-\newcommand{\selfattack}[2][]{\path(#2) edge [attack,selfattack,#1] (#2);}
-
-% Symmetric attack edges between two arguments
-\newcommand{\dualattack}[3][]{\path(#2) edge [attack, bend right,#1] (#3);\path(#3) edge [attack, bend right,#1] (#2);}
-
-% Attack edge with value
-\newcommand{\annotatedattack}[4][]{\path(#2) edge [attack,#1] node[annotation](p_#2_#3){#4} (#3);}
-
-% Support edge
-\newcommand{\support}[3][]{\path(#2) edge [support=0.35,#1] (#3);}
+%%% Create a text annotation next to another node
+\NewDocumentCommand { \annotation } {O{} m m} {%
+    \node[annotation,above of=#2,#1](an_#2){#3};
+}
 
 %%% Commands for setting custom tikz-style parameters
 \newcommand{\setafstyle}[1]{\tikzset{af/.style={#1}}}
-
+\newcommand{\setargumentcolorscheme}[2]{\tikzset{argument colored/.style={argument thick,fill=#2,draw=#1}}}
 \newcommand{\setargumentstyle}[1]{\tikzset{argument/.style={argument size,#1}}}
 \newcommand{\setattackstyle}[1]{\tikzset{attack/.style={attack width,#1}}}
 \newcommand{\setsupportstyle}[1]{\tikzset{support/.style={#1}}}
 \newcommand{\setannotationstyle}[1]{\tikzset{annotation/.style={#1}}}
 
-%\newcommand{\setloopstyle}[1]{\tikzset{selfattack/.style={#1}}}
-%\newcommand{\adjustargumentstyle}[1]{\tikzset{argument/.append style={#1}}}
-%\newcommand{\adjustattackstyle}[1]{\tikzset{attack/.append style={#1}}}
 
+%%%%%%%%%%%% Beamer Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifbeamer
+\makeatletter
+%%% Prints an extension of an AF for the given list of accepted arguments
+%   #1 unique ID of an AF
+%   #2 a comma-separated list of argument IDs
+\NewDocumentCommand { \afextension } {mm} {%
+    \@prepare@af{#1}
+    % Collect accepted arguments in list
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
+
+    % render the af with the given information
+    \@render@af{\@afid}{accepted}{}{}{}{}
+}
+
+%%% Prints a labeling of an AF for the given list of accepted arguments
+%   #1 unique ID of an AF
+%   #2 a comma-separated list of argument IDs
+\NewDocumentCommand { \aflabeling } {mm} {%
+    \@prepare@af{#1}
+    % Collect accepted arguments in list
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
+
+    % Collect rejected arguments in list
+    \renewcommand*{\do}[1]{
+        \expandafter\@split@pair##1\relax
+        \xifinlist{\@attacker}{\@accepted@arguments}{%
+            \listeadd\@rejected@arguments{\@attacked}
+        }{}
+    }
+    \dolistcsloop{@attacks@\@afid}
+
+    % Collect undecided arguments in list
+    \renewcommand*{\do}[1]{
+        \xifinlist{##1}{\@accepted@arguments}{}{
+            \xifinlist{##1}{\@rejected@arguments}{}{
+                \listadd\@undecided@arguments{##1}
+            }
+        }
+    }
+    \dolistcsloop{@arguments@\@afid}
+
+    % render the af with the given information
+    \@render@af{\@afid}{accepted}{rejected}{undecided}{}{}
+}
+
+%%% Prints the reduct of an AF wrt. the given list of arguments
+%   #1 unique ID of an AF
+%   #2 a comma-separated list of argument IDs
+\NewDocumentCommand { \afreduct } {mm} {%
+    \@prepare@af{#1}
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
+    \forcsvlist{\listeadd\@inactive@arguments}{#2}
+    
+    \renewcommand*{\do}[1]{
+        \expandafter\@split@pair##1\relax
+        \xifinlist{\@attacker}{\@accepted@arguments}{%
+            \listeadd\@rejected@arguments{\@attacked}
+            \listeadd\@inactive@arguments{\@attacked}
+        }{}
+    }
+    \dolistcsloop{@attacks@\@afid}
+    
+    \@render@af{\@afid}{inactive}{inactive}{}{inactive}{}
+}
+
+%%% Prints an AF restricted to the given list of arguments
+%   #1 unique ID of an AF
+%   #2 a comma-separated list of argument IDs
+\NewDocumentCommand { \afrestriction } {mm} {%
+    \@prepare@af{#1}
+    \forcsvlist{\listeadd\@accepted@arguments}{#2}
+
+    \renewcommand*{\do}[1]{%
+        \ifinlist{##1}{\@accepted@arguments}{}{
+            \listeadd\@inactive@arguments{##1}
+        }
+    }
+    \dolistcsloop{@arguments@\@afid}
+
+    \@render@af{\@afid}{}{}{}{invisible}{}    
+}
+
+%%% Prepares recreation of an AF. Parses AF label to letter ID and defines lists to partition arguments
+%   #1 unique ID of the AF to recreate
+\NewDocumentCommand { \@prepare@af } {m} {%
+    \edef\@afid{\getrefnumber{#1}}
+    \def\@accepted@arguments{}
+    \def\@rejected@arguments{}
+    \def\@undecided@arguments{}
+    \def\@inactive@arguments{}
+}
+
+%%% name of innermost af environment
+\def\@afenvname{af*}
+
+%%% Prepares recreation of AF by making sure we are inside an af environment
+%   #1 unique ID of the AF to recreate
+%   #2-#6 style parameters (see \@render@afdo)
+\NewDocumentCommand { \@render@af } {mmmmmm} {%
+    \ifx\@currenvir\@afenvname
+        \@render@afdo{#1}{#2}{#3}{#4}{#5}{#6}
+    \else
+        \begin{af*}
+        \@render@afdo{#1}{#2}{#3}{#4}{#5}{#6}
+        \end{af*}
+    \fi
+}
+
+%%% Recreates an AF
+%%  Utilises lists defined in \@prepare@af
+%   #1 unique ID of the AF to recreate
+%   #2 style of accepted arguments
+%   #3 style of rejected arguments
+%   #4 style of undecided arguments
+%   #5 style of inactive arguments/attacks
+%   #6 style of normal attacks
+\NewDocumentCommand { \@render@afdo } {mmmmmm} {%
+    % handle arguments for rendering
+    \renewcommand*{\do}[1]{%
+        \ifinlist{##1}{\@accepted@arguments}{
+            \csname @af@#1@arg@##1\endcsname{#2}
+        }{%
+            \ifinlist{##1}{\@rejected@arguments}{%
+                \csname @af@#1@arg@##1\endcsname{#3}
+            }{%
+                \ifinlist{##1}{\@undecided@arguments}{%
+                    \csname @af@#1@arg@##1\endcsname{#4}
+                }{%
+                    \ifinlist{##1}{\@inactive@arguments}{%
+                        \csname @af@#1@arg@##1\endcsname{#5}
+                    }{%
+                        \csname @af@#1@arg@##1\endcsname{}
+                    }
+                }
+            }
+        }
+    }
+    \dolistcsloop{@arguments@#1}
+
+    % handle attack rendering
+    \renewcommand*{\do}[1]{%
+        \expandafter\@split@pair##1\relax
+        \xifinlist{\@attacker}{\@inactive@arguments}{%
+            \csname @af@#1@att@\@attacker\@attacked\endcsname{#5,fill=none}
+        }{%
+            \xifinlist{\@attacked}{\@inactive@arguments}{%
+                \csname @af@#1@att@\@attacker\@attacked\endcsname{#5,fill=none}
+            }{%
+                \csname @af@#1@att@\@attacker\@attacked\endcsname{#6}
+            }
+        }
+    }
+    \dolistcsloop{@attacks@#1}
+}
+\makeatother
+\fi
