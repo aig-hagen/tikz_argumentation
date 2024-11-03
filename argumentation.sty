@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2024/10/31 Argumentation]
+\ProvidesPackage{argumentation}[2024/11/03 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
 % Version:  1.4
-% Date:     2024/10/31
+% Date:     2024/11/03
 % License:  LaTeX Project Public License 1.3c
 
 
@@ -34,7 +34,7 @@
     argument large/.style={circle,draw=black,inner sep=0,outer sep=0, font=\large},             % Large argument style
     argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, line width=0.1em},        % Thick outline argument style
     argument gray/.style={argument thick,fill=gray!30,draw=gray!65,text=black!80},              % Gray argument style
-    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80,text=black!80},     % Colored argument stlye
+    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80},                   % Colored argument stlye
 }
 
 %%% Attack/Support Edge Definitions
@@ -45,7 +45,7 @@
     attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
     attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Mordern rightarrow style tip
     support/.style={},                                                      % Base style for support
-    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                         % Standard support arrow
+    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                                             % Standard support arrow
     support dashed/.style={attack,densely dashed},                          % Dashed Support arrow
     support double/.style={-{Classical TikZ Rightarrow},double},            % double-line support arrow
 }
@@ -60,7 +60,7 @@
     undecided/.style={fill=cyan!40},                                        % Undecided Argument (undec)
     highlight/.style={fill=aigyellow!60},                                   % Highlighted argument
     caption/.style={draw=none},                                             % Caption or text
-    invisible/.style={draw=none,text=black!0,fill=none},                    % Invisible argument or edge
+    invisible/.style={draw=none,fill=none,opacity=0.0},                     % Invisible argument or edge
     annotation/.style={font=\small},                                        % Argument annotation
     argin/.style={accepted},
     argout/.style={rejected},
@@ -69,35 +69,28 @@
 
 %%% Style-Options for af environment
 \pgfkeys{/tikz/.cd,
-    af/.style={},                                                                % Base style for af
-    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em}},                       % Standard size style for af
-    small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},      % Small size style for af
-    tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},                                                        % Tiny size style for af
+    af/.style={},                                               % Base style for af
+    standard/.style={node distance=6.6ex,argument size/.style={minimum size=4.5ex},attack width/.style={line width=0.05em}},                                                                % Standard size style for af
+    small/.style={node distance=3.5ex,argument size/.style={minimum size=3.4ex},attack width/.style={line width=0.045em},caption/.append style={font=\small}},        % Small size style for af
+    tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},         % Tiny size style for af
 }
 
 
 %%%%%%%%%% Internal Utility Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
 \newif\ifmacros
 \newif\ifbeamer
-\newif\ifnumericidx
-\newif\ifalphaidx
-\newif\ifinsideaf
+\newif\if@numericidx
+\newif\if@alphaidx
+\newif\if@insideaf
 
 %%% Defines the font style in which argument names are displayed
-\newcommand{\argstyle}[1]{#1}
+\newcommand{\@arg@style}[1]{#1}
 
-\makeatletter
 %%% Auxilliary command for splitting a given pair x,y into two macros
 \def\@split@pair#1,#2\relax{%
   \def\@attacker{#1}%
   \def\@attacked{#2}%
-}
-
-%%% Auxilliary command for converting a number into a letter
-\def\@arg@convert#1{%
-    \ifcase#1\or a\or b\or c\or d\or e\or f\or g\or h\or i\or j\or
-    k\or l\or m\or n\or o\or p\or q\or r\or s\or t\or u\or v\or w\or x\or
-    y\or z\else\@ctrerr\fi
 }
 \makeatother
 
@@ -155,34 +148,37 @@
 }
 
 %%% Options for the automatic text formatting for the argument names
+\makeatletter
 \pgfkeys{/tikz/.cd,
     namestyle/.is choice,
-    namestyle/none/.code={\renewcommand{\argstyle}[1]{##1}},
-    namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
-    namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{##1}}}},
-    namestyle/monospace/.code={\renewcommand{\argstyle}[1]{{\ttfamily##1}}},
-    namestyle/monoemph/.code={\renewcommand{\argstyle}[1]{{\ttfamily\itshape##1}}},
+    namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
+    namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{##1}}},
+    namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{##1}}}},
+    namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily##1}}},
+    namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
     namestyle=none,
 }
 \pgfkeys{/argumentation/.cd,
     namestyle/.is choice,
-    namestyle/none/.code={\renewcommand{\argstyle}[1]{##1}},
-    namestyle/math/.code={\renewcommand{\argstyle}[1]{\ensuremath{##1}}},
-    namestyle/bold/.code={\renewcommand{\argstyle}[1]{\ensuremath{\boldsymbol{##1}}}},
-    namestyle/monospace/.code={\renewcommand{\argstyle}[1]{{\ttfamily##1}}},
-    namestyle/monoemph/.code={\renewcommand{\argstyle}[1]{{\ttfamily\itshape##1}}},
+    namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
+    namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{##1}}},
+    namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{##1}}}},
+    namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily##1}}},
+    namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
     namestyle=none,
 }
+
 
 %%% Option for automatic indexing of arguments
 \pgfkeys{/argumentation/.cd,
     indexing/.is choice,
-    indexing/numeric/.code={\numericidxtrue},
-    indexing/alphabetic/.code={\alphaidxtrue},
-    indexing/none/.code={\numericidxfalse\alphaidxfalse},
+    indexing/numeric/.code={\@numericidxtrue},
+    indexing/alphabetic/.code={\@alphaidxtrue},
+    indexing/none/.code={\@numericidxfalse\@alphaidxfalse},
     indexing/.default=numeric,
     indexing=numeric,
 }
+\makeatother
 
 %%% Option for enabling additional macros
 \pgfkeys{/argumentation/.cd,
@@ -219,9 +215,9 @@
 \NewDocumentCommand { \argument } {O{} d() m dat d()} {%
     \stepcounter{@argument}
     \IfNoValueTF {#2}{%
-        \ifalphaidx
+        \if@alphaidx
             \edef\@argid{\alph{@argument}}
-        \else\ifnumericidx
+        \else\if@numericidx
             \edef\@argid{a\arabic{@argument}}
         \else
             \PackageError{argumentation}{Missing argument ID}{Must either provide argument ID inside () or activate auto-indexing}
@@ -230,7 +226,7 @@
         \edef\@argid{#2}
     }
     \ifbeamer
-        \ifinsideaf
+        \if@insideaf
             \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\arabic{af}}
             \csname @af@\arabic{af}@arg@\@argid\endcsname{}
         \else
@@ -249,9 +245,9 @@
 %   #5 absolute positioning value (optional)
 \NewDocumentCommand { \@create@argument } {mmmmm} {%
     \IfNoValueTF {#5}{%
-        \node[argument size,argument,#1,#2](#3) {\argstyle{#4}};
+        \node[argument size,argument,#1,#2](#3) {\@arg@style{#4}};
     }{%
-        \node[argument size,argument,#1,#2](#3) at (#5) {\argstyle{#4}};
+        \node[argument size,argument,#1,#2](#3) at (#5) {\@arg@style{#4}};
     }
 }
 
@@ -284,7 +280,7 @@
 %   #4 annotation text (optional)
 \NewDocumentCommand { \attack } {O{} m m d()} {%
     \ifbeamer
-        \ifinsideaf
+        \if@insideaf
             \@make@attack{#1}{#2}{#3}{#4}{\arabic{af}}
             \csname @af@\arabic{af}@att@#2#3\endcsname{}
         \else
@@ -379,11 +375,11 @@
         \global\expandafter\def\csname @arguments@\arabic{af}\endcsname{}
         \global\expandafter\def\csname @attacks@\arabic{af}\endcsname{}
     \fi
-    \insideaftrue
+    \@insideaftrue
     \begin{af*}[#1]
 }{%
     \end{af*}
-    \insideaffalse
+    \@insideaffalse
 }
 \makeatother
 
@@ -415,7 +411,7 @@
 
 %%% Commands for setting custom tikz-style parameters
 \newcommand{\setafstyle}[1]{\tikzset{af/.style={#1}}}
-\newcommand{\setargumentcolorscheme}[2]{\tikzset{argument colored/.style={argument thick,fill=#2,draw=#1,text=black!80}}}
+\newcommand{\setargumentcolorscheme}[2]{\tikzset{argument colored/.style={argument thick,fill=#2,draw=#1}}}
 \newcommand{\setargumentstyle}[1]{\tikzset{argument/.style={argument size,#1}}}
 \newcommand{\setattackstyle}[1]{\tikzset{attack/.style={attack width,#1}}}
 \newcommand{\setsupportstyle}[1]{\tikzset{support/.style={#1}}}
