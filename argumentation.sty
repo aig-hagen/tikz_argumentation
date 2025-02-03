@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2024/11/03 Argumentation]
+\ProvidesPackage{argumentation}[2025/02/03 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
-% Version:  1.4
-% Date:     2024/11/03
+% Version:  1.5
+% Date:     2025/02/03
 % License:  LaTeX Project Public License 1.3c
 
 
@@ -75,6 +75,18 @@
     tiny/.style={node distance=2.3ex,argument size/.style={minimum size=2.6ex,font=\small},attack width/.style={line width=0.03em},caption/.append style={font=\small}},         % Tiny size style for af
 }
 
+%%% Option for switching beamer cover type in af
+\makeatletter
+\newif\if@afoverlay
+\pgfkeys{/tikz/.cd,
+    covered/.is choice,
+    covered/transparent/.code={\@afoverlaytrue},
+    covered/invisible/.code={\@afoverlayfalse},
+    covered/.default=transparent,
+    covered=transparent,
+}
+\makeatother
+
 
 %%%%%%%%%% Internal Utility Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
@@ -92,6 +104,11 @@
   \def\@attacker{#1}%
   \def\@attacked{#2}%
 }
+
+% Dummy command in case the beamer documentclass is not loaded
+\ProvideDocumentCommand{ \alt } {r<> m m} {#2}
+
+
 \makeatother
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -207,14 +224,15 @@
 \newcounter{@argument}
 
 %%% Command for creating arguments
-%   #1 TikZ parameters (optional)
-%   #2 unique argument ID (optional)
-%   #3 argument display name
-%   #4 ignored
-%   #5 absolute positioning values (optional)
-\NewDocumentCommand { \argument } {O{} d() m dat d()} {%
+%   #1 beamer overlay specification (optional)
+%   #2 TikZ parameters (optional)
+%   #3 unique argument ID (optional)
+%   #4 argument display name
+%   #5 ignored
+%   #6 absolute positioning values (optional)
+\NewDocumentCommand { \argument } {D<>{.-} O{} d() m dat d()} {%
     \stepcounter{@argument}
-    \IfNoValueTF {#2}{%
+    \IfNoValueTF {#3}{%
         \if@alphaidx
             \edef\@argid{\alph{@argument}}
         \else\if@numericidx
@@ -223,31 +241,48 @@
             \PackageError{argumentation}{Missing argument ID}{Must either provide argument ID inside () or activate auto-indexing}
         \fi\fi
     }{%
-        \edef\@argid{#2}
+        \edef\@argid{#3}
     }
     \ifbeamer
         \if@insideaf
-            \@make@argument{#1}{\@argid}{#3}{#4}{#5}{\arabic{af}}
+            \@make@argument{#2}{\@argid}{#4}{#5}{#6}{\arabic{af}}
             \csname @af@\arabic{af}@arg@\@argid\endcsname{}
         \else
-            \@create@argument{#1}{}{\@argid}{#3}{#5}
+            \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
         \fi
     \else
-        \@create@argument{#1}{}{\@argid}{#3}{#5}
+        \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
     \fi
 }
 
 %%% Auxilliary command for creating arguments
-%   #1 TikZ parameters (optional)
+%   #1 beamer overlay specification (optional)
 %   #2 TikZ parameters (optional)
-%   #3 unique argument ID (optional)
-%   #4 argument display name
-%   #5 absolute positioning value (optional)
-\NewDocumentCommand { \@create@argument } {mmmmm} {%
-    \IfNoValueTF {#5}{%
-        \node[argument size,argument,#1,#2](#3) {\@arg@style{#4}};
+%   #3 TikZ parameters (optional)
+%   #4 unique argument ID (optional)
+%   #5 argument display name
+%   #6 absolute positioning value (optional)
+\NewDocumentCommand { \@create@argument } {mmmmmm} {%
+    \alt<#1>{
+        \IfNoValueTF {#6}{%
+            \node[argument size,argument,#2,#3](#4) {\@arg@style{#5}};
+        }{%
+            \node[argument size,argument,#2,#3](#4) at (#6) {\@arg@style{#5}};
+        }
     }{%
-        \node[argument size,argument,#1,#2](#3) at (#5) {\@arg@style{#4}};
+        \if@afoverlay
+            \IfNoValueTF {#6}{%
+                \node[argument size,argument,inactive,#2,#3](#4) {\@arg@style{#5}};
+            }{%
+                \node[argument size,argument,inactive,#2,#3](#4) at (#6) {\@arg@style{#5}};
+            }
+        \else
+            \IfNoValueTF {#6}{%
+                \node[argument size,argument,invisible,#2,#3](#4) {\@arg@style{#5}};
+            }{%
+                \node[argument size,argument,invisible,#2,#3](#4) at (#6) {\@arg@style{#5}};
+            }
+        \fi
     }
 }
 
@@ -260,11 +295,9 @@
 %   #5 absolute positioning values
 %   #6 unique AF ID
 \NewDocumentCommand { \@make@argument } {mmmmmm} {%
-    %\typeout{CREATED NEW MACRO @af@#6@arg#2}
     \expandafter\listxadd\csname @arguments@#6\endcsname{#2}
     \expandafter\global\expandafter\edef\csname @af@#6@arg@#2\endcsname##1{%
-        %\typeout{RECALLING MACRO @af@#6@arg#2}
-        \@create@argument{#1}{##1}{#2}{#3}{#5}
+        \@create@argument{.-}{#1}{##1}{#2}{#3}{#5}
     }
 }
 \fi
@@ -274,34 +307,52 @@
 %%%%%%%%%%%%%%% Attacks & Support %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
 %%% Command for creating attacks
-%   #1 TikZ parameters (optional)
-%   #2 attacking argument ID
-%   #3 attacked argument ID
-%   #4 annotation text (optional)
-\NewDocumentCommand { \attack } {O{} m m d()} {%
+%   #1 beamer overlay specification (optional)
+%   #2 TikZ parameters (optional)
+%   #3 attacking argument ID
+%   #4 attacked argument ID
+%   #5 annotation text (optional)
+\NewDocumentCommand { \attack } {D<>{.-} O{} m m d()} {%
     \ifbeamer
         \if@insideaf
-            \@make@attack{#1}{#2}{#3}{#4}{\arabic{af}}
-            \csname @af@\arabic{af}@att@#2#3\endcsname{}
+            \@make@attack{#2}{#3}{#4}{#5}{\arabic{af}}
+            \csname @af@\arabic{af}@att@#3#4\endcsname{}
         \else
-            \@create@attack{#1}{}{#2}{#3}{#4}
+            \@create@attack{#1}{#2}{}{#3}{#4}{#5}
         \fi
     \else
-        \@create@attack{#1}{}{#2}{#3}{#4}
+        \@create@attack{#1}{#2}{}{#3}{#4}{#5}
     \fi
 }
 
 %%% Internal command for creating the attack in TikZ
-%   #1 TikZ parameters (optional)
+%   #1 beamer overlay specification (optional)
 %   #2 TikZ parameters (optional)
-%   #3 attacking argument ID
-%   #4 attacked argument ID
-%   #5 annotation text
-\NewDocumentCommand { \@create@attack } {mmmmm} {%
-    \IfNoValueTF{#5}{%
-        \path(#3) edge [attack,#1,#2] (#4);
+%   #3 TikZ parameters (optional)
+%   #4 attacking argument ID
+%   #5 attacked argument ID
+%   #6 annotation text
+\NewDocumentCommand { \@create@attack } {mmmmmm} {%
+    \alt<#1>{
+        \IfNoValueTF{#6}{%
+            \path(#4) edge [attack,#2,#3] (#5);
+        }{%
+            \path(#4) edge [attack,#2,#3] node[annotation](p_#4_#5){#6} (#5);
+        }
     }{%
-        \path(#3) edge [attack,#1,#2] node[annotation](p_#3_#4){#5} (#4);
+        \if@afoverlay
+            \IfNoValueTF{#6}{%
+                \path(#4) edge [attack,inactive,#2,#3] (#5);
+            }{%
+                \path(#4) edge [attack,inactive,#2,#3] node[annotation](p_#4_#5){#6} (#5);
+            }
+        \else
+            \IfNoValueTF{#6}{%
+                \path(#4) edge [attack,invisible,#2,#3] (#5);
+            }{%
+                \path(#4) edge [attack,invisible,#2,#3] node[annotation](p_#4_#5){#6} (#5);
+            }
+        \fi
     }
 }
 
@@ -315,7 +366,7 @@
 \NewDocumentCommand { \@make@attack } {mmmmm} {%
     \expandafter\listgadd\csname @attacks@#5\endcsname{#2,#3}
     \expandafter\global\expandafter\edef\csname @af@#5@att@#2#3\endcsname##1{
-        \@create@attack{#1}{##1}{#2}{#3}{#4}
+        \@create@attack{.-}{#1}{##1}{#2}{#3}{#4}
     }
 }
 \fi
