@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2025/02/03 Argumentation]
+\ProvidesPackage{argumentation}[2025/02/09 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
 % Version:  1.5
-% Date:     2025/02/03
+% Date:     2025/02/09
 % License:  LaTeX Project Public License 1.3c
 
 
@@ -374,17 +374,17 @@
 %%% Self-attack edge
 %   #1 TikZ parameters (optional)
 %   #2 argument ID
-\NewDocumentCommand { \selfattack } {O{} m} {%
-    \attack[selfattack,#1]{#2}{#2}
+\NewDocumentCommand { \selfattack } {D<>{.-} O{} m} {%
+    \attack<#1>[selfattack,#2]{#3}{#3}
 }
 
 %%% Symmetric attack edges between two arguments
 %   #1 TikZ parameters (optional)
 %   #2 first argument ID
 %   #3 second argument ID
-\NewDocumentCommand { \dualattack } {O{} m m} {%
-    \attack[bend right,#1]{#2}{#3}
-    \attack[bend right,#1]{#3}{#2}
+\NewDocumentCommand { \dualattack } {D<>{.-} O{} m m} {%
+    \attack<#1>[bend right,#2]{#3}{#4}
+    \attack<#1>[bend right,#2]{#4}{#3}
 }
 
 %%% Create attack edge with value (DEPRECATED as of v1.4)
@@ -392,16 +392,25 @@
 %   #2 attacking argument ID
 %   #3 attacked argument ID
 %   #4 annotation text
-\NewDocumentCommand{ \annotatedattack } {O{}mmm} {%
-    \attack[#1]{#2}{#3}(#4)
+\NewDocumentCommand{ \annotatedattack } {D<>{.-} O{} m m m} {%
+    \attack<#1>[#2]{#3}{#4}(#5)
 }
 
 %%% Support edge
-%   #1 TikZ parameters (optional)
-%   #2 supporting argument ID
-%   #3 supported argument ID
-\NewDocumentCommand { \support } {O{} m m} {%
-    \path(#2) edge [support=0.35,#1] (#3);
+%   #1 overlay specification (optional)
+%   #2 TikZ parameters (optional)
+%   #3 supporting argument ID
+%   #4 supported argument ID
+\NewDocumentCommand { \support } {D<>{.-} O{} m m} {%
+    \alt<#1>{%
+        \path(#3) edge [support=0.35,#2] (#4);
+        }{%
+            \if@afoverlay
+                \path(#3) edge [support=0.35,inactive,#2] (#4);
+            \else
+                \path(#3) edge [support=0.35,invisible,#2] (#4);
+            \fi
+        }
 }
 \makeatother
 
@@ -447,17 +456,35 @@
 \fi
 
 %%% Creates a node displaying the name of the AF
-\NewDocumentCommand { \afname } { O{} D(){caption} m dat d()} {%
-    \IfNoValueTF {#5}{%
-        \node[caption,#1](#2){#3};
+%   #1 overlay specification (optional)
+%   #2 TikZ-parameters (optional)
+%   #3 node identifier (optional)
+%   #4 node name
+%   #5 ignored
+%   #6 node position
+\NewDocumentCommand { \afname } { D<>{.-} O{} D(){caption} m dat d()} {%
+    \alt<#1>{
+        \IfNoValueTF {#6}{%
+            \node[caption,#2](#3){#4};
+        }{%
+            \node[caption,#2](#3) at (#6) {#4};
+        }
     }{%
-        \node[caption,#1](#2) at (#5) {#3};
+        \IfNoValueTF {#6}{%
+            \node[caption,invisible,#2](#3){#4};
+        }{%
+            \node[caption,invisible,#2](#3) at (#6) {#4};
+        }
     }
 }
 
 %%% Create a text annotation next to another node
-\NewDocumentCommand { \annotation } {O{} m m} {%
-    \node[annotation,above of=#2,#1](an_#2){#3};
+\NewDocumentCommand { \annotation } {D<>{.-} O{} m m} {%
+    \alt<#1>{%
+        \node[annotation,above of=#3,#2](an_#3){#4};
+    }{%
+        \node[annotation,above of=#3,invisible,#2](an_#3){#4};
+    }   
 }
 
 %%% Commands for setting custom tikz-style parameters

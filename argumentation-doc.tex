@@ -42,7 +42,7 @@
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.5 [2025/02/03]}
+\date{Version 1.5 [2025/02/09]}
 
 \begin{document}
 \maketitle
@@ -227,7 +227,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Documentation for Version 1.5 [2025/02/03]}\label{sec:documentation}
+\section{Documentation for Version 1.5 [2025/02/09]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in non-monotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
 It builds on the \tikzname package for drawing the argumentation graphs.
@@ -548,11 +548,30 @@ Some useful style options for the attacks (and other edges) are listed below:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Beamer}\label{sec:beamer}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{overlay specifications + example}
-\todo{option for af environment}
+Most commands provided by the \argumentation package support \emph{overlay specifications} used for creating presentations with \textsf{beamer}\footnote{\url{https://tug.ctan.org/macros/latex/contrib/beamer/doc/beameruserguide.pdf}}.
+To specify overlay information, use \verb|<X>| directly after the command name, where \verb|X| is for instance a number, a list of numbers or any other form of overlay specification (see \textsf{beamer} documentation for more information).
+All commands for creating AFs introduced so far support overlay specifications.
+
+\begin{example}~
+\begin{verbatim}
+\begin{frame}{Example AF}
+\begin{af}
+    \argument<1>{a}                 % Argument visible on slide 1
+    \argument<1,2>[right=of a1]{b}  % Argument visible on slides 2 and 3
+    \argument<2-4>[right=of a2]{c}  % Argument visible on slides 2 to 4
+
+    \attack<2->{a2}{a3}             % Attack is visible on slide 2 
+                                    % and any following slides
+\end{af}
+\end{frame}
+\end{verbatim}
+\end{example}
+
+In accordance with the \textsf{beamer} cover types, the \argumentation package provides the two cover modes: \textsf{transparent} and \textsf{invisible}.
+In \textsf{transparent} mode arguments and attacks that are inactive on a slide are rendered in gray, and in \textsf{invisible} mode they are completely invisible on inactive slides.
 
 \subsubsection{Experimental Features}
-\todo{add warning}
+\textbf{Warning: The following features are experimental and the performance is not necessarily optimized yet.}
 If you want to reuse (parts of) previously created argumentation frameworks in some form, the \argumentation package provides some useful commands that can be enabled via the package option $\textsf{beamer}{=}\textsf{true}$.
 While primarily intended for the use inside the $\textsf{beamer}$ document class when creating presentations, the commands also work in any other document class.
 Each command required the label of some argumentation framework and a list of argument IDs of that framework and then creates a copy of that framework, with some changes depending on the command.\\
@@ -1075,10 +1094,11 @@ You may use or redefine them at your own discretion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version History}\label{sec:history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{[v1.5 2025/02/03]}
+\subsection*{[v1.5 2025/02/09]}
 \begin{itemize}
-    \item Added support for beamer overlay specifications to \verb|\argument{ }| and \verb|\attack{ }{ }| commands.
+    \item Added support for beamer overlay specifications to \verb|\argument{ }|, \verb|\attack{ }{ }| and related commands.
     \item Added \textsf{covered} parameter for \texttt{af} environment to select between \textit{transparent} and \textit{invisible} rendering of inactive arguments/attacks on slides.
+    \item Bugfix related to experimental beamer commands.
 \end{itemize}
 
 \subsection*{[v1.4 2024/10/31]}
