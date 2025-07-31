@@ -1,16 +1,15 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{argumentation}[2025/02/09 Argumentation]
+\ProvidesPackage{argumentation}[2025/07/31 Argumentation]
 % Author:   Lars Bengel
 % E-Mail:   lars.bengel@fernuni-hagen.de
-% Version:  1.5
-% Date:     2025/02/09
+% Version:  1.6
+% Date:     2025/07/31
 % License:  LaTeX Project Public License 1.3c
 
 
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{amsbsy,amsmath}                 % Proper bold letters in math mode
 \RequirePackage{pgfopts}                        % Managing package options
-\RequirePackage{etoolbox}                       % Internal list handling
 \RequirePackage{refcount}                       % Expandable ref-counter value
 \RequirePackage{xspace}                         % Dynamic spaces after math commands
 \RequirePackage{xcolor}                         % Defining colors
@@ -91,7 +90,6 @@
 %%%%%%%%%% Internal Utility Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
 \newif\ifmacros
-\newif\ifbeamer
 \newif\if@numericidx
 \newif\if@alphaidx
 \newif\if@insideaf
@@ -99,15 +97,8 @@
 %%% Defines the font style in which argument names are displayed
 \newcommand{\@arg@style}[1]{#1}
 
-%%% Auxilliary command for splitting a given pair x,y into two macros
-\def\@split@pair#1,#2\relax{%
-  \def\@attacker{#1}%
-  \def\@attacked{#2}%
-}
-
 % Dummy command in case the beamer documentclass is not loaded
 \ProvideDocumentCommand{ \alt } {r<> m m} {#2}
-
 
 \makeatother
 
@@ -206,15 +197,6 @@
     macros=false,
 }
 
-%%% Option for enabling beamer functionality
-\pgfkeys{/argumentation/.cd,
-    beamer/.is choice,
-    beamer/true/.code={\beamertrue},
-    beamer/false/.code={\beamerfalse},
-    beamer/.default=true,
-    beamer=false,
-}
-
 \ProcessPgfPackageOptions{/argumentation}
 
 
@@ -243,16 +225,7 @@
     }{%
         \edef\@argid{#3}
     }
-    \ifbeamer
-        \if@insideaf
-            \@make@argument{#2}{\@argid}{#4}{#5}{#6}{\arabic{af}}
-            \csname @af@\arabic{af}@arg@\@argid\endcsname{}
-        \else
-            \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
-        \fi
-    \else
-        \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
-    \fi
+    \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
 }
 
 %%% Auxilliary command for creating arguments
@@ -285,22 +258,6 @@
         \fi
     }
 }
-
-\ifbeamer
-%%% Auxilliary command for creating unique argument macros
-%   #1 TikZ parameters
-%   #2 unique argument ID
-%   #3 argument display name
-%   #4 ignored
-%   #5 absolute positioning values
-%   #6 unique AF ID
-\NewDocumentCommand { \@make@argument } {mmmmmm} {%
-    \expandafter\listxadd\csname @arguments@#6\endcsname{#2}
-    \expandafter\global\expandafter\edef\csname @af@#6@arg@#2\endcsname##1{%
-        \@create@argument{.-}{#1}{##1}{#2}{#3}{#5}
-    }
-}
-\fi
 \makeatother
 
 
@@ -313,16 +270,7 @@
 %   #4 attacked argument ID
 %   #5 annotation text (optional)
 \NewDocumentCommand { \attack } {D<>{.-} O{} m m d()} {%
-    \ifbeamer
-        \if@insideaf
-            \@make@attack{#2}{#3}{#4}{#5}{\arabic{af}}
-            \csname @af@\arabic{af}@att@#3#4\endcsname{}
-        \else
-            \@create@attack{#1}{#2}{}{#3}{#4}{#5}
-        \fi
-    \else
-        \@create@attack{#1}{#2}{}{#3}{#4}{#5}
-    \fi
+    \@create@attack{#1}{#2}{}{#3}{#4}{#5}
 }
 
 %%% Internal command for creating the attack in TikZ
@@ -355,21 +303,6 @@
         \fi
     }
 }
-
-\ifbeamer
-%%% Auxilliary command for creating unique attack macros
-%   #1 TikZ parameters
-%   #2 attacking argument ID
-%   #3 attacked argument ID
-%   #4 annotation text
-%   #5 unique AF ID
-\NewDocumentCommand { \@make@attack } {mmmmm} {%
-    \expandafter\listgadd\csname @attacks@#5\endcsname{#2,#3}
-    \expandafter\global\expandafter\edef\csname @af@#5@att@#2#3\endcsname##1{
-        \@create@attack{.-}{#1}{##1}{#2}{#3}{#4}
-    }
-}
-\fi
 
 %%% Self-attack edge
 %   #1 TikZ parameters (optional)
@@ -404,19 +337,18 @@
 \NewDocumentCommand { \support } {D<>{.-} O{} m m} {%
     \alt<#1>{%
         \path(#3) edge [support=0.35,#2] (#4);
-        }{%
-            \if@afoverlay
-                \path(#3) edge [support=0.35,inactive,#2] (#4);
-            \else
-                \path(#3) edge [support=0.35,invisible,#2] (#4);
-            \fi
-        }
+    }{%
+        \if@afoverlay
+            \path(#3) edge [support=0.35,inactive,#2] (#4);
+        \else
+            \path(#3) edge [support=0.35,invisible,#2] (#4);
+        \fi
+    }
 }
 \makeatother
 
 
 %%%%%%%%%%%%%%%  AF Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcounter{af}
 
 %%% Uncounted version of the environment
 \makeatletter
@@ -428,19 +360,26 @@
     \endtikzpicture
 }
 
-%%% Standard version of af environment
-\NewDocumentEnvironment {af} {O{}} {%
-    \refstepcounter{af}
-    \ifbeamer
-        \global\expandafter\def\csname @arguments@\arabic{af}\endcsname{}
-        \global\expandafter\def\csname @attacks@\arabic{af}\endcsname{}
+\NewDocumentCommand{\newafenvironment}{mm}{
+    \newcounter{#1}
+    \NewDocumentEnvironment{#1}{O{}}{
+        \refstepcounter{#1}
+        \@insideaftrue
+        \begin{af*}[##1]
+    }{
+        \end{af*}
+        \@insideaffalse
+    }
+    \ifmacros
+        \@ifpackageloaded{hyperref}{
+            \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{\hyperref[##1]{#2_{\ref*{##1}}}}\xspace}
+        }{
+            \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{#2_{\ref{##1}}}\xspace}
+        }
     \fi
-    \@insideaftrue
-    \begin{af*}[#1]
-}{%
-    \end{af*}
-    \@insideaffalse
 }
+
+\newafenvironment{af}{\AF}
 \makeatother
 
 
@@ -451,8 +390,7 @@
     \providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
     \providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
     \providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Full AF
-    \newcommand{\afref}[1]{\ensuremath{\AF_{\ref{#1}}}\xspace}      % Reference an AF
-    \newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref{#1}}, \attacks_{\ref{#1}})}\xspace}                                   % Full AF with reference
+    \newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref*{#1}}, \attacks_{\ref*{#1}})}\xspace}                                   % Full AF with reference
 \fi
 
 %%% Creates a node displaying the name of the AF
@@ -494,162 +432,3 @@
 \newcommand{\setattackstyle}[1]{\tikzset{attack/.style={attack width,#1}}}
 \newcommand{\setsupportstyle}[1]{\tikzset{support/.style={#1}}}
 \newcommand{\setannotationstyle}[1]{\tikzset{annotation/.style={#1}}}
-
-
-%%%%%%%%%%%% Beamer Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ifbeamer
-\makeatletter
-%%% Prints an extension of an AF for the given list of accepted arguments
-%   #1 unique ID of an AF
-%   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \afextension } {mm} {%
-    \@prepare@af{#1}
-    % Collect accepted arguments in list
-    \forcsvlist{\listeadd\@accepted@arguments}{#2}
-
-    % render the af with the given information
-    \@render@af{\@afid}{accepted}{}{}{}{}
-}
-
-%%% Prints a labeling of an AF for the given list of accepted arguments
-%   #1 unique ID of an AF
-%   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \aflabeling } {mm} {%
-    \@prepare@af{#1}
-    % Collect accepted arguments in list
-    \forcsvlist{\listeadd\@accepted@arguments}{#2}
-
-    % Collect rejected arguments in list
-    \renewcommand*{\do}[1]{
-        \expandafter\@split@pair##1\relax
-        \xifinlist{\@attacker}{\@accepted@arguments}{%
-            \listeadd\@rejected@arguments{\@attacked}
-        }{}
-    }
-    \dolistcsloop{@attacks@\@afid}
-
-    % Collect undecided arguments in list
-    \renewcommand*{\do}[1]{
-        \xifinlist{##1}{\@accepted@arguments}{}{
-            \xifinlist{##1}{\@rejected@arguments}{}{
-                \listadd\@undecided@arguments{##1}
-            }
-        }
-    }
-    \dolistcsloop{@arguments@\@afid}
-
-    % render the af with the given information
-    \@render@af{\@afid}{accepted}{rejected}{undecided}{}{}
-}
-
-%%% Prints the reduct of an AF wrt. the given list of arguments
-%   #1 unique ID of an AF
-%   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \afreduct } {mm} {%
-    \@prepare@af{#1}
-    \forcsvlist{\listeadd\@accepted@arguments}{#2}
-    \forcsvlist{\listeadd\@inactive@arguments}{#2}
-    
-    \renewcommand*{\do}[1]{
-        \expandafter\@split@pair##1\relax
-        \xifinlist{\@attacker}{\@accepted@arguments}{%
-            \listeadd\@rejected@arguments{\@attacked}
-            \listeadd\@inactive@arguments{\@attacked}
-        }{}
-    }
-    \dolistcsloop{@attacks@\@afid}
-    
-    \@render@af{\@afid}{inactive}{inactive}{}{inactive}{}
-}
-
-%%% Prints an AF restricted to the given list of arguments
-%   #1 unique ID of an AF
-%   #2 a comma-separated list of argument IDs
-\NewDocumentCommand { \afrestriction } {mm} {%
-    \@prepare@af{#1}
-    \forcsvlist{\listeadd\@accepted@arguments}{#2}
-
-    \renewcommand*{\do}[1]{%
-        \ifinlist{##1}{\@accepted@arguments}{}{
-            \listeadd\@inactive@arguments{##1}
-        }
-    }
-    \dolistcsloop{@arguments@\@afid}
-
-    \@render@af{\@afid}{}{}{}{invisible}{}    
-}
-
-%%% Prepares recreation of an AF. Parses AF label to letter ID and defines lists to partition arguments
-%   #1 unique ID of the AF to recreate
-\NewDocumentCommand { \@prepare@af } {m} {%
-    \edef\@afid{\getrefnumber{#1}}
-    \def\@accepted@arguments{}
-    \def\@rejected@arguments{}
-    \def\@undecided@arguments{}
-    \def\@inactive@arguments{}
-}
-
-%%% name of innermost af environment
-\def\@afenvname{af*}
-
-%%% Prepares recreation of AF by making sure we are inside an af environment
-%   #1 unique ID of the AF to recreate
-%   #2-#6 style parameters (see \@render@afdo)
-\NewDocumentCommand { \@render@af } {mmmmmm} {%
-    \ifx\@currenvir\@afenvname
-        \@render@afdo{#1}{#2}{#3}{#4}{#5}{#6}
-    \else
-        \begin{af*}
-        \@render@afdo{#1}{#2}{#3}{#4}{#5}{#6}
-        \end{af*}
-    \fi
-}
-
-%%% Recreates an AF
-%%  Utilises lists defined in \@prepare@af
-%   #1 unique ID of the AF to recreate
-%   #2 style of accepted arguments
-%   #3 style of rejected arguments
-%   #4 style of undecided arguments
-%   #5 style of inactive arguments/attacks
-%   #6 style of normal attacks
-\NewDocumentCommand { \@render@afdo } {mmmmmm} {%
-    % handle arguments for rendering
-    \renewcommand*{\do}[1]{%
-        \ifinlist{##1}{\@accepted@arguments}{
-            \csname @af@#1@arg@##1\endcsname{#2}
-        }{%
-            \ifinlist{##1}{\@rejected@arguments}{%
-                \csname @af@#1@arg@##1\endcsname{#3}
-            }{%
-                \ifinlist{##1}{\@undecided@arguments}{%
-                    \csname @af@#1@arg@##1\endcsname{#4}
-                }{%
-                    \ifinlist{##1}{\@inactive@arguments}{%
-                        \csname @af@#1@arg@##1\endcsname{#5}
-                    }{%
-                        \csname @af@#1@arg@##1\endcsname{}
-                    }
-                }
-            }
-        }
-    }
-    \dolistcsloop{@arguments@#1}
-
-    % handle attack rendering
-    \renewcommand*{\do}[1]{%
-        \expandafter\@split@pair##1\relax
-        \xifinlist{\@attacker}{\@inactive@arguments}{%
-            \csname @af@#1@att@\@attacker\@attacked\endcsname{#5,fill=none}
-        }{%
-            \xifinlist{\@attacked}{\@inactive@arguments}{%
-                \csname @af@#1@att@\@attacker\@attacked\endcsname{#5,fill=none}
-            }{%
-                \csname @af@#1@att@\@attacker\@attacked\endcsname{#6}
-            }
-        }
-    }
-    \dolistcsloop{@attacks@#1}
-}
-\makeatother
-\fi

@@ -1,7 +1,6 @@
 \documentclass{scrartcl}
 
 \usepackage[top=1.35in, bottom=1.33in, left=1.35in, right=1.35in]{geometry}
-\usepackage[macros,beamer]{argumentation}       % Main Package
 \usepackage[T1]{fontenc}                        % Font Encoding
 \usepackage[utf8]{inputenc}                     % Input font encoding
 \usepackage[english]{babel}                     % Language
@@ -15,7 +14,8 @@
             pdftitle={The argumentation LaTeX-package},
             pdfsubject={Documentation of the argumentation LaTeX-package},
             pdfkeywords={argumentation,tikz,graphs}]{hyperref}
-
+\usepackage[macros,beamer]{argumentation}       % Main Package
+            
 %%% Document settings
 \KOMAoptions{
     paper=a4,
@@ -41,11 +41,15 @@
 \DeclareRobustCommand\cs[2][-1.6cm]{\hspace{#1}\texttt{\char`\\#2}}
 
 \title{The \argumentation Package}
-\author{Lars Bengel\footnote{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.5 [2025/02/09]}
+\author{Lars Bengel\footnotemark\\\small lars.bengel@fernuni-hagen.de}
+\date{Version 1.6 [2025/07/31]}
 
 \begin{document}
 \maketitle
+
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]{Please report any issues at \url{https://github.com/aig-hagen/tikz_argumentation}}
+\renewcommand*{\thefootnote}{\arabic{footnote}}
 
 \begin{minipage}{.26\textwidth}
     \centering
@@ -79,8 +83,8 @@
     \end{small}
 \end{minipage}
 
-
 \tableofcontents
+
 \newpage
 
 %\sffamily
@@ -227,7 +231,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Documentation for Version 1.5 [2025/02/09]}\label{sec:documentation}
+\section{Documentation for Version 1.6 [2025/07/31]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in non-monotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
 It builds on the \tikzname package for drawing the argumentation graphs.
@@ -567,9 +571,10 @@ All commands for creating AFs introduced so far support overlay specifications.
 \end{verbatim}
 \end{example}
 
-In accordance with the \textsf{beamer} cover types, the \argumentation package provides the two cover modes: \textsf{transparent} and \textsf{invisible}.
+In accordance with the \textsf{beamer} cover types, the \argumentation package provides the two cover modes: \textsf{transparent} and \textsf{invisible}, activated by giving the option \textsf{covered=transparent} or \textsf{covered=invisible} to the \texttt{af} environment (default is \textsf{transparent}).
 In \textsf{transparent} mode arguments and attacks that are inactive on a slide are rendered in gray, and in \textsf{invisible} mode they are completely invisible on inactive slides.
 
+\iffalse
 \subsubsection{Experimental Features}
 \textbf{Warning: The following features are experimental and the performance is not necessarily optimized yet.}
 If you want to reuse (parts of) previously created argumentation frameworks in some form, the \argumentation package provides some useful commands that can be enabled via the package option $\textsf{beamer}{=}\textsf{true}$.
@@ -640,6 +645,7 @@ See Figure~\ref{fig:beamer} for some examples.
     \label{fig:beamer}
 \end{figure}
 
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Other Commands}
@@ -685,6 +691,7 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
 
 \noindent\cs{setargumentcolorscheme \{\mopt{outer color}\} \{\mopt{inner color}\}}
 
+\newpage
 \begin{example}~
 
     \begin{minipage}{0.22\textwidth}
@@ -724,7 +731,7 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
 \subsubsection{Argumentation Macros}\label{sec:macros}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To facilitate referencing argumentation frameworks and working with them in general, the \argumentation package provides some additional macros that can be enabled with the package option \textsf{macros=true}.
-Most importantly, there is the macro \verb|\afref{|\sopt{label}\verb|}| which works like the \verb|ref| command but adds the reference number directly into the index of the \verb|\AF| symbol.
+Most importantly, there is the macro \verb|\afref{|\sopt{label}\verb|}| which works like the \verb|\ref| command but adds the reference number directly into the index of the \verb|\AF| symbol.
 You may redefine any of the first four commands if you prefer a different naming scheme for AFs.
 
 \begin{table}[ht]
@@ -740,6 +747,16 @@ You may redefine any of the first four commands if you prefer a different naming
     \caption{Macros provided by the package option \textsf{macros=true} and their respective output.}
     \label{tab:macros}
 \end{table}
+
+With the following command you can define a new type of argumentation environment, which will have its own separate counter and accompanying \verb|\ref| command, analogously to the \texttt{af} environment.\\
+
+\noindent\cs{newafenvironment \{\mopt{environment name}\} \{\mopt{macro name}\}}
+\begin{description}
+    \item[\mopt{environment name}] name of the environment to be defined.
+    \item[\mopt{macro name}] name of the accompanying macro for the type of argumentation framework.\\
+\end{description}
+
+For instance, \verb|\newafenvironment{adf}{\ADF}| creates a new environment called \texttt{adf} and the command \verb|\adfref{ }|, which indexes the symbol you have defined via \verb|\ADF|.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1094,6 +1111,13 @@ You may use or redefine them at your own discretion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version History}\label{sec:history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{[v1.6 2025/07/31]}
+\begin{itemize}
+    \item Added command \verb|\newafenvironment{ }{ }| to dynamically add new \texttt{af} environments.
+    \item Updated \verb|\afref{ }| command with better hyperlink.
+    \item Removed experimental features.
+\end{itemize}
+
 \subsection*{[v1.5 2025/02/09]}
 \begin{itemize}
     \item Added support for beamer overlay specifications to \verb|\argument{ }|, \verb|\attack{ }{ }| and related commands.
