@@ -10,7 +10,6 @@
 %%%%%%%%%%% Package Requirements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{amsbsy,amsmath}                 % Proper bold letters in math mode
 \RequirePackage{pgfopts}                        % Managing package options
-\RequirePackage{refcount}                       % Expandable ref-counter value
 \RequirePackage{xspace}                         % Dynamic spaces after math commands
 \RequirePackage{xcolor}                         % Defining colors
 \RequirePackage{tikz}                           % Drawing the argumentation frameworks
@@ -33,7 +32,7 @@
     argument large/.style={circle,draw=black,inner sep=0,outer sep=0, font=\large},             % Large argument style
     argument thick/.style={circle,draw=black,inner sep=0,outer sep=0, line width=0.1em},        % Thick outline argument style
     argument gray/.style={argument thick,fill=gray!30,draw=gray!65,text=black!80},              % Gray argument style
-    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80},                   % Colored argument stlye
+    argument colored/.style={argument thick,fill=aigblue!40,draw=aigblue!80},                   % Colored argument style
 }
 
 %%% Attack/Support Edge Definitions
@@ -42,7 +41,7 @@
     attack/.style={},                                                       % Base style for attack arrow
     attack standard/.style={-{stealth'}},                                   % Standard attack arrow
     attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
-    attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Mordern rightarrow style tip
+    attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Modern rightarrow style tip
     support/.style={},                                                      % Base style for support
     support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                                             % Standard support arrow
     support dashed/.style={attack,densely dashed},                          % Dashed Support arrow
@@ -104,14 +103,6 @@
 
 %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Options for style of the argument node itself
-\pgfkeys{/tikz/.cd,
-    argumentstyle/.is choice,
-    argumentstyle/standard/.code={\tikzset{argument/.style={argument standard,argument size}}},
-    argumentstyle/large/.code={\tikzset{argument/.style={argument large,argument size}}},
-    argumentstyle/thick/.code={\tikzset{argument/.style={argument thick,argument size}}},
-    argumentstyle/gray/.code={\tikzset{argument/.style={argument gray,argument size}}},
-    argumentstyle/colored/.code={\tikzset{argument/.style={argument colored,argument size}}},
-}
 \pgfkeys{/argumentation/.cd,
     .unknown/.code={},
     argumentstyle/.is choice,
@@ -124,13 +115,6 @@
 }
 
 %%% Options for the style of the attack edges
-\pgfkeys{/tikz/.cd,
-    attackstyle/.is choice,
-    attackstyle/standard/.code={\tikzset{attack/.style={attack width,attack standard}}},
-    attackstyle/large/.code={\tikzset{attack/.style={attack width,attack large}}},
-    attackstyle/modern/.code={\tikzset{attack/.style={attack width,attack modern}}},
-    attackstyle=standard,
-}
 \pgfkeys{/argumentation/.cd,
     attackstyle/.is choice,
     attackstyle/standard/.code={\tikzset{attack/.style={attack width,attack standard}}},
@@ -140,13 +124,6 @@
 }
 
 %%% Options for the style of the support edges
-\pgfkeys{/tikz/.cd,
-    supportstyle/.is choice,
-    supportstyle/standard/.code={\tikzset{support/.style={support standard}}},
-    supportstyle/dashed/.code={\tikzset{support/.style={support dashed}}},
-    supportstyle/double/.code={\tikzset{support/.style={support double}}},
-    supportstyle=standard,
-}
 \pgfkeys{/argumentation/.cd,
     supportstyle/.is choice,
     supportstyle/standard/.code={\tikzset{support/.style={support standard}}},
@@ -157,15 +134,6 @@
 
 %%% Options for the automatic text formatting for the argument names
 \makeatletter
-\pgfkeys{/tikz/.cd,
-    namestyle/.is choice,
-    namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
-    namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{##1}}},
-    namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{##1}}}},
-    namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily##1}}},
-    namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
-    namestyle=none,
-}
 \pgfkeys{/argumentation/.cd,
     namestyle/.is choice,
     namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
@@ -175,7 +143,6 @@
     namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
     namestyle=none,
 }
-
 
 %%% Option for automatic indexing of arguments
 \pgfkeys{/argumentation/.cd,
@@ -187,6 +154,14 @@
     indexing=numeric,
 }
 \makeatother
+
+%%% Forward argumentation-specific keys from /tikz namespace to /argumentation
+\pgfkeys{/tikz/.cd,
+    argumentstyle/.code={\pgfkeys{/argumentation/.cd,argumentstyle=#1}},
+    attackstyle/.code={\pgfkeys{/argumentation/.cd,attackstyle=#1}},
+    supportstyle/.code={\pgfkeys{/argumentation/.cd,supportstyle=#1}},
+    namestyle/.code={\pgfkeys{/argumentation/.cd,namestyle=#1}},
+}
 
 %%% Option for enabling additional macros
 \pgfkeys{/argumentation/.cd,
@@ -228,7 +203,7 @@
     \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
 }
 
-%%% Auxilliary command for creating arguments
+%%% Auxiliary command for creating arguments
 %   #1 beamer overlay specification (optional)
 %   #2 TikZ parameters (optional)
 %   #3 TikZ parameters (optional)
