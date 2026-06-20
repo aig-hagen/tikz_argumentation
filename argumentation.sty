@@ -44,7 +44,7 @@
     attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
     attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Modern rightarrow style tip
     support/.style={},                                                      % Base style for support
-    support standard/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                                             % Standard support arrow
+    support marked/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                                              % Marked support arrow
     support dashed/.style={attack,densely dashed},                          % Dashed Support arrow
     support double/.style={-{Classical TikZ Rightarrow},double},            % double-line support arrow
 }
@@ -124,18 +124,18 @@
     attackstyle=standard,
 }
 
-%%% Option for setattack junction placement: minimum clearance beyond target node border
+%%% Option for hyperedge junction placement: minimum clearance beyond target node border
 \pgfkeys{/argumentation/.cd,
-    setattack dist/.initial=1ex,
+    junction dist/.initial=1ex,
 }
 
 %%% Options for the style of the support edges
 \pgfkeys{/argumentation/.cd,
     supportstyle/.is choice,
-    supportstyle/standard/.code={\tikzset{support/.style={support standard}}},
+    supportstyle/marked/.code={\tikzset{support/.style={support marked}}},
     supportstyle/dashed/.code={\tikzset{support/.style={support dashed}}},
     supportstyle/double/.code={\tikzset{support/.style={support double}}},
-    supportstyle=standard,
+    supportstyle=double,
 }
 
 %%% Options for the automatic text formatting for the argument names
@@ -167,7 +167,7 @@
     attackstyle/.code={\pgfkeys{/argumentation/.cd,attackstyle=#1}},
     supportstyle/.code={\pgfkeys{/argumentation/.cd,supportstyle=#1}},
     namestyle/.code={\pgfkeys{/argumentation/.cd,namestyle=#1}},
-    setattack dist/.code={\pgfkeys{/argumentation/.cd,setattack dist=#1}},
+    junction dist/.code={\pgfkeys{/argumentation/.cd,junction dist=#1}},
 }
 
 %%% Option for enabling additional macros
@@ -308,119 +308,8 @@
 %   #3 comma-separated list of attacking argument IDs
 %   #4 attacked argument ID
 %   #5 annotation text (optional)
-\newcounter{@setattack@count}
-\newif\if@setattack@first
 \NewDocumentCommand { \setattack } {D<>{.-} O{} m m d()} {%
-    \@create@setattack{#1}{#2}{}{#3}{#4}{#5}%
-}
-
-%%% Internal command for creating the set-attack in TikZ
-%   #1 beamer overlay specification
-%   #2 TikZ parameters (optional)
-%   #3 TikZ parameters (optional)
-%   #4 comma-separated list of attacking argument IDs
-%   #5 attacked argument ID
-%   #6 annotation text
-\NewDocumentCommand { \@create@setattack } {mmmmmm} {%
-    \stepcounter{@setattack@count}%
-    \edef\@sacent{setattack@cent@\the@setattack@count}%
-    \edef\@sajunc{setattack@junc@\the@setattack@count}%
-    \edef\@saann{setattack@ann@\the@setattack@count}%
-    % Build "node=1,node=1,..." string for barycentric cs from source clist
-    \global\let\@setattack@bary\@empty
-    \@setattack@firsttrue
-    \@for\@sa@item:=#4\do{%
-        \if@setattack@first
-            \@setattack@firstfalse
-            \xdef\@setattack@bary{\@sa@item=1}%
-        \else
-            \xdef\@setattack@bary{\@setattack@bary,\@sa@item=1}%
-        \fi
-    }%
-    \edef\@sacmd{\noexpand\coordinate(\@sacent) at (barycentric cs:\@setattack@bary);}%
-    \alt<#1>{%
-        \@@draw@setattack{}{#2}{#3}{#4}{#5}{#6}%
-    }{%
-        \if@afoverlay
-            \@@draw@setattack{inactive}{#2}{#3}{#4}{#5}{#6}%
-        \else
-            \@@draw@setattack{invisible}{#2}{#3}{#4}{#5}{#6}%
-        \fi
-    }%
-}
-
-%%% Internal drawing helper for set-attack
-%   #1 style modifier (empty / inactive / invisible)
-%   #2 TikZ parameters
-%   #3 TikZ parameters
-%   #4 source IDs (comma-separated)
-%   #5 target ID
-%   #6 annotation text
-\NewDocumentCommand { \@@draw@setattack } {mmmmmm} {%
-    \@sacmd
-    \path let
-        \p{@c}  = (\@sacent),
-        \p{@t}  = (#5.center),
-        \p{@te} = (#5.east),
-        \n{@d}  = {veclen(\x{@t}-\x{@c}, \y{@t}-\y{@c})},
-        \n{@r}  = {\x{@te} - \x{@t}},
-        \n{@jd} = {max(0.25*\n{@d}, \n{@r} + \pgfkeysvalueof{/argumentation/setattack dist})}
-    in
-        ($(#5.center)!\n{@jd}!(\@sacent)$) node[coordinate](\@sajunc){};%
-    \edef\@satgt{#5}%
-    \foreach \@sa@src in {#4} {%
-        \ifx\@sa@src\@satgt
-            % Source = target: detour arc bowing 90° off the junction direction
-            \draw[attack width,#1,#2,#3]
-                let
-                    \p{src}   = (\@sa@src),
-                    \p{src_e} = (\@sa@src.east),
-                    \p{jnc}   = (\@sajunc),
-                    \n{r}     = {\x{src_e} - \x{src}},
-                    \n{ja}    = {atan2(\y{jnc}-\y{src}, \x{jnc}-\x{src})},
-                    \n{sbx}   = {\x{src} + \n{r}*cos(\n{ja}+45)},
-                    \n{sby}   = {\y{src} + \n{r}*sin(\n{ja}+45)},
-                    \n{cp1x}  = {\n{sbx} + 1.25*\n{r}*cos(\n{ja}+45)},
-                    \n{cp1y}  = {\n{sby} + 1.25*\n{r}*sin(\n{ja}+45)},
-                    \n{cp2x}  = {\x{jnc} + \n{r}*cos(\n{ja})},
-                    \n{cp2y}  = {\y{jnc} + \n{r}*sin(\n{ja})}
-                in
-                (\n{sbx}, \n{sby}) .. controls (\n{cp1x}, \n{cp1y})
-                                  and (\n{cp2x}, \n{cp2y}) .. (\@sajunc);%
-        \else
-            \draw[attack width,#1,#2,#3]
-                let
-                    \p{src}   = (\@sa@src),
-                    \p{src_e} = (\@sa@src.east),
-                    \p{jnc}   = (\@sajunc),
-                    \p{tgt}   = (#5),
-                    \n{r}     = {\x{src_e} - \x{src}},
-                    \n{dx}    = {\x{jnc} - \x{src}},
-                    \n{dy}    = {\y{jnc} - \y{src}},
-                    \n{h}     = {veclen(\n{dx}, \n{dy})},
-                    \n{ux}    = {\n{dx} / \n{h}},
-                    \n{uy}    = {\n{dy} / \n{h}},
-                    \n{bx}    = {\x{src} + \n{r} * \n{ux}},
-                    \n{by}    = {\y{src} + \n{r} * \n{uy}},
-                    \n{cp1x}  = {\n{bx} + \n{h}/3 * \n{ux}},
-                    \n{cp1y}  = {\n{by} + \n{h}/3 * \n{uy}},
-                    \n{j2tx}  = {\x{tgt} - \x{jnc}},
-                    \n{j2ty}  = {\y{tgt} - \y{jnc}},
-                    \n{j2td}  = {veclen(\n{j2tx}, \n{j2ty})},
-                    \n{j2tux} = {\n{j2tx} / \n{j2td}},
-                    \n{j2tuy} = {\n{j2ty} / \n{j2td}},
-                    \n{cp2x}  = {\x{jnc} - 0.35 * \n{h} * \n{j2tux}},
-                    \n{cp2y}  = {\y{jnc} - 0.35 * \n{h} * \n{j2tuy}}
-                in
-                (\n{bx}, \n{by}) .. controls (\n{cp1x}, \n{cp1y})
-                                  and (\n{cp2x}, \n{cp2y}) .. (\@sajunc);%
-        \fi
-    }%
-    \IfNoValueTF{#6}{%
-        \path(\@sajunc) edge[attack,#1,#2,#3] (#5);%
-    }{%
-        \path(\@sajunc) edge[attack,#1,#2,#3] node[annotation](\@saann){#6} (#5);%
-    }%
+    \@create@sehyperedge{#1}{#2}{}{#3}{#4}{#5}{attack}%
 }
 
 %%% Create attack edge with value (DEPRECATED as of v1.4)
@@ -447,6 +336,132 @@
             \path(#3) edge [support=0.35,invisible,#2] (#4);
         \fi
     }
+}
+
+%%% Hyperedge support from a set of arguments to one argument
+%   #1 beamer overlay specification (optional)
+%   #2 TikZ parameters (optional)
+%   #3 comma-separated list of supporting argument IDs
+%   #4 supported argument ID
+%   #5 annotation text (optional)
+\NewDocumentCommand { \setsupport } {D<>{.-} O{} m m d()} {%
+    \@create@sehyperedge{#1}{#2}{}{#3}{#4}{#5}{support=0.35}%
+}
+
+%%% Shared internal command for set-attack and set-support
+%   #1 beamer overlay specification
+%   #2 TikZ parameters (optional)
+%   #3 TikZ parameters (optional)
+%   #4 comma-separated list of source argument IDs
+%   #5 target argument ID
+%   #6 annotation text
+%   #7 junction-to-target edge style (attack / support=0.35)
+\newcounter{@sehyperedge@count}
+\newif\if@sehyperedge@first
+\NewDocumentCommand { \@create@sehyperedge } {mmmmmmm} {%
+    \stepcounter{@sehyperedge@count}%
+    \edef\@shcent{sehyperedge@cent@\the@sehyperedge@count}%
+    \edef\@shjunc{sehyperedge@junc@\the@sehyperedge@count}%
+    \edef\@shann{sehyperedge@ann@\the@sehyperedge@count}%
+    % Build "node=1,node=1,..." string for barycentric cs from source clist
+    \global\let\@sehyperedge@bary\@empty
+    \@sehyperedge@firsttrue
+    \@for\@she@item:=#4\do{%
+        \if@sehyperedge@first
+            \@sehyperedge@firstfalse
+            \xdef\@sehyperedge@bary{\@she@item=1}%
+        \else
+            \xdef\@sehyperedge@bary{\@sehyperedge@bary,\@she@item=1}%
+        \fi
+    }%
+    \edef\@shcmd{\noexpand\coordinate(\@shcent) at (barycentric cs:\@sehyperedge@bary);}%
+    \alt<#1>{%
+        \@@draw@sehyperedge{}{#2}{#3}{#4}{#5}{#6}{#7}%
+    }{%
+        \if@afoverlay
+            \@@draw@sehyperedge{inactive}{#2}{#3}{#4}{#5}{#6}{#7}%
+        \else
+            \@@draw@sehyperedge{invisible}{#2}{#3}{#4}{#5}{#6}{#7}%
+        \fi
+    }%
+}
+
+%%% Shared internal drawing helper for set-attack and set-support
+%   #1 style modifier (empty / inactive / invisible)
+%   #2 TikZ parameters
+%   #3 TikZ parameters
+%   #4 source IDs (comma-separated)
+%   #5 target ID
+%   #6 annotation text
+%   #7 junction-to-target edge style
+\NewDocumentCommand { \@@draw@sehyperedge } {mmmmmmm} {%
+    \begingroup
+    \pgfkeys{/tikz/.cd,#2,#3}%
+    \@shcmd
+    \path let
+        \p{@c}  = (\@shcent),
+        \p{@t}  = (#5.center),
+        \p{@te} = (#5.east),
+        \n{@d}  = {veclen(\x{@t}-\x{@c}, \y{@t}-\y{@c})},
+        \n{@r}  = {\x{@te} - \x{@t}},
+        \n{@jd} = {max(0.25*\n{@d}, \n{@r} + \pgfkeysvalueof{/argumentation/junction dist})}
+    in
+        ($(#5.center)!\n{@jd}!(\@shcent)$) node[coordinate](\@shjunc){};%
+    \edef\@shtgt{#5}%
+    \foreach \@she@src in {#4} {%
+        \ifx\@she@src\@shtgt
+            % Source = target: detour arc bowing 45° off the junction direction
+            \draw[attack width,#7,-,#1,#2,#3]
+                let
+                    \p{src}   = (\@she@src),
+                    \p{src_e} = (\@she@src.east),
+                    \p{jnc}   = (\@shjunc),
+                    \n{r}     = {\x{src_e} - \x{src}},
+                    \n{ja}    = {atan2(\y{jnc}-\y{src}, \x{jnc}-\x{src})},
+                    \n{sbx}   = {\x{src} + \n{r}*cos(\n{ja}+45)},
+                    \n{sby}   = {\y{src} + \n{r}*sin(\n{ja}+45)},
+                    \n{cp1x}  = {\n{sbx} + 1.25*\n{r}*cos(\n{ja}+45)},
+                    \n{cp1y}  = {\n{sby} + 1.25*\n{r}*sin(\n{ja}+45)},
+                    \n{cp2x}  = {\x{jnc} + \n{r}*cos(\n{ja})},
+                    \n{cp2y}  = {\y{jnc} + \n{r}*sin(\n{ja})}
+                in
+                (\n{sbx}, \n{sby}) .. controls (\n{cp1x}, \n{cp1y})
+                                  and (\n{cp2x}, \n{cp2y}) .. (\@shjunc);%
+        \else
+            \draw[attack width,#7,-,#1,#2,#3]
+                let
+                    \p{src}   = (\@she@src),
+                    \p{src_e} = (\@she@src.east),
+                    \p{jnc}   = (\@shjunc),
+                    \p{tgt}   = (#5),
+                    \n{r}     = {\x{src_e} - \x{src}},
+                    \n{dx}    = {\x{jnc} - \x{src}},
+                    \n{dy}    = {\y{jnc} - \y{src}},
+                    \n{h}     = {veclen(\n{dx}, \n{dy})},
+                    \n{ux}    = {\n{dx} / \n{h}},
+                    \n{uy}    = {\n{dy} / \n{h}},
+                    \n{bx}    = {\x{src} + \n{r} * \n{ux}},
+                    \n{by}    = {\y{src} + \n{r} * \n{uy}},
+                    \n{cp1x}  = {\n{bx} + \n{h}/3 * \n{ux}},
+                    \n{cp1y}  = {\n{by} + \n{h}/3 * \n{uy}},
+                    \n{j2tx}  = {\x{tgt} - \x{jnc}},
+                    \n{j2ty}  = {\y{tgt} - \y{jnc}},
+                    \n{j2td}  = {veclen(\n{j2tx}, \n{j2ty})},
+                    \n{j2tux} = {\n{j2tx} / \n{j2td}},
+                    \n{j2tuy} = {\n{j2ty} / \n{j2td}},
+                    \n{cp2x}  = {\x{jnc} - 0.35 * \n{h} * \n{j2tux}},
+                    \n{cp2y}  = {\y{jnc} - 0.35 * \n{h} * \n{j2tuy}}
+                in
+                (\n{bx}, \n{by}) .. controls (\n{cp1x}, \n{cp1y})
+                                  and (\n{cp2x}, \n{cp2y}) .. (\@shjunc);%
+        \fi
+    }%
+    \IfNoValueTF{#6}{%
+        \path(\@shjunc) edge[#7,#1,#2,#3] (#5);%
+    }{%
+        \path(\@shjunc) edge[#7,#1,#2,#3] node[annotation](\@shann){#6} (#5);%
+    }%
+    \endgroup
 }
 \makeatother
 
