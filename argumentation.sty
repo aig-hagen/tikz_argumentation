@@ -367,33 +367,54 @@
         \n{@jd} = {max(0.25*\n{@d}, \n{@r} + \pgfkeysvalueof{/argumentation/setattack dist})}
     in
         ($(#5.center)!\n{@jd}!(\@sacent)$) node[coordinate](\@sajunc){};%
+    \edef\@satgt{#5}%
     \foreach \@sa@src in {#4} {%
-        \draw[attack width,#1,#2,#3]
-            let
-                \p{src}   = (\@sa@src),
-                \p{src_e} = (\@sa@src.east),
-                \p{jnc}   = (\@sajunc),
-                \p{tgt}   = (#5),
-                \n{r}     = {\x{src_e} - \x{src}},
-                \n{dx}    = {\x{jnc} - \x{src}},
-                \n{dy}    = {\y{jnc} - \y{src}},
-                \n{h}     = {veclen(\n{dx}, \n{dy})},
-                \n{ux}    = {\n{dx} / \n{h}},
-                \n{uy}    = {\n{dy} / \n{h}},
-                \n{bx}    = {\x{src} + \n{r} * \n{ux}},
-                \n{by}    = {\y{src} + \n{r} * \n{uy}},
-                \n{cp1x}  = {\n{bx} + \n{h}/3 * \n{ux}},
-                \n{cp1y}  = {\n{by} + \n{h}/3 * \n{uy}},
-                \n{j2tx}  = {\x{tgt} - \x{jnc}},
-                \n{j2ty}  = {\y{tgt} - \y{jnc}},
-                \n{j2td}  = {veclen(\n{j2tx}, \n{j2ty})},
-                \n{j2tux} = {\n{j2tx} / \n{j2td}},
-                \n{j2tuy} = {\n{j2ty} / \n{j2td}},
-                \n{cp2x}  = {\x{jnc} - 0.35 * \n{h} * \n{j2tux}},
-                \n{cp2y}  = {\y{jnc} - 0.35 * \n{h} * \n{j2tuy}}
-            in
-            (\n{bx}, \n{by}) .. controls (\n{cp1x}, \n{cp1y})
-                              and (\n{cp2x}, \n{cp2y}) .. (\@sajunc);%
+        \ifx\@sa@src\@satgt
+            % Source = target: detour arc bowing 90° off the junction direction
+            \draw[attack width,#1,#2,#3]
+                let
+                    \p{src}   = (\@sa@src),
+                    \p{src_e} = (\@sa@src.east),
+                    \p{jnc}   = (\@sajunc),
+                    \n{r}     = {\x{src_e} - \x{src}},
+                    \n{ja}    = {atan2(\y{jnc}-\y{src}, \x{jnc}-\x{src})},
+                    \n{sbx}   = {\x{src} + \n{r}*cos(\n{ja}+45)},
+                    \n{sby}   = {\y{src} + \n{r}*sin(\n{ja}+45)},
+                    \n{cp1x}  = {\n{sbx} + 1.25*\n{r}*cos(\n{ja}+45)},
+                    \n{cp1y}  = {\n{sby} + 1.25*\n{r}*sin(\n{ja}+45)},
+                    \n{cp2x}  = {\x{jnc} + \n{r}*cos(\n{ja})},
+                    \n{cp2y}  = {\y{jnc} + \n{r}*sin(\n{ja})}
+                in
+                (\n{sbx}, \n{sby}) .. controls (\n{cp1x}, \n{cp1y})
+                                  and (\n{cp2x}, \n{cp2y}) .. (\@sajunc);%
+        \else
+            \draw[attack width,#1,#2,#3]
+                let
+                    \p{src}   = (\@sa@src),
+                    \p{src_e} = (\@sa@src.east),
+                    \p{jnc}   = (\@sajunc),
+                    \p{tgt}   = (#5),
+                    \n{r}     = {\x{src_e} - \x{src}},
+                    \n{dx}    = {\x{jnc} - \x{src}},
+                    \n{dy}    = {\y{jnc} - \y{src}},
+                    \n{h}     = {veclen(\n{dx}, \n{dy})},
+                    \n{ux}    = {\n{dx} / \n{h}},
+                    \n{uy}    = {\n{dy} / \n{h}},
+                    \n{bx}    = {\x{src} + \n{r} * \n{ux}},
+                    \n{by}    = {\y{src} + \n{r} * \n{uy}},
+                    \n{cp1x}  = {\n{bx} + \n{h}/3 * \n{ux}},
+                    \n{cp1y}  = {\n{by} + \n{h}/3 * \n{uy}},
+                    \n{j2tx}  = {\x{tgt} - \x{jnc}},
+                    \n{j2ty}  = {\y{tgt} - \y{jnc}},
+                    \n{j2td}  = {veclen(\n{j2tx}, \n{j2ty})},
+                    \n{j2tux} = {\n{j2tx} / \n{j2td}},
+                    \n{j2tuy} = {\n{j2ty} / \n{j2td}},
+                    \n{cp2x}  = {\x{jnc} - 0.35 * \n{h} * \n{j2tux}},
+                    \n{cp2y}  = {\y{jnc} - 0.35 * \n{h} * \n{j2tuy}}
+                in
+                (\n{bx}, \n{by}) .. controls (\n{cp1x}, \n{cp1y})
+                                  and (\n{cp2x}, \n{cp2y}) .. (\@sajunc);%
+        \fi
     }%
     \IfNoValueTF{#6}{%
         \path(\@sajunc) edge[attack,#1,#2,#3] (#5);%
