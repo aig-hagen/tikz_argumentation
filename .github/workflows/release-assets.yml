@@ -20,9 +20,15 @@ jobs:
         with:
           root_file: argumentation-doc.tex
 
+      - name: Build CTAN-style package zip
+        run: |
+          mkdir argumentation
+          cp argumentation.sty argumentation-doc.tex argumentation-doc.pdf README.md argumentation/
+          zip -r argumentation.zip argumentation
+
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload "${{ github.event.release.tag_name }}" \
-            argumentation-doc.pdf argumentation.sty --clobber
+            argumentation-doc.pdf argumentation.sty argumentation.zip --clobber
