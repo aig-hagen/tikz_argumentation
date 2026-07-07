@@ -5,7 +5,7 @@
 \usepackage[utf8]{inputenc}                     % Input font encoding
 \usepackage[english]{babel}                     % Language
 \usepackage{subcaption}                         % Multi-part Figures
-\usepackage{doc}                                % Showing Commands (must load before tcolorbox)
+\usepackage[nohyperref]{doc}                    % Showing Commands (must load before tcolorbox); nohyperref avoids doc auto-loading hypdoc, which resets hyperref's colorlinks/hidelinks at begin-document
 \usepackage[breakable]{tcolorbox}               % Fancier Examples
 \usepackage{booktabs}                           % Fancier Tables
 \usepackage{enumitem}                           % Fancier Enumeration
@@ -160,7 +160,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
         \argument[right=of a8]{i}
         \argument[right=of a9]{j}
 
-        \annotation[right]{a5}{$a\lor b$}
+        \annotation[right=of a5]{$a\lor b$}
 
         \afname{$F_{\ref{af:ex2}}$} at (-1,-1)
 
@@ -202,7 +202,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
         \argument[right=of a8]{i}
         \argument[right=of a9]{j}
 
-        \annotation[right]{a5}{$a\lor b$}
+        \annotation[right=of a5]{$a\lor b$}
         \afname{$F_{\ref{af:ex2}}$} at (-1,-1)
 
         \selfattack{a1}
@@ -708,15 +708,15 @@ See Figure~\ref{fig:beamer} for some examples.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The \argumentation package also provides some additional features.
-The following command can be used to create a text annotation next to an argument node in the argumentation framework.
-By default, the annotation is placed above the argument node.
-To adjust its position, use \texttt{xshift}/\texttt{yshift} for fine-tuning, or pass a placement key such as \texttt{below of=\mopt{argId}}, \texttt{left of=\mopt{argId}}, or \texttt{right of=\mopt{argId}} in the options to change the direction entirely.\\
+The following command can be used to create a text annotation (e.g.\ a value or a condition) inside the argumentation framework.
+It behaves essentially exactly like the \cs[0cm]{argument} command: there is no default position, so place it either relative to another node, e.g.\ \verb|[right=of a5]|, or at absolute coordinates via \texttt{at (\popt{posX}, \popt{posY})}.\\
 
-\noindent\cs{annotation [\oopt{options}] \{\mopt{argId}\} \{\mopt{value}\}}
+\noindent\cs{annotation [\oopt{options}] (\popt{id}) \{\mopt{value}\} at (\popt{posX}, \popt{posY})}
 \begin{description}
-    \item[\oopt{options}] Optional \tikzname style parameters.
-    \item[\mopt{argId}] Identifier of the argument.
-    \item[\mopt{value}] The annotation text.\\
+    \item[\oopt{options}] (optional) a list of \tikzname style parameters and/or relative positioning parameters.
+    \item[\popt{id}] (optional) Identifier of the annotation node. If omitted, an identifier of the form \textsf{annotation1}, \textsf{annotation2}, \dots is generated automatically.
+    \item[\mopt{value}] The annotation text.
+    \item[\popt{posX},\popt{posY}] (optional) the coordinates for placement. Omit if using relative positioning.\\
 \end{description}
 
 The command \cs[0cm]{afname} can be used to create a simple text node inside the AF.
@@ -757,6 +757,7 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
         \centering
         \setargumentstyle{argument thick,text=blue}
         \setafstyle{node distance=0.75cm}
+        \setannotationstyle{node distance=1ex}
         \begin{af}
             \label{af:8}
             \argument{a}
@@ -764,7 +765,7 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
             \argument[below=of a1]{c}
             \argument[right=of a3]{d}
 
-            \annotation{a4}{$\top$}
+            \annotation[above=of a4]{$\top$}
             \afname{$F_{\ref{af:8}}$} at (-1,-0.75)
 
             \attack{a1}{a2}
@@ -776,10 +777,11 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
         \begin{verbatim}
             \setargumentstyle{argument thick,text=blue}
             \setafstyle{node distance=0.75cm}
+            \setannotationstyle{node distance=1ex}
             \begin{af}\label{af:8}
                 ...
-        
-                \annotation{a4}{$\top$}
+
+                \annotation[above=of a4]{$\top$}
                 \afname{$F_{\ref{af:8}}$} at (-1,-0.75)
             \end{af}
         \end{verbatim}

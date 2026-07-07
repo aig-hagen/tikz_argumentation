@@ -60,7 +60,7 @@
         highlight/.style={fill=aigyellow!60},                                   % Highlighted argument
         caption/.style={draw=none},                                             % Caption or text
         invisible/.style={draw=none,fill=none,opacity=0.0},                     % Invisible argument or edge
-        annotation/.style={font=\scriptsize,node distance=4ex},               % Argument annotation
+        annotation/.style={font=\scriptsize,node distance=1.5ex},               % Argument annotation
         argin/.style={accepted},
         argout/.style={rejected},
         argundec/.style={undecided},
@@ -547,14 +547,42 @@
         }
     }
 
-    %%% Create a text annotation next to another node
-    \NewDocumentCommand { \annotation } {D<>{.-} O{} m m} {%
-        \alt<#1>{%
-            \node[annotation,above of=#3,#2](an_#3){#4};
+    %%% Create a text annotation, positioned the same way as \argument:
+    %%% either relative to another node (e.g. [right=of a5]) or at absolute
+    %%% coordinates via "at (posX,posY)". No implicit default position.
+    \makeatletter
+    % Internal counter for annotation IDs
+    \newcounter{@annotation}
+
+    %%% Command for creating annotations
+    %   #1 beamer overlay specification (optional)
+    %   #2 TikZ parameters (optional)
+    %   #3 unique annotation ID (optional)
+    %   #4 annotation text
+    %   #5 ignored
+    %   #6 absolute positioning values (optional)
+    \NewDocumentCommand { \annotation } {D<>{.-} O{} d() m dat d()} {%
+        \stepcounter{@annotation}
+        \IfNoValueTF {#3}{%
+            \edef\@annid{annotation\arabic{@annotation}}
         }{%
-            \node[annotation,above of=#3,invisible,#2](an_#3){#4};
-        }   
+            \edef\@annid{#3}
+        }
+        \alt<#1>{
+            \IfNoValueTF {#6}{%
+                \node[annotation,#2](\@annid){#4};
+            }{%
+                \node[annotation,#2](\@annid) at (#6) {#4};
+            }
+        }{%
+            \IfNoValueTF {#6}{%
+                \node[annotation,invisible,#2](\@annid){#4};
+            }{%
+                \node[annotation,invisible,#2](\@annid) at (#6) {#4};
+            }
+        }
     }
+    \makeatother
 
     %%% Commands for setting custom tikz-style parameters
     \newcommand{\setafstyle}[1]{\tikzset{af/.style={#1}}}
