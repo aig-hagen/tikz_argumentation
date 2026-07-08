@@ -100,6 +100,39 @@
     % Dummy command in case the beamer documentclass is not loaded
     \ProvideDocumentCommand{ \alt } {r<> m m} {#2}
 
+    %%% Registry mapping node/coordinate IDs to the kind of thing that created them
+    %%% (argument / attack / support / annotation / caption). Registered with a plain
+    %%% (non-\global) \@namedef, so entries are scoped to the enclosing af/af* environment's
+    %%% own TeX group -- just like the TikZ nodes/coordinates they describe -- and vanish
+    %%% automatically at \end{af} instead of leaking into unrelated, later af environments.
+    %   #1 id
+    %   #2 type (argument / attack / support / annotation / caption)
+    \newcommand{\@registerid}[2]{%
+        \edef\@registerid@old{\@idtypeof{#1}}%
+        \edef\@registerid@new{#2}%
+        \ifx\@registerid@old\@empty
+        \else
+            \ifx\@registerid@old\@registerid@new
+            \else
+                \PackageWarning{argumentation}{Id '#1' was already used for a \@registerid@old, now reused as a #2 -- this can silently produce a wrong or missing node; consider using a unique id}%
+            \fi
+        \fi
+        \@namedef{@idtype@#1}{#2}%
+    }
+
+    %%% Expands to the type registered for ID #1, or to nothing if it was never registered.
+    \newcommand{\@idtypeof}[1]{%
+        \@ifundefined{@idtype@#1}{}{\@nameuse{@idtype@#1}}%
+    }
+
+    %%% Test whether ID #1 is registered with type #2.
+    %   #1 id, #2 type to test for, #3 true branch, #4 false branch
+    \newcommand{\@ifidtype}[4]{%
+        \edef\@ifidtype@found{\@idtypeof{#1}}%
+        \edef\@ifidtype@want{#2}%
+        \ifx\@ifidtype@found\@ifidtype@want #3\else #4\fi
+    }
+
     \makeatother
 
     %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,8 +217,9 @@
 
     %%%%%%%%%%%%%%% Arguments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \makeatletter
-    % Internal counter for argument IDs
-    \newcounter{@argument}
+    % Internal (locally-scoped) counter for argument IDs; 
+    % resets automatically at the end of each af/af* environment
+    \newcount\@argumentcnt
 
     %%% Command for creating arguments
     %   #1 beamer overlay specification (optional)
@@ -195,18 +229,19 @@
     %   #5 ignored
     %   #6 absolute positioning values (optional)
     \NewDocumentCommand { \argument } {D<>{.-} O{} d() m dat d()} {%
-        \stepcounter{@argument}
+        \advance\@argumentcnt by 1
         \IfNoValueTF {#3}{%
             \if@alphaidx
-                \edef\@argid{\alph{@argument}}
+                \edef\@argid{\@alph{\the\@argumentcnt}}
             \else\if@numericidx
-                \edef\@argid{a\arabic{@argument}}
+                \edef\@argid{a\the\@argumentcnt}
             \else
                 \PackageError{argumentation}{Missing argument ID}{Must either provide argument ID inside () or activate auto-indexing}
             \fi\fi
         }{%
             \edef\@argid{#3}
         }
+        \@registerid{\@argid}{argument}
         \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
     }
 
@@ -245,8 +280,8 @@
 
     %%%%%%%%%%%%%%% Attacks & Support %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \makeatletter
-    % Internal counter for attack IDs
-    \newcounter{@attack}
+    % Internal counter for attack IDs; plain (locally-scoped) register
+    \newcount\@attackcnt
 
     %%% Command for creating attacks
     %   #1 beamer overlay specification (optional)
@@ -256,12 +291,13 @@
     %   #5 attacked argument ID
     %   #6 annotation text (optional)
     \NewDocumentCommand { \attack } {D<>{.-} O{} d() m m d()} {%
-        \stepcounter{@attack}
+        \advance\@attackcnt by 1
         \IfNoValueTF {#3}{%
-            \edef\@attid{att\arabic{@attack}}
+            \edef\@attid{att\the\@attackcnt}
         }{%
             \edef\@attid{#3}
         }
+        \@registerid{\@attid}{attack}
         \@create@attack{#1}{#2}{}{#4}{#5}{#6}{\@attid}
     }
 
@@ -299,28 +335,51 @@
 
     %%% Self-attack edge
     %   #1 TikZ parameters (optional)
-    %   #2 argument ID
-    \NewDocumentCommand { \selfattack } {D<>{.-} O{} m} {%
-        \attack<#1>[selfattack,#2]{#3}{#3}
+    %   #2 unique attack ID (optional)
+    %   #3 argument ID
+    \NewDocumentCommand { \selfattack } {D<>{.-} O{} d() m} {%
+        \IfNoValueTF{#3}{%
+            \attack<#1>[selfattack,#2]{#4}{#4}
+        }{%
+            \attack<#1>[selfattack,#2](#3){#4}{#4}
+        }
     }
 
     %%% Symmetric attack edges between two arguments
     %   #1 TikZ parameters (optional)
-    %   #2 first argument ID
-    %   #3 second argument ID
-    \NewDocumentCommand { \dualattack } {D<>{.-} O{} m m} {%
-        \attack<#1>[bend right,#2]{#3}{#4}
-        \attack<#1>[bend right,#2]{#4}{#3}
+    %   #2 unique ID for the first attack edge (optional)
+    %   #3 unique ID for the second attack edge (optional)
+    %   #4 first argument ID
+    %   #5 second argument ID
+    \NewDocumentCommand { \dualattack } {D<>{.-} O{} d() d() m m} {%
+        \IfNoValueTF{#3}{%
+            \attack<#1>[bend right,#2]{#5}{#6}
+        }{%
+            \attack<#1>[bend right,#2](#3){#5}{#6}
+        }
+        \IfNoValueTF{#4}{%
+            \attack<#1>[bend right,#2]{#6}{#5}
+        }{%
+            \attack<#1>[bend right,#2](#4){#6}{#5}
+        }
     }
 
     %%% Hyperedge attack from a set of arguments to one argument
     %   #1 beamer overlay specification (optional)
     %   #2 TikZ parameters (optional)
-    %   #3 comma-separated list of attacking argument IDs
-    %   #4 attacked argument ID
-    %   #5 annotation text (optional)
-    \NewDocumentCommand { \setattack } {D<>{.-} O{} m m d()} {%
-        \@create@sehyperedge{#1}{#2}{}{#3}{#4}{#5}{attack}%
+    %   #3 unique attack ID (optional)
+    %   #4 comma-separated list of attacking argument IDs
+    %   #5 attacked argument ID
+    %   #6 annotation text (optional)
+    \NewDocumentCommand { \setattack } {D<>{.-} O{} d() m m d()} {%
+        \advance\@attackcnt by 1
+        \IfNoValueTF {#3}{%
+            \edef\@attid{att\the\@attackcnt}
+        }{%
+            \edef\@attid{#3}
+        }
+        \@registerid{\@attid}{attack}
+        \@create@sehyperedge{#1}{#2}{}{#4}{#5}{#6}{attack}{\@attid}{attack}%
     }
 
     %%% Create attack edge with value (DEPRECATED as of v1.4)
@@ -329,11 +388,12 @@
     %   #3 attacked argument ID
     %   #4 annotation text
     \NewDocumentCommand{ \annotatedattack } {D<>{.-} O{} m m m} {%
+        \PackageWarning{argumentation}{\string\annotatedattack\space is deprecated and may be removed in a future release; use \string\attack\space with a (\string\annotation) argument instead}%
         \attack<#1>[#2]{#3}{#4}(#5)
     }
 
-    % Internal counter for support IDs
-    \newcounter{@support}
+    % Internal counter for support IDs; plain (locally-scoped) register
+    \newcount\@supportcnt
 
     %%% Support edge
     %   #1 overlay specification (optional)
@@ -343,12 +403,13 @@
     %   #5 supported argument ID
     %   #6 annotation text (optional)
     \NewDocumentCommand { \support } {D<>{.-} O{} d() m m d()} {%
-        \stepcounter{@support}
+        \advance\@supportcnt by 1
         \IfNoValueTF {#3}{%
-            \edef\@suppid{supp\arabic{@support}}
+            \edef\@suppid{supp\the\@supportcnt}
         }{%
             \edef\@suppid{#3}
         }
+        \@registerid{\@suppid}{support}
         \alt<#1>{%
             \IfNoValueTF{#6}{%
                 \path(#4) edge [support=0.35,#2] coordinate(\@suppid) (#5);
@@ -375,11 +436,19 @@
     %%% Hyperedge support from a set of arguments to one argument
     %   #1 beamer overlay specification (optional)
     %   #2 TikZ parameters (optional)
-    %   #3 comma-separated list of supporting argument IDs
-    %   #4 supported argument ID
-    %   #5 annotation text (optional)
-    \NewDocumentCommand { \setsupport } {D<>{.-} O{} m m d()} {%
-        \@create@sehyperedge{#1}{#2}{}{#3}{#4}{#5}{support=0.35}%
+    %   #3 unique support ID (optional)
+    %   #4 comma-separated list of supporting argument IDs
+    %   #5 supported argument ID
+    %   #6 annotation text (optional)
+    \NewDocumentCommand { \setsupport } {D<>{.-} O{} d() m m d()} {%
+        \advance\@supportcnt by 1
+        \IfNoValueTF {#3}{%
+            \edef\@suppid{supp\the\@supportcnt}
+        }{%
+            \edef\@suppid{#3}
+        }
+        \@registerid{\@suppid}{support}
+        \@create@sehyperedge{#1}{#2}{}{#4}{#5}{#6}{support=0.35}{\@suppid}{support}%
     }
 
     %%% Shared internal command for set-attack and set-support
@@ -390,13 +459,16 @@
     %   #5 target argument ID
     %   #6 annotation text
     %   #7 junction-to-target edge style (attack / support=0.35)
-    \newcounter{@sehyperedge@count}
+    %   #8 unique ID for the junction-to-target edge
+    %   #9 registry type for the id ("attack" / "support")
+    % Plain (locally-scoped) registers
+    \newcount\@sehyperedgecnt
+    \newcount\@sehyperedgesrccnt
     \newif\if@sehyperedge@first
-    \NewDocumentCommand { \@create@sehyperedge } {mmmmmmm} {%
-        \stepcounter{@sehyperedge@count}%
-        \edef\@shcent{sehyperedge@cent@\the@sehyperedge@count}%
-        \edef\@shjunc{sehyperedge@junc@\the@sehyperedge@count}%
-        \edef\@shann{sehyperedge@ann@\the@sehyperedge@count}%
+    \NewDocumentCommand { \@create@sehyperedge } {mmmmmmmmm} {%
+        \advance\@sehyperedgecnt by 1
+        \edef\@shcent{sehyperedge@cent@\the\@sehyperedgecnt}%
+        \edef\@shjunc{sehyperedge@junc@\the\@sehyperedgecnt}%
         % Build "node=1,node=1,..." string for barycentric cs from source clist
         \global\let\@sehyperedge@bary\@empty
         \@sehyperedge@firsttrue
@@ -409,13 +481,21 @@
             \fi
         }%
         \edef\@shcmd{\noexpand\coordinate(\@shcent) at (barycentric cs:\@sehyperedge@bary);}%
+        % Register the per-source sub-anchors here (not inside \@@draw@sehyperedge's
+        % \begingroup below), so the registration is scoped to the af environment's own
+        % group, matching how long the underlying TikZ coordinates actually stay valid.
+        \@sehyperedgesrccnt=0 %
+        \@for\@she@item:=#4\do{%
+            \advance\@sehyperedgesrccnt by 1
+            \@registerid{#8-\the\@sehyperedgesrccnt}{#9}%
+        }%
         \alt<#1>{%
-            \@@draw@sehyperedge{}{#2}{#3}{#4}{#5}{#6}{#7}%
+            \@@draw@sehyperedge{}{#2}{#3}{#4}{#5}{#6}{#7}{#8}%
         }{%
             \if@afoverlay
-                \@@draw@sehyperedge{inactive}{#2}{#3}{#4}{#5}{#6}{#7}%
+                \@@draw@sehyperedge{inactive}{#2}{#3}{#4}{#5}{#6}{#7}{#8}%
             \else
-                \@@draw@sehyperedge{invisible}{#2}{#3}{#4}{#5}{#6}{#7}%
+                \@@draw@sehyperedge{invisible}{#2}{#3}{#4}{#5}{#6}{#7}{#8}%
             \fi
         }%
     }
@@ -428,7 +508,10 @@
     %   #5 target ID
     %   #6 annotation text
     %   #7 junction-to-target edge style
-    \NewDocumentCommand { \@@draw@sehyperedge } {mmmmmmm} {%
+    %   #8 unique ID for the junction-to-target edge; each individual
+    %      source-to-junction curve additionally gets its own anchor
+    %      named #8-1, #8-2, ... in source-list order
+    \NewDocumentCommand { \@@draw@sehyperedge } {mmmmmmmm} {%
         \begingroup
         \pgfkeys{/tikz/.cd,#2,#3}%
         \@shcmd
@@ -442,7 +525,11 @@
         in
             ($(#5.center)!\n{@jd}!(\@shcent)$) node[coordinate](\@shjunc){};%
         \edef\@shtgt{#5}%
+        \edef\@shid{#8}%
+        \@sehyperedgesrccnt=0 %
         \foreach \@she@src in {#4} {%
+            \advance\@sehyperedgesrccnt by 1
+            \edef\@shsrcid{\@shid-\the\@sehyperedgesrccnt}%
             \ifx\@she@src\@shtgt
                 % Source = target: detour arc bowing 45° off the junction direction
                 \draw[attack width,#7,-,#1,#2,#3]
@@ -460,7 +547,7 @@
                         \n{cp2y}  = {\y{jnc} + \n{r}*sin(\n{ja})}
                     in
                     (\n{sbx}, \n{sby}) .. controls (\n{cp1x}, \n{cp1y})
-                                    and (\n{cp2x}, \n{cp2y}) .. (\@shjunc);%
+                                    and (\n{cp2x}, \n{cp2y}) .. (\@shjunc) coordinate[pos=0.5](\@shsrcid);%
             \else
                 \draw[attack width,#7,-,#1,#2,#3]
                     let
@@ -487,13 +574,13 @@
                         \n{cp2y}  = {\y{jnc} - 0.35 * \n{h} * \n{j2tuy}}
                     in
                     (\n{bx}, \n{by}) .. controls (\n{cp1x}, \n{cp1y})
-                                    and (\n{cp2x}, \n{cp2y}) .. (\@shjunc);%
+                                    and (\n{cp2x}, \n{cp2y}) .. (\@shjunc) coordinate[pos=0.5](\@shsrcid);%
             \fi
         }%
         \IfNoValueTF{#6}{%
-            \path(\@shjunc) edge[#7,#1,#2,#3] (#5);%
+            \path(\@shjunc) edge[#7,#1,#2,#3] coordinate[pos=0.1](#8) (#5);%
         }{%
-            \path(\@shjunc) edge[#7,#1,#2,#3] node[annotation](\@shann){#6} (#5);%
+            \path(\@shjunc) edge[#7,#1,#2,#3] node[annotation,pos=0.1](#8){#6} (#5);%
         }%
         \endgroup
     }
@@ -505,7 +592,6 @@
     %%% Uncounted version of the environment
     \makeatletter
     \NewDocumentEnvironment {af*} {O{}} {%
-        \setcounter{@argument}{0}
         \pgfkeys{/argumentation/.cd, #1}
         \tikzpicture[standard,af,#1]
     }{%
@@ -552,7 +638,9 @@
     %   #4 node name
     %   #5 ignored
     %   #6 node position
+    \makeatletter
     \NewDocumentCommand { \afname } { D<>{.-} O{} D(){caption} m dat d()} {%
+        \@registerid{#3}{other}
         \alt<#1>{
             \IfNoValueTF {#6}{%
                 \node[caption,#2](#3){#4};
@@ -567,13 +655,14 @@
             }
         }
     }
+    \makeatother
 
     %%% Create a text annotation, positioned the same way as \argument:
     %%% either relative to another node (e.g. [right=of a5]) or at absolute
     %%% coordinates via "at (posX,posY)". No implicit default position.
     \makeatletter
-    % Internal counter for annotation IDs
-    \newcounter{@annotation}
+    % Internal counter for annotation IDs; plain (locally-scoped) register
+    \newcount\@annotationcnt
 
     %%% Command for creating annotations
     %   #1 beamer overlay specification (optional)
@@ -583,12 +672,13 @@
     %   #5 ignored
     %   #6 absolute positioning values (optional)
     \NewDocumentCommand { \annotation } {D<>{.-} O{} d() m dat d()} {%
-        \stepcounter{@annotation}
+        \advance\@annotationcnt by 1
         \IfNoValueTF {#3}{%
-            \edef\@annid{annotation\arabic{@annotation}}
+            \edef\@annid{annotation\the\@annotationcnt}
         }{%
             \edef\@annid{#3}
         }
+        \@registerid{\@annid}{other}
         \alt<#1>{
             \IfNoValueTF {#6}{%
                 \node[annotation,#2](\@annid){#4};

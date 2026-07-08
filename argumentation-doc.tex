@@ -170,8 +170,8 @@ To customize the look of the arguments and attacks and for a detailed overview o
         
         \attack[inactive]{a8}{a7}
         \attack[inactive]{a7}{a2}
-        \annotatedattack[above]{a3}{a2}{$3$}
-        \annotatedattack[below,incomplete]{a4}{a5}{$x$}
+        \attack[above]{a3}{a2}($3$)
+        \attack[below,incomplete]{a4}{a5}($x$)
         \attack{a5}{a10}
         \setattack{a9,a10}{a4}
 
@@ -214,8 +214,8 @@ To customize the look of the arguments and attacks and for a detailed overview o
         \attack{a5}{a10}
         \setattack{a9,a10}{a4}
 
-        \annotatedattack[above]{a3}{a2}{$3$}
-        \annotatedattack[below,incomplete]{a4}{a5}{$x$}
+        \attack[above]{a3}{a2}($3$)
+        \attack[below,incomplete]{a4}{a5}($x$)
         \support{a4}{a3}
         \support{a9}{a3}
         \label{af:ex2}
@@ -487,15 +487,6 @@ To attach an annotation to an attack edge, pass it as an optional argument in pa
 \noindent\cs{attack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\} (\popt{annotation})}
 
 The \popt{annotation} placement can be controlled via the options, e.\,g., \textsf{above}, \textsf{below}, \textsf{left} or \textsf{right}.
-The following shorthand is also still available but deprecated:\\
-
-\noindent\cs{annotatedattack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\} \{\mopt{value}\}}
-\begin{description}
-    \item[\oopt{options}] Optional \tikzname parameters. Must also include one of the following parameters to specify placement of the annotation relative to the attack arrow: \textsf{above}, \textsf{below}, \textsf{left}, \textsf{right}.
-    \item[\mopt{arg1}] Identifier of the attacking argument.
-    \item[\mopt{arg2}] Identifier of the attacked argument.
-    \item[\mopt{value}] The text that is annotated.\\
-\end{description}
 
 As an alternative to the standard attack arrow, you can use the following command.\\
 
@@ -586,7 +577,7 @@ Some useful style options for the attacks (and other edges) are listed below:
             \attack{a3}{a1}
             \selfattack[incomplete]{a3}
             \dualattack{a1}{a2}
-            \annotatedattack[right]{a2}{a4}{$x$}
+            \attack[right]{a2}{a4}($x$)
             \support[bend left]{a4}{a3}
         \end{af}
     \end{minipage}%
@@ -598,7 +589,7 @@ Some useful style options for the attacks (and other edges) are listed below:
                 \attack{a3}{a1}
                 \selfattack[incomplete]{a3}
                 \dualattack{a1}{a2}
-                \annotatedattack[right]{a2}{a4}{$x$}
+                \attack[right]{a2}{a4}($x$)
                 \support[bend left]{a4}{a3}
             \end{af}
         \end{verbatim}
