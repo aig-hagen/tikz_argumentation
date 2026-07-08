@@ -8,6 +8,7 @@ It provides a simple, high-level syntax for creating argument nodes and attack/s
 - `af` environment for creating labelled, referenceable argumentation frameworks
 - Commands for attacks (`\attack`, `\dualattack`, `\selfattack`), supports (`\support`), and annotated edges
 - Collective (hyperedge) attacks and supports via `\setattack` and `\setsupport`
+- Every attack/support edge gets a referenceable, optionally-named coordinate for further positioning
 - Five argument styles, three attack styles, and three support styles
 - Size presets (`small`, `tiny`) for two-column layouts
 - Automatic or manual argument indexing
@@ -49,7 +50,7 @@ See `argumentation-doc.pdf` for the full documentation including all commands, p
 
 ## Version
 
-1.7 [2026/06/20]
+1.8 [2026/07/08]
 
 ## License
 

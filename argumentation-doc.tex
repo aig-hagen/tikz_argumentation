@@ -42,7 +42,7 @@
 
 \title{The \argumentation Package}
 \author{Lars Bengel\footnotemark\\\small lars.bengel@fernuni-hagen.de}
-\date{Version 1.7 [2026/06/20]}
+\date{Version 1.8 [2026/07/08]}
 
 \begin{document}
 \maketitle
@@ -229,7 +229,7 @@ To customize the look of the arguments and attacks and for a detailed overview o
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Documentation for Version 1.7 [2026/06/20]}\label{sec:documentation}
+\section{Documentation for Version 1.8 [2026/07/08]}\label{sec:documentation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The \argumentation package provides an easy way for creating argumentation frameworks\footnote{Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in non-monotonic reasoning, logic programming and n-person games. Artificial intelligence.} in \LaTeX-documents.
 It builds on the \tikzname package for drawing the argumentation graphs, providing a simplified, high-level syntax for common argumentation constructs while retaining full \tikzname compatibility and customisation options.
@@ -456,25 +456,29 @@ In the following, we list some useful style options for the \verb|\argument| com
 To create a directed attack between two argument nodes, you can use the following command.
 The parameters \mopt{arg1} and \mopt{arg2} are the identifiers of the two arguments.\\
 
-\noindent\cs{attack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\}}
+\noindent\cs{attack [\oopt{options}] (\popt{id}) \{\mopt{argId1}\} \{\mopt{argId2}\} (\popt{annotation})}
 \begin{description}
     \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\popt{id}] (optional) the identifier of the attack edge. Per default, when omitted, attacks are automatically assigned an identifier of the form: \textsf{att1}, \textsf{att2}, \dots. This identifier always names a coordinate on the edge -- whether or not an \popt{annotation} is given -- which can be used like any other coordinate, e.\,g.\ for relative positioning or as the source/target of another attack.
     \item[\mopt{arg1}] Identifier of the attacking argument.
-    \item[\mopt{arg2}] Identifier of the attacked argument.\\
+    \item[\mopt{arg2}] Identifier of the attacked argument.
+    \item[\popt{annotation}] (optional) annotation text placed on the attack edge. Its placement can be controlled via \oopt{options}, e.\,g., \textsf{above}, \textsf{below}, \textsf{left} or \textsf{right}.\\
 \end{description}
 
 To simplify creating special types of attacks, like bidirectional attacks or self-attacks, the following two commands are provided.\\
 
-\noindent\cs{dualattack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\}}
+\noindent\cs{dualattack [\oopt{options}] (\popt{id1}) (\popt{id2}) \{\mopt{argId1}\} \{\mopt{argId2}\}}
 \begin{description}
     \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\popt{id1},\popt{id2}] (optional) identifiers for the two created attack edges (\mopt{argId1}$\to$\mopt{argId2} and \mopt{argId2}$\to$\mopt{argId1}, respectively). Defaults follow the same automatic numbering as \verb|\attack|.
     \item[\mopt{arg1}] Identifier of the first argument.
     \item[\mopt{arg2}] Identifier of the second argument.
 \end{description}
 
-\noindent\cs{selfattack [\oopt{options}] \{\mopt{argId}\}}
+\noindent\cs{selfattack [\oopt{options}] (\popt{id}) \{\mopt{argId}\}}
 \begin{description}
     \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\popt{id}] (optional) identifier for the created attack edge.
     \item[\mopt{arg1}] Identifier of the self-attacking argument.
 \end{description}
 
@@ -482,17 +486,12 @@ For \verb|\selfattack| you might want to specify the position of the attack loop
 For that, you should provide the start and end point of the attack-edge (as a degree from \verb|0| to \verb|360|) via the optional \tikzname-parameters \texttt{in=\oopt{degree1}} and \texttt{out=\oopt{degree2}}.
 The default values are \texttt{in=0} and \texttt{out=60}.\\
 
-To attach an annotation to an attack edge, pass it as an optional argument in parentheses directly to \verb|\attack|:\\
-
-\noindent\cs{attack [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\} (\popt{annotation})}
-
-The \popt{annotation} placement can be controlled via the options, e.\,g., \textsf{above}, \textsf{below}, \textsf{left} or \textsf{right}.
-
 As an alternative to the standard attack arrow, you can use the following command.\\
 
-\noindent\cs{support [\oopt{options}] \{\mopt{argId1}\} \{\mopt{argId2}\} (\popt{annotation})}
+\noindent\cs{support [\oopt{options}] (\popt{id}) \{\mopt{argId1}\} \{\mopt{argId2}\} (\popt{annotation})}
 \begin{description}
     \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\popt{id}] (optional) the identifier of the support edge, named and defaulted the same way as for \verb|\attack| (\textsf{supp1}, \textsf{supp2}, \dots).
     \item[\mopt{arg1}] Identifier of the supporting argument.
     \item[\mopt{arg2}] Identifier of the supported argument.
     \item[\popt{annotation}] (optional) annotation text placed on the support edge.\\
@@ -502,17 +501,19 @@ To draw a \emph{collective} (hyperedge) attack or support from a \emph{set} of a
 Each command places a \emph{junction point} on the line between the barycenter of the source arguments and the target node, at a clearance of \texttt{junction dist} beyond the target's border.
 A Bézier curve is drawn from each source to this junction, and a single arrowhead edge is drawn from the junction to the target.\\
 
-\noindent\cs{setattack [\oopt{options}] \{\mopt{sourceList}\} \{\mopt{argId}\} (\popt{annotation})}
+\noindent\cs{setattack [\oopt{options}] (\popt{id}) \{\mopt{sourceList}\} \{\mopt{argId}\} (\popt{annotation})}
 \begin{description}
     \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\popt{id}] (optional) the identifier of the arrow from the junction to the target, named and defaulted the same way as for \verb|\attack|. Additionally, each individual curve from a source argument to the junction gets its own identifier \popt{id}\textsf{-1}, \popt{id}\textsf{-2}, \dots, in the order the sources are listed in \mopt{sourceList}.
     \item[\mopt{sourceList}] Comma-separated list of identifiers of the attacking arguments.
     \item[\mopt{argId}] Identifier of the attacked argument.
     \item[\popt{annotation}] (optional) annotation text placed on the arrow from the junction to the target.\\
 \end{description}
 
-\noindent\cs{setsupport [\oopt{options}] \{\mopt{sourceList}\} \{\mopt{argId}\} (\popt{annotation})}
+\noindent\cs{setsupport [\oopt{options}] (\popt{id}) \{\mopt{sourceList}\} \{\mopt{argId}\} (\popt{annotation})}
 \begin{description}
     \item[\oopt{options}] (optional) a list of \tikzname style parameters.
+    \item[\popt{id}] (optional) the identifier of the arrow from the junction to the target, named and defaulted the same way as for \verb|\support|. Additionally, each individual curve from a source argument to the junction gets its own identifier \popt{id}\textsf{-1}, \popt{id}\textsf{-2}, \dots, in the order the sources are listed in \mopt{sourceList}.
     \item[\mopt{sourceList}] Comma-separated list of identifiers of the supporting arguments.
     \item[\mopt{argId}] Identifier of the supported argument.
     \item[\popt{annotation}] (optional) annotation text placed on the arrow from the junction to the target.\\
@@ -1093,6 +1094,14 @@ You may use or redefine them at your own discretion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version History}\label{sec:history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{[v1.8 2026/07/08]}
+\begin{itemize}
+    \item Added an optional \texttt{(id)} parameter to \verb|\attack|, \verb|\support|, \verb|\selfattack|, \verb|\dualattack|, \verb|\setattack| and \verb|\setsupport|, naming a coordinate on the edge that can be referenced like any other node. Defaults to automatically numbered identifiers (\textsf{att1}, \textsf{att2}, \dots for attacks; \textsf{supp1}, \textsf{supp2}, \dots for supports).
+    \item Attack and support edges now always create a referenceable coordinate, even without an \popt{annotation}; previously no node was created in that case.
+    \item \verb|\setattack|/\verb|\setsupport| additionally name each individual source-to-junction curve (\texttt{id-1}, \texttt{id-2}, \dots).
+    \item Fixed a bug where automatically generated identifiers for attacks, supports and annotations were not reset between separate \texttt{af} environments (only argument identifiers were).
+\end{itemize}
+
 \subsection*{[v1.7 2026/06/20]}
 \begin{itemize}
     \item Added command \verb|\setattack{ }{ }| for drawing collective attacks from a set of arguments to a single target.

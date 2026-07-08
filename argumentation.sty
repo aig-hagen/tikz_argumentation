@@ -1,9 +1,9 @@
     \NeedsTeXFormat{LaTeX2e}
-    \ProvidesPackage{argumentation}[2026/06/20 Argumentation]
+    \ProvidesPackage{argumentation}[2026/07/08 Argumentation]
     % Author:   Lars Bengel
     % E-Mail:   lars.bengel@fernuni-hagen.de
-    % Version:  1.7
-    % Date:     2026/06/20
+    % Version:  1.8
+    % Date:     2026/07/08
     % License:  LaTeX Project Public License 1.3c
 
 
@@ -527,7 +527,10 @@
         \edef\@shtgt{#5}%
         \edef\@shid{#8}%
         \@sehyperedgesrccnt=0 %
-        \foreach \@she@src in {#4} {%
+        % \@for (unlike TikZ's \foreach) does not run each iteration in its own local
+        % group, so \advance below correctly accumulates across sources -- see the
+        % identical loop in \@create@sehyperedge above.
+        \@for\@she@src:=#4\do{%
             \advance\@sehyperedgesrccnt by 1
             \edef\@shsrcid{\@shid-\the\@sehyperedgesrccnt}%
             \ifx\@she@src\@shtgt
