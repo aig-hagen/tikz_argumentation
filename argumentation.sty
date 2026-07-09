@@ -39,10 +39,11 @@
     %%% Attack/Support Edge Definitions
     \tikzset{
         attack width/.style={},                                                 % Width of attack arrows
-        attack/.style={},                                                       % Base style for attack arrow
-        attack standard/.style={-{stealth'}},                                   % Standard attack arrow
-        attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip
-        attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Modern rightarrow style tip
+        attack/.style={attack width,-{\pgfkeysvalueof{/argumentation/attack tip}}},     % Base style for attack arrow; tip tracks the attack tip key (set via attackstyle)
+        edgetarget/.style={attack width,-{\pgfkeysvalueof{/argumentation/attack tip}[]\pgfkeysvalueof{/argumentation/attack tip}[]}}, % Auto-applied double arrow head for attacks/supports that target another edge's anchor
+        attack standard/.style={-{stealth'}},                                   % Standard attack arrow (for manual reference/override)
+        attack large/.style={-{Stealth[scale=1.25]}},                           % Larger arrow tip (for manual reference/override)
+        attack modern/.style={-{To[sharp,length=0.65ex,line width=0.05em]}},    % Modern rightarrow style tip (for manual reference/override)
         support/.style={},                                                      % Base style for support
         support marked/.style = {attack, postaction = {decorate,decoration={markings,mark=at position 0.36 with {\draw[-] (0,-0.1) -- (0.1,0.1);}}}},                                              % Marked support arrow
         support dashed/.style={attack,densely dashed},                          % Dashed Support arrow
@@ -133,6 +134,13 @@
         \ifx\@ifidtype@found\@ifidtype@want #3\else #4\fi
     }
 
+    %%% Test whether ID #1 is registered as an edge (attack or support), i.e. whether
+    %%% it refers to another edge's anchor rather than an argument.
+    %   #1 id, #2 true branch, #3 false branch
+    \newcommand{\@ifedgeid}[3]{%
+        \@ifidtype{#1}{attack}{#2}{\@ifidtype{#1}{support}{#2}{#3}}%
+    }
+
     \makeatother
 
     %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,10 +158,11 @@
 
     %%% Options for the style of the attack edges
     \pgfkeys{/argumentation/.cd,
+        attack tip/.initial={stealth'},                                        % Tip of the currently selected attackstyle; reused (doubled) by edgetarget
         attackstyle/.is choice,
-        attackstyle/standard/.code={\tikzset{attack/.style={attack width,attack standard}}},
-        attackstyle/large/.code={\tikzset{attack/.style={attack width,attack large}}},
-        attackstyle/modern/.code={\tikzset{attack/.style={attack width,attack modern}}},
+        attackstyle/standard/.code={\pgfkeys{/argumentation/.cd,attack tip={stealth'}}},
+        attackstyle/large/.code={\pgfkeys{/argumentation/.cd,attack tip={Stealth[scale=1.25]}}},
+        attackstyle/modern/.code={\pgfkeys{/argumentation/.cd,attack tip={To[sharp,length=0.65ex,line width=0.05em]}}},
         attackstyle=standard,
     }
 
@@ -298,7 +307,14 @@
             \edef\@attid{#3}
         }
         \@registerid{\@attid}{attack}
-        \@create@attack{#1}{#2}{}{#4}{#5}{#6}{\@attid}
+        % An attack whose target is itself another edge's anchor (attack on an
+        % attack/support) is drawn by the dedicated \@create@extendedattack helper,
+        % which auto-applies the edgetarget (double arrow head) style.
+        \@ifedgeid{#5}{%
+            \@create@extendedattack{#1}{#2}{}{#4}{#5}{#6}{\@attid}%
+        }{%
+            \@create@attack{#1}{#2}{}{#4}{#5}{#6}{\@attid}%
+        }%
     }
 
     %%% Internal command for creating the attack in TikZ
@@ -328,6 +344,41 @@
                     \path(#4) edge [attack,invisible,#2,#3] coordinate(#7) (#5);
                 }{%
                     \path(#4) edge [attack,invisible,#2,#3] node[annotation](#7){#6} (#5);
+                }
+            \fi
+        }
+    }
+
+    %%% Internal command for creating an "extended" attack, i.e. one whose target is
+    %%% another edge's anchor rather than an argument (attack on attack/support).
+    %%% Identical to \@create@attack except the edgetarget style (auto double arrow
+    %%% head) is always applied.
+    %   #1 beamer overlay specification (optional)
+    %   #2 TikZ parameters (optional)
+    %   #3 TikZ parameters (optional)
+    %   #4 attacking argument ID
+    %   #5 attacked edge ID
+    %   #6 annotation text
+    %   #7 unique attack ID
+    \NewDocumentCommand { \@create@extendedattack } {mmmmmmm} {%
+        \alt<#1>{
+            \IfNoValueTF{#6}{%
+                \path(#4) edge [attack,edgetarget,#2,#3] coordinate(#7) (#5);
+            }{%
+                \path(#4) edge [attack,edgetarget,#2,#3] node[annotation](#7){#6} (#5);
+            }
+        }{%
+            \if@afoverlay
+                \IfNoValueTF{#6}{%
+                    \path(#4) edge [attack,edgetarget,inactive,#2,#3] coordinate(#7) (#5);
+                }{%
+                    \path(#4) edge [attack,edgetarget,inactive,#2,#3] node[annotation](#7){#6} (#5);
+                }
+            \else
+                \IfNoValueTF{#6}{%
+                    \path(#4) edge [attack,edgetarget,invisible,#2,#3] coordinate(#7) (#5);
+                }{%
+                    \path(#4) edge [attack,edgetarget,invisible,#2,#3] node[annotation](#7){#6} (#5);
                 }
             \fi
         }
