@@ -158,7 +158,7 @@
     %%%%%%%%%% Package Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% Options for style of the argument node itself
     \pgfkeys{/argumentation/.cd,
-        .unknown/.code={},
+        .unknown/.code={\PackageError{argumentation}{Unknown option '\pgfkeyscurrentname'}{Check the spelling of the option; see the package documentation for the available options.}},
         argumentstyle/.is choice,
         argumentstyle/standard/.code={\tikzset{argument/.style={argument standard,argument size}}},
         argumentstyle/large/.code={\tikzset{argument/.style={argument large,argument size}}},
@@ -181,6 +181,7 @@
     %%% Option for hyperedge junction placement: minimum clearance beyond target node border
     \pgfkeys{/argumentation/.cd,
         junction dist/.initial=1ex,
+        junctiondist/.code={\pgfkeys{/argumentation/junction dist=#1}},   % LaTeX strips spaces from package options
     }
 
     %%% Options for the style of the support edges
@@ -670,7 +671,6 @@
         \global\@attackcnt=0
         \global\@supportcnt=0
         \global\@annotationcnt=0
-        \pgfkeys{/argumentation/.cd, #1}%
         \tikzpicture[standard,af,#1]%
     }{%
         \endtikzpicture
