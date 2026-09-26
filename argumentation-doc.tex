@@ -775,6 +775,7 @@ The following package options are currently available:
     Under the default numeric indexing the generated argument IDs are of the form $a1, a2, \dots$.
     With alphabetic indexing the IDs will simply be letters: $a,b,\dots$.
     If \texttt{none} is selected, no IDs will be generated and you are required to provide them for each argument via the parameter \texttt{(\popt{id})} of the \verb|\argument| command.
+    Can also be set locally per \texttt{af} environment, e.\,g., \verb|\begin{af}[indexing=alphabetic]|.
     
     \item[macros] Boolean (default \texttt{false}) When enabled provides additional macros for naming and referencing argumentation frameworks (see Table~\ref{tab:macros}).
     \item[beamer] Boolean (default \texttt{false}) When enabled, provides the commands for recreating argumentations frameworks described in Section~\ref{sec:beamer}.
@@ -1101,6 +1102,7 @@ You may use or redefine them at your own discretion.
     \item \verb|\setattack|/\verb|\setsupport| additionally name each individual source-to-junction curve (\texttt{id-1}, \texttt{id-2}, \dots).
     \item Fixed a bug where automatically generated identifiers for attacks, supports and annotations were not reset between separate \texttt{af} environments (only argument identifiers were).
     \item Fixed spurious horizontal spaces around the \texttt{af} and \texttt{af*} environments, which added extra whitespace when placing AFs inline or side by side.
+    \item The \texttt{indexing} option can now also be set per \texttt{af} environment; fixed switching from \textit{alphabetic} back to \textit{numeric} indexing.
     \item Fixed \verb|\afref| only linking the index instead of the full reference when \textsf{hyperref} is loaded after the \argumentation package.
 \end{itemize}
 
