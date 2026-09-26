@@ -670,12 +670,16 @@
             \@insideaffalse
         }%
         \ifmacros
-            \@ifpackageloaded{hyperref}{
-                \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{\hyperref[##1]{#2_{\ref*{##1}}}}\xspace}
-            }{
-                \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{#2_{\ref{##1}}}\xspace}
-            }
+            \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{\@afref{##1}{#2}}\xspace}%
         \fi
+    }
+
+    %%% Reference to an AF; checks for hyperref at use time, so the load order of
+    %%% argumentation and hyperref does not matter
+    %   #1 label
+    %   #2 AF symbol
+    \newcommand{\@afref}[2]{%
+        \@ifundefined{hyperref}{#2_{\ref{#1}}}{\hyperref[#1]{#2_{\ref*{#1}}}}%
     }
 
     \newafenvironment{af}{\AF}

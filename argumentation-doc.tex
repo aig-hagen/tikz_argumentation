@@ -1101,6 +1101,7 @@ You may use or redefine them at your own discretion.
     \item \verb|\setattack|/\verb|\setsupport| additionally name each individual source-to-junction curve (\texttt{id-1}, \texttt{id-2}, \dots).
     \item Fixed a bug where automatically generated identifiers for attacks, supports and annotations were not reset between separate \texttt{af} environments (only argument identifiers were).
     \item Fixed spurious horizontal spaces around the \texttt{af} and \texttt{af*} environments, which added extra whitespace when placing AFs inline or side by side.
+    \item Fixed \verb|\afref| only linking the index instead of the full reference when \textsf{hyperref} is loaded after the \argumentation package.
 \end{itemize}
 
 \subsection*{[v1.7 2026/06/20]}
