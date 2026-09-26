@@ -102,12 +102,12 @@
     \ProvideDocumentCommand{ \alt } {r<> m m} {#2}
 
     %%% Registry mapping node/coordinate IDs to the kind of thing that created them
-    %%% (argument / attack / support / annotation / caption). Registered with a plain
-    %%% (non-\global) \@namedef, so entries are scoped to the enclosing af/af* environment's
-    %%% own TeX group -- just like the TikZ nodes/coordinates they describe -- and vanish
-    %%% automatically at \end{af} instead of leaking into unrelated, later af environments.
+    %%% (argument / attack / support / annotation / caption). Entries are defined globally,
+    %%% so they survive TikZ's own groups (scope, \foreach iterations), and are keyed by the
+    %%% number of the enclosing af/af* picture, so they do not leak into later pictures.
     %   #1 id
     %   #2 type (argument / attack / support / annotation / caption)
+    \newcount\@afpicturecnt
     \newcommand{\@registerid}[2]{%
         \edef\@registerid@old{\@idtypeof{#1}}%
         \edef\@registerid@new{#2}%
@@ -118,12 +118,12 @@
                 \PackageWarning{argumentation}{Id '#1' was already used for a \@registerid@old, now reused as a #2 -- this can silently produce a wrong or missing node; consider using a unique id}%
             \fi
         \fi
-        \@namedef{@idtype@#1}{#2}%
+        \expandafter\xdef\csname @idtype@\the\@afpicturecnt @#1\endcsname{#2}%
     }
 
-    %%% Expands to the type registered for ID #1, or to nothing if it was never registered.
+    %%% Expands to the type registered for ID #1 in the current picture, or to nothing if it was never registered.
     \newcommand{\@idtypeof}[1]{%
-        \@ifundefined{@idtype@#1}{}{\@nameuse{@idtype@#1}}%
+        \@ifundefined{@idtype@\the\@afpicturecnt @#1}{}{\@nameuse{@idtype@\the\@afpicturecnt @#1}}%
     }
 
     %%% Test whether ID #1 is registered with type #2.
@@ -226,8 +226,8 @@
 
     %%%%%%%%%%%%%%% Arguments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \makeatletter
-    % Internal (locally-scoped) counter for argument IDs; 
-    % resets automatically at the end of each af/af* environment
+    % Internal counter for argument IDs; global (survives scope/\foreach),
+    % reset at the start of each af/af* environment
     \newcount\@argumentcnt
 
     %%% Command for creating arguments
@@ -238,7 +238,7 @@
     %   #5 ignored
     %   #6 absolute positioning values (optional)
     \NewDocumentCommand { \argument } {D<>{.-} O{} d() m dat d()} {%
-        \advance\@argumentcnt by 1
+        \global\advance\@argumentcnt by 1
         \IfNoValueTF {#3}{%
             \if@alphaidx
                 \edef\@argid{\@alph{\the\@argumentcnt}}
@@ -289,7 +289,7 @@
 
     %%%%%%%%%%%%%%% Attacks & Support %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \makeatletter
-    % Internal counter for attack IDs; plain (locally-scoped) register
+    % Internal counter for attack IDs; global, reset at the start of each af/af* environment
     \newcount\@attackcnt
 
     %%% Command for creating attacks
@@ -300,7 +300,7 @@
     %   #5 attacked argument ID
     %   #6 annotation text (optional)
     \NewDocumentCommand { \attack } {D<>{.-} O{} d() m m d()} {%
-        \advance\@attackcnt by 1
+        \global\advance\@attackcnt by 1
         \IfNoValueTF {#3}{%
             \edef\@attid{att\the\@attackcnt}
         }{%
@@ -423,7 +423,7 @@
     %   #5 attacked argument ID
     %   #6 annotation text (optional)
     \NewDocumentCommand { \setattack } {D<>{.-} O{} d() m m d()} {%
-        \advance\@attackcnt by 1
+        \global\advance\@attackcnt by 1
         \IfNoValueTF {#3}{%
             \edef\@attid{att\the\@attackcnt}
         }{%
@@ -443,7 +443,7 @@
         \attack<#1>[#2]{#3}{#4}(#5)
     }
 
-    % Internal counter for support IDs; plain (locally-scoped) register
+    % Internal counter for support IDs; global, reset at the start of each af/af* environment
     \newcount\@supportcnt
 
     %%% Support edge
@@ -454,7 +454,7 @@
     %   #5 supported argument ID
     %   #6 annotation text (optional)
     \NewDocumentCommand { \support } {D<>{.-} O{} d() m m d()} {%
-        \advance\@supportcnt by 1
+        \global\advance\@supportcnt by 1
         \IfNoValueTF {#3}{%
             \edef\@suppid{supp\the\@supportcnt}
         }{%
@@ -492,7 +492,7 @@
     %   #5 supported argument ID
     %   #6 annotation text (optional)
     \NewDocumentCommand { \setsupport } {D<>{.-} O{} d() m m d()} {%
-        \advance\@supportcnt by 1
+        \global\advance\@supportcnt by 1
         \IfNoValueTF {#3}{%
             \edef\@suppid{supp\the\@supportcnt}
         }{%
@@ -512,12 +512,13 @@
     %   #7 junction-to-target edge style (attack / support=0.35)
     %   #8 unique ID for the junction-to-target edge
     %   #9 registry type for the id ("attack" / "support")
-    % Plain (locally-scoped) registers
+    % \@sehyperedgecnt is global (never reset) so internal junction names stay unique;
+    % the others are plain (locally-scoped) registers
     \newcount\@sehyperedgecnt
     \newcount\@sehyperedgesrccnt
     \newif\if@sehyperedge@first
     \NewDocumentCommand { \@create@sehyperedge } {mmmmmmmmm} {%
-        \advance\@sehyperedgecnt by 1
+        \global\advance\@sehyperedgecnt by 1
         \edef\@shcent{sehyperedge@cent@\the\@sehyperedgecnt}%
         \edef\@shjunc{sehyperedge@junc@\the\@sehyperedgecnt}%
         % Build "node=1,node=1,..." string for barycentric cs from source clist
@@ -646,22 +647,28 @@
     %%% Uncounted version of the environment
     \makeatletter
     \NewDocumentEnvironment {af*} {O{}} {%
-        \pgfkeys{/argumentation/.cd, #1}
-        \tikzpicture[standard,af,#1]
+        % Start a new picture: fresh ID registry and automatic ID counters
+        \global\advance\@afpicturecnt by 1
+        \global\@argumentcnt=0
+        \global\@attackcnt=0
+        \global\@supportcnt=0
+        \global\@annotationcnt=0
+        \pgfkeys{/argumentation/.cd, #1}%
+        \tikzpicture[standard,af,#1]%
     }{%
         \endtikzpicture
     }
 
-    \NewDocumentCommand{\newafenvironment}{mm}{
-        \newcounter{#1}
-        \NewDocumentEnvironment{#1}{O{}}{
-            \refstepcounter{#1}
+    \NewDocumentCommand{\newafenvironment}{mm}{%
+        \newcounter{#1}%
+        \NewDocumentEnvironment{#1}{O{}}{%
+            \refstepcounter{#1}%
             \@insideaftrue
-            \begin{af*}[##1]
-        }{
-            \end{af*}
+            \begin{af*}[##1]%
+        }{%
+            \end{af*}%
             \@insideaffalse
-        }
+        }%
         \ifmacros
             \@ifpackageloaded{hyperref}{
                 \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{\hyperref[##1]{#2_{\ref*{##1}}}}\xspace}
@@ -715,7 +722,7 @@
     %%% either relative to another node (e.g. [right=of a5]) or at absolute
     %%% coordinates via "at (posX,posY)". No implicit default position.
     \makeatletter
-    % Internal counter for annotation IDs; plain (locally-scoped) register
+    % Internal counter for annotation IDs; global, reset at the start of each af/af* environment
     \newcount\@annotationcnt
 
     %%% Command for creating annotations
@@ -726,7 +733,7 @@
     %   #5 ignored
     %   #6 absolute positioning values (optional)
     \NewDocumentCommand { \annotation } {D<>{.-} O{} d() m dat d()} {%
-        \advance\@annotationcnt by 1
+        \global\advance\@annotationcnt by 1
         \IfNoValueTF {#3}{%
             \edef\@annid{annotation\the\@annotationcnt}
         }{%

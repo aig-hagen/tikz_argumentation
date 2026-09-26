@@ -1100,6 +1100,7 @@ You may use or redefine them at your own discretion.
     \item Attack and support edges now always create a referenceable coordinate, even without an \popt{annotation}; previously no node was created in that case.
     \item \verb|\setattack|/\verb|\setsupport| additionally name each individual source-to-junction curve (\texttt{id-1}, \texttt{id-2}, \dots).
     \item Fixed a bug where automatically generated identifiers for attacks, supports and annotations were not reset between separate \texttt{af} environments (only argument identifiers were).
+    \item Fixed spurious horizontal spaces around the \texttt{af} and \texttt{af*} environments, which added extra whitespace when placing AFs inline or side by side.
 \end{itemize}
 
 \subsection*{[v1.7 2026/06/20]}
