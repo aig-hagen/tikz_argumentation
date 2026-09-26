@@ -313,7 +313,9 @@
             \else\if@numericidx
                 \edef\@argid{a\the\@argumentcnt}
             \else
-                \PackageError{argumentation}{Missing argument ID}{Must either provide argument ID inside () or activate auto-indexing}
+                % Fall back to the numeric id, so that the argument does not take over the id of the previous one
+                \edef\@argid{a\the\@argumentcnt}
+                \PackageError{argumentation}{Missing argument ID for argument '\detokenize{#4}';\MessageBreak using '\@argid' instead}{Must either provide argument ID inside () or activate auto-indexing}
             \fi\fi
         }{%
             \edef\@argid{#3}
