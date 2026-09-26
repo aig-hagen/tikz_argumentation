@@ -1,5 +1,5 @@
     \NeedsTeXFormat{LaTeX2e}
-    \ProvidesPackage{argumentation}[2026/07/08 Argumentation]
+    \ProvidesPackage{argumentation}[2026/07/08 v1.8 Argumentation]
     % Author:   Lars Bengel
     % E-Mail:   lars.bengel@fernuni-hagen.de
     % Version:  1.8
@@ -90,7 +90,7 @@
 
     %%%%%%%%%% Internal Utility Functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \makeatletter
-    \newif\ifmacros
+    \newif\if@argumentation@macros
     \newif\if@numericidx
     \newif\if@alphaidx
     \newif\if@insideaf
@@ -215,13 +215,15 @@
     }
 
     %%% Option for enabling additional macros
+    \makeatletter
     \pgfkeys{/argumentation/.cd,
         macros/.is choice,
-        macros/true/.code={\macrostrue},
-        macros/false/.code={\macrosfalse},
+        macros/true/.code={\@argumentation@macrostrue},
+        macros/false/.code={\@argumentation@macrosfalse},
         macros/.default=true,
         macros=false,
     }
+    \makeatother
 
     \ProcessPgfPackageOptions{/argumentation}
 
@@ -387,9 +389,10 @@
     }
 
     %%% Self-attack edge
-    %   #1 TikZ parameters (optional)
-    %   #2 unique attack ID (optional)
-    %   #3 argument ID
+    %   #1 beamer overlay specification (optional)
+    %   #2 TikZ parameters (optional)
+    %   #3 unique attack ID (optional)
+    %   #4 argument ID
     \NewDocumentCommand { \selfattack } {D<>{.-} O{} d() m} {%
         \IfNoValueTF{#3}{%
             \attack<#1>[selfattack,#2]{#4}{#4}
@@ -671,7 +674,7 @@
             \end{af*}%
             \@insideaffalse
         }%
-        \ifmacros
+        \if@argumentation@macros
             \global\expandafter\def\csname #1ref\endcsname##1{\ensuremath{\@afref{##1}{#2}}\xspace}%
         \fi
     }
@@ -690,13 +693,15 @@
 
     %%%%%%%%%%%%%%%% Additional Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% Definitions for referencing
-    \ifmacros
+    \makeatletter
+    \if@argumentation@macros
         \providecommand{\AF}{\ensuremath{F}\xspace}                     % AF abbreviation
         \providecommand{\arguments}{\ensuremath{A}\xspace}              % Set of arguments
         \providecommand{\attacks}{\ensuremath{R}\xspace}                % Set of attacks
         \providecommand{\AFcomplete}{\ensuremath{\AF = (\arguments, \attacks)}\xspace}  % Full AF
         \newcommand{\fullafref}[1]{\ensuremath{\afref{#1} = (\arguments_{\ref*{#1}}, \attacks_{\ref*{#1}})}\xspace}                                   % Full AF with reference
     \fi
+    \makeatother
 
     %%% Creates a node displaying the name of the AF
     %   #1 overlay specification (optional)
