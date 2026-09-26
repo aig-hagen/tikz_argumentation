@@ -102,23 +102,35 @@
     \ProvideDocumentCommand{ \alt } {r<> m m} {#2}
 
     %%% Registry mapping node/coordinate IDs to the kind of thing that created them
-    %%% (argument / attack / support / annotation / caption). Entries are defined globally,
+    %%% (argument / attack / support / other). Entries are defined globally,
     %%% so they survive TikZ's own groups (scope, \foreach iterations), and are keyed by the
     %%% number of the enclosing af/af* picture, so they do not leak into later pictures.
+    %%% Warns whenever an id is registered twice in the same picture, except for a
+    %%% same-type reuse with an explicit overlay (beamer: the same node drawn
+    %%% differently on different slides).
     %   #1 id
-    %   #2 type (argument / attack / support / annotation / caption)
+    %   #2 type (argument / attack / support / other)
+    %   #3 overlay specification of the registering command
     \newcount\@afpicturecnt
-    \newcommand{\@registerid}[2]{%
+    \def\@registerid@defaultoverlay{.-}
+    \newcommand{\@registerid}[3]{%
         \edef\@registerid@old{\@idtypeof{#1}}%
         \edef\@registerid@new{#2}%
+        \def\@registerid@overlay{#3}%
         \ifx\@registerid@old\@empty
         \else
             \ifx\@registerid@old\@registerid@new
+                \ifx\@registerid@overlay\@registerid@defaultoverlay
+                    \@registerid@warn{#1}{#2}%
+                \fi
             \else
-                \PackageWarning{argumentation}{Id '#1' was already used for a \@registerid@old, now reused as a #2 -- this can silently produce a wrong or missing node; consider using a unique id}%
+                \@registerid@warn{#1}{#2}%
             \fi
         \fi
         \expandafter\xdef\csname @idtype@\the\@afpicturecnt @#1\endcsname{#2}%
+    }
+    \newcommand{\@registerid@warn}[2]{%
+        \PackageWarning{argumentation}{Id '#1' is used more than once in this af (first as \@registerid@old, now as #2);\MessageBreak the later node replaces the earlier one. Use a unique id}%
     }
 
     %%% Expands to the type registered for ID #1 in the current picture, or to nothing if it was never registered.
@@ -254,7 +266,7 @@
         }{%
             \edef\@argid{#3}
         }
-        \@registerid{\@argid}{argument}
+        \@registerid{\@argid}{argument}{#1}%
         \@create@argument{#1}{#2}{}{\@argid}{#4}{#6}
     }
 
@@ -310,7 +322,7 @@
         }{%
             \edef\@attid{#3}
         }
-        \@registerid{\@attid}{attack}
+        \@registerid{\@attid}{attack}{#1}%
         % An attack whose target is itself another edge's anchor (attack on an
         % attack/support) is drawn by the dedicated \@create@extendedattack helper,
         % which auto-applies the edgetarget (double arrow head) style.
@@ -434,7 +446,7 @@
         }{%
             \edef\@attid{#3}
         }
-        \@registerid{\@attid}{attack}
+        \@registerid{\@attid}{attack}{#1}%
         \@create@sehyperedge{#1}{#2}{}{#4}{#5}{#6}{attack}{\@attid}{attack}%
     }
 
@@ -465,7 +477,7 @@
         }{%
             \edef\@suppid{#3}
         }
-        \@registerid{\@suppid}{support}
+        \@registerid{\@suppid}{support}{#1}%
         \alt<#1>{%
             \IfNoValueTF{#6}{%
                 \path(#4) edge [support=0.35,#2] coordinate(\@suppid) (#5);
@@ -503,7 +515,7 @@
         }{%
             \edef\@suppid{#3}
         }
-        \@registerid{\@suppid}{support}
+        \@registerid{\@suppid}{support}{#1}%
         \@create@sehyperedge{#1}{#2}{}{#4}{#5}{#6}{support=0.35}{\@suppid}{support}%
     }
 
@@ -544,7 +556,7 @@
         \@sehyperedgesrccnt=0 %
         \@for\@she@item:=#4\do{%
             \advance\@sehyperedgesrccnt by 1
-            \@registerid{#8-\the\@sehyperedgesrccnt}{#9}%
+            \@registerid{#8-\the\@sehyperedgesrccnt}{#9}{#1}%
         }%
         \alt<#1>{%
             \@@draw@sehyperedge{}{#2}{#3}{#4}{#5}{#6}{#7}{#8}%
@@ -712,7 +724,7 @@
     %   #6 node position
     \makeatletter
     \NewDocumentCommand { \afname } { D<>{.-} O{} D(){caption} m dat d()} {%
-        \@registerid{#3}{other}
+        \@registerid{#3}{other}{#1}%
         \alt<#1>{
             \IfNoValueTF {#6}{%
                 \node[caption,#2](#3){#4};
@@ -750,7 +762,7 @@
         }{%
             \edef\@annid{#3}
         }
-        \@registerid{\@annid}{other}
+        \@registerid{\@annid}{other}{#1}%
         \alt<#1>{
             \IfNoValueTF {#6}{%
                 \node[annotation,#2](\@annid){#4};
