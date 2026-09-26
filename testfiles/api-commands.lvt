@@ -1,0 +1,137 @@
+% Macro contract: every public command exists and every documented call form runs
+% without errors or warnings (any message showing up in a smoke test is a regression).
+% build.lua checks that the \CHECKDEFINED list below matches the public commands
+% defined in argumentation.sty.
+\input{regression-test}
+\documentclass{article}
+\usepackage[macros]{argumentation}
+\input{argumentation-test}
+\newcommand\SMOKE[1]{\setbox0\hbox{\begin{af}#1\end{af}}}
+\begin{document}
+\START
+\TEST{public commands}{%
+  \CHECKDEFINED\argument
+  \CHECKDEFINED\attack
+  \CHECKDEFINED\selfattack
+  \CHECKDEFINED\dualattack
+  \CHECKDEFINED\setattack
+  \CHECKDEFINED\annotatedattack
+  \CHECKDEFINED\support
+  \CHECKDEFINED\setsupport
+  \CHECKDEFINED\annotation
+  \CHECKDEFINED\afname
+  \CHECKDEFINED\newafenvironment
+  \CHECKDEFINED\setafstyle
+  \CHECKDEFINED\setargumentcolorscheme
+  \CHECKDEFINED\setargumentstyle
+  \CHECKDEFINED\setattackstyle
+  \CHECKDEFINED\setsupportstyle
+  \CHECKDEFINED\setannotationstyle
+  \CHECKDEFINED\AF
+  \CHECKDEFINED\arguments
+  \CHECKDEFINED\attacks
+  \CHECKDEFINED\AFcomplete
+  \CHECKDEFINED\afref
+  \CHECKDEFINED\fullafref
+}
+\TEST{public environments}{%
+  \CHECKENV{af}
+  \CHECKENV{af*}
+}
+
+\TEST{argument call forms}{%
+  \SMOKE{%
+    \argument{a}
+    \argument[right=of a1]{b}
+    \argument(c){c}
+    \argument[below=of c](d){d}
+    \argument{e} at (3,0)
+    \argument(f){f} at (3,1)
+    \argument<2->[fill=red](g){g} at (3,2)
+    \argument[incomplete]{$a_1$}
+    \SHOWID{a1}\SHOWID{a2}\SHOWID{c}\SHOWID{a5}\SHOWID{g}
+  }
+}
+\TEST{attack call forms}{%
+  \SMOKE{%
+    \argument(x){x}\argument[right=of x](y){y}\argument[right=of y](z){z}
+    \attack{x}{y}
+    \attack[bend left](named){y}{z}
+    \attack{z}{x}(annotated)
+    \attack<2->[dashed](both){x}{z}(text)
+    \attack{x}{named}
+    \SHOWID{att1}\SHOWID{named}\SHOWID{att3}\SHOWID{both}\SHOWID{att5}
+  }
+}
+\TEST{selfattack and dualattack call forms}{%
+  \SMOKE{%
+    \argument(x){x}\argument[right=of x](y){y}
+    \selfattack{x}
+    \selfattack<2->[red](self){y}
+    \dualattack{x}{y}
+    \dualattack[dashed](one)(two){x}{y}
+    \SHOWID{att1}\SHOWID{self}\SHOWID{att3}\SHOWID{att4}\SHOWID{one}\SHOWID{two}
+  }
+}
+\TEST{setattack call forms}{%
+  \SMOKE{%
+    \argument(x){x}\argument[right=of x](y){y}\argument[below=of x](z){z}
+    \setattack{x,y}{z}
+    \setattack[junction dist=2ex](set){x,z}{y}(ann)
+    \setattack<2->{x,y}{x}
+    \SHOWID{att1}\SHOWID{att1-1}\SHOWID{att1-2}\SHOWID{set}\SHOWID{set-2}\SHOWID{att3}
+  }
+}
+\TEST{support and setsupport call forms}{%
+  \SMOKE{%
+    \argument(x){x}\argument[right=of x](y){y}\argument[below=of x](z){z}
+    \support{x}{y}
+    \support[bend left](supp){y}{z}(ann)
+    \support<2->{z}{x}
+    \setsupport{x,y}{z}
+    \setsupport(sets){y,z}{x}(ann)
+    \attack{z}{supp}
+    \SHOWID{supp1}\SHOWID{supp}\SHOWID{supp3}\SHOWID{supp4}\SHOWID{supp4-1}\SHOWID{sets}
+  }
+}
+\TEST{annotation and afname call forms}{%
+  \SMOKE{%
+    \argument(x){x}
+    \annotation[right=of x]{text}
+    \annotation(note){text} at (0,1)
+    \annotation<2->[above=of x](later){text}
+    \annotation{$a_1$} at (1,1)
+    \afname{name}
+    \afname[left=of x](title){name} at (-2,0)
+    \SHOWID{annotation1}\SHOWID{note}\SHOWID{later}\SHOWID{annotation4}\SHOWID{caption}\SHOWID{title}
+  }
+}
+\TEST{set*style commands replace the whole style}{%
+  \begingroup
+  \setafstyle{scale=2}\SHOWSTYLE{af}
+  \setargumentstyle{fill=red}\SHOWSTYLE{argument}
+  \setattackstyle{dashed}\SHOWSTYLE{attack}
+  \setsupportstyle{dotted}\SHOWSTYLE{support}
+  \setannotationstyle{font=\tiny}\SHOWSTYLE{annotation}
+  \setargumentcolorscheme{blue}{yellow}\SHOWSTYLE{argument colored}
+  \endgroup
+}
+\TEST{af* and custom environments}{%
+  \SMOKE{\argument{a}}
+  \setbox0\hbox{\begin{af*}[small]\argument{a}\end{af*}}
+  \newafenvironment{bipolar}{\mathcal{B}}
+  \CHECKENV{bipolar}
+  \CHECKDEFINED\bipolarref
+  \setbox0\hbox{\begin{bipolar}[tiny]\argument{a}\end{bipolar}}
+  \TYPE{af counter: \the\value{af}, bipolar counter: \the\value{bipolar}}
+}
+\TEST{macros}{%
+  % Typeset on the page (not in a box), so that \label reaches the aux file;
+  % build.lua uses two runs so that the reference is resolved.
+  \begin{af}\label{af:test}\argument{a}\end{af}
+  \AF \arguments \attacks \AFcomplete \afref{af:test} \fullafref{af:test}
+  \setbox0\hbox{\afref{af:test}}\showbox0
+}
+% \END does not ship out the page, which the \label above needs
+\OMIT\clearpage\TIMO
+\END

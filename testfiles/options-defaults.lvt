@@ -1,0 +1,22 @@
+% Contract: the documented default value of every package option.
+\input{regression-test}
+\documentclass{article}
+\usepackage{argumentation}
+\input{argumentation-test}
+\begin{document}
+\START
+\TEST{defaults}{%
+  \setbox0\hbox{\begin{af}\SHOWOPTIONS\end{af}}%
+}
+\TEST{default indexing generates a1, a2, ...}{%
+  \setbox0\hbox{\begin{af}\argument{x}\argument{y}\SHOWID{a1}\SHOWID{a2}\SHOWID{a}\end{af}}%
+}
+\TEST{macros=false: no extra macros}{%
+  \CHECKDEFINED\AF
+  \CHECKDEFINED\arguments
+  \CHECKDEFINED\attacks
+  \CHECKDEFINED\AFcomplete
+  \CHECKDEFINED\afref
+  \CHECKDEFINED\fullafref
+}
+\END

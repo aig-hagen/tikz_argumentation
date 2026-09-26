@@ -16,3 +16,23 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: argumentation-doc.tex
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install TeX Live
+        uses: teatimeguest/setup-texlive-action@v3
+        with:
+          packages: |
+            scheme-basic
+            l3build
+            pgf
+            pgfopts
+            xcolor
+            luatex
+            lm
+
+      - name: Run regression tests
+        run: l3build check --show-log-on-error

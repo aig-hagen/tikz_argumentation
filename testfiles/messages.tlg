@@ -1,0 +1,89 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: duplicate id: same type
+============================================================
+Package argumentation Warning: Id 'x' is used more than once in this af (first as argument, now as argument);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+============================================================
+============================================================
+TEST 2: duplicate id: different types
+============================================================
+Package argumentation Warning: Id 'x' is used more than once in this af (first as argument, now as attack);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+Package argumentation Warning: Id 'y' is used more than once in this af (first as argument, now as support);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+Package argumentation Warning: Id 'x' is used more than once in this af (first as argument, now as other);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+Package argumentation Warning: Id 'caption' is used more than once in this af (first as argument, now as other);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+Package argumentation Warning: Id 'e' is used more than once in this af (first as attack, now as attack);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+Package argumentation Warning: Id 'e-1' is used more than once in this af (first as attack, now as argument);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+============================================================
+============================================================
+TEST 3: duplicate id: automatic ids clash with explicit ones
+============================================================
+Package argumentation Warning: Id 'a2' is used more than once in this af (first as argument, now as argument);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+Package argumentation Warning: Id 'att2' is used more than once in this af (first as attack, now as attack);
+(argumentation)                the later node replaces the earlier one. Use a unique id on input line ....
+============================================================
+============================================================
+TEST 4: no warning: same-type reuse with explicit overlay
+============================================================
+============================================================
+============================================================
+TEST 5: no warning: ids are per af
+============================================================
+============================================================
+============================================================
+TEST 6: deprecated: \annotation {argId}{text}
+============================================================
+Package argumentation Warning: \annotation{x}{...} is deprecated;
+(argumentation)                use \annotation[above=of x]{...} instead on input line ....
+id an_x: other
+Package argumentation Warning: \annotation{x}{...} is deprecated;
+(argumentation)                use \annotation[above=of x]{...} instead on input line ....
+id note: other
+============================================================
+============================================================
+TEST 7: not deprecated: \annotation {text} followed by a group
+============================================================
+============================================================
+============================================================
+TEST 8: deprecated: \annotatedattack 
+============================================================
+Package argumentation Warning: \annotatedattack is deprecated and may be removed in a future release; use \attack with a (\annotation) argument instead on input line ....
+============================================================
+============================================================
+TEST 9: error: _ outside math mode with a text namestyle
+============================================================
+! Package argumentation Error: Argument name 'a_1' contains _ or ^ outside math mode.
+For immediate help type H <return>.
+ ...                                              
+l. ...}
+Write the math part in math mode (e.g. $a_1$) or use namestyle=math.
+============================================================
+============================================================
+TEST 10: error: missing argument id with indexing=none
+============================================================
+! Package argumentation Error: Missing argument ID for argument '$x_1$';
+(argumentation)                using 'a1' instead.
+See the argumentation package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ...}
+Must either provide argument ID inside () or activate auto-indexing
+id a1: argument
+! Package argumentation Error: Missing argument ID for argument 'y';
+(argumentation)                using 'a2' instead.
+See the argumentation package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ...}
+Must either provide argument ID inside () or activate auto-indexing
+id x: argument
+id a2: argument
+============================================================

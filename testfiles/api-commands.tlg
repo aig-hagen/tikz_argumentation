@@ -1,0 +1,126 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: public commands
+============================================================
+\argument: defined
+\attack: defined
+\selfattack: defined
+\dualattack: defined
+\setattack: defined
+\annotatedattack: defined
+\support: defined
+\setsupport: defined
+\annotation: defined
+\afname: defined
+\newafenvironment: defined
+\setafstyle: defined
+\setargumentcolorscheme: defined
+\setargumentstyle: defined
+\setattackstyle: defined
+\setsupportstyle: defined
+\setannotationstyle: defined
+\AF: defined
+\arguments: defined
+\attacks: defined
+\AFcomplete: defined
+\afref: defined
+\fullafref: defined
+============================================================
+============================================================
+TEST 2: public environments
+============================================================
+env af: defined
+env af*: defined
+============================================================
+============================================================
+TEST 3: argument call forms
+============================================================
+id a1: argument
+id a2: argument
+id c: argument
+id a5: argument
+id g: argument
+============================================================
+============================================================
+TEST 4: attack call forms
+============================================================
+id att1: attack
+id named: attack
+id att3: attack
+id both: attack
+id att5: attack
+============================================================
+============================================================
+TEST 5: selfattack and dualattack call forms
+============================================================
+id att1: attack
+id self: attack
+id att3: attack
+id att4: attack
+id one: attack
+id two: attack
+============================================================
+============================================================
+TEST 6: setattack call forms
+============================================================
+id att1: attack
+id att1-1: attack
+id att1-2: attack
+id set: attack
+id set-2: attack
+id att3: attack
+============================================================
+============================================================
+TEST 7: support and setsupport call forms
+============================================================
+id supp1: support
+id supp: support
+id supp3: support
+id supp4: support
+id supp4-1: support
+id sets: support
+============================================================
+============================================================
+TEST 8: annotation and afname call forms
+============================================================
+id annotation1: other
+id note: other
+id later: other
+id annotation4: other
+id caption: other
+id title: other
+============================================================
+============================================================
+TEST 9: set*style commands replace the whole style
+============================================================
+style af = {\pgfkeysalso {scale=2}}
+style argument = {\pgfkeysalso {argument size,fill=red}}
+style attack = {\pgfkeysalso {attack width,dashed}}
+style support = {\pgfkeysalso {dotted}}
+style annotation = {\pgfkeysalso {font=\tiny }}
+style argument colored = {\pgfkeysalso {argument thick,fill=yellow,draw=blue}}
+============================================================
+============================================================
+TEST 10: af* and custom environments
+============================================================
+\c@bipolar=\count...
+env bipolar: defined
+\bipolarref: defined
+af counter: 7, bipolar counter: 1
+============================================================
+============================================================
+TEST 11: macros
+============================================================
+> \box...=
+\hbox(6.83331+1.49998)x10.91669
+.\mathon
+.\OML/cmm/m/it/10 F
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998
+..\OT1/cmr/m/n/7 8
+..\hbox(0.0+0.0)x0.0
+.\mathoff
+! OK.
+<argument> ...0\hbox {\afref {af:test}}\showbox 0 
+l. ...}
+============================================================

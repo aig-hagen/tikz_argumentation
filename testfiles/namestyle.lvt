@@ -1,0 +1,19 @@
+% How argument names are typeset under each namestyle. The box output depends on
+% the engine's fonts, so this test has an engine-specific .tlg for each engine.
+\input{regression-test}
+\documentclass{article}
+\usepackage{argumentation}
+\input{argumentation-test}
+\newcommand\NAMES[1]{%
+  \setbox2\hbox{\begin{af}[#1]\TYPE{[#1]}%
+    \SHOWNAME{ab}\SHOWNAME{arg one}\SHOWNAME{$a_1$}\SHOWNAME{\ensuremath{a_1}}%
+  \end{af}}}
+\begin{document}
+\START
+\TEST{default (none) outside an af}{\SHOWNAME{ab}}
+\TEST{namestyle=none}{\NAMES{namestyle=none}}
+\TEST{namestyle=math}{\NAMES{namestyle=math}}
+\TEST{namestyle=bold}{\NAMES{namestyle=bold}}
+\TEST{namestyle=monospace}{\NAMES{namestyle=monospace}}
+\TEST{namestyle=monoemph}{\NAMES{namestyle=monoemph}}
+\END

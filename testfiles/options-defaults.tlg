@@ -1,0 +1,31 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: defaults
+============================================================
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 2: default indexing generates a1, a2, ...
+============================================================
+id a1: argument
+id a2: argument
+id a: -
+============================================================
+============================================================
+TEST 3: macros=false: no extra macros
+============================================================
+\AF: MISSING
+\arguments: MISSING
+\attacks: MISSING
+\AFcomplete: MISSING
+\afref: MISSING
+\fullafref: MISSING
+============================================================

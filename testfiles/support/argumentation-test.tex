@@ -1,0 +1,58 @@
+% Shared helpers for the argumentation regression tests.
+% Loaded after the package with \input{argumentation-test}.
+\makeatletter
+
+%%% Contract helpers: report whether a command / environment exists.
+%%% build.lua reads the \CHECKDEFINED list to verify that every public command is covered.
+\newcommand\CHECKDEFINED[1]{\TYPE{\string#1: \ifdefined#1defined\else MISSING\fi}}
+\newcommand\CHECKENV[1]{%
+  \TYPE{env #1: \ifcsname #1\endcsname\ifcsname end#1\endcsname defined\else MISSING\fi\else MISSING\fi}}
+
+%%% Report the current body of a /tikz style, e.g. \SHOWSTYLE{argument}
+\newcommand\SHOWSTYLE[1]{%
+  \pgfkeysgetvalue{/tikz/#1/.@body}\argtest@tmp
+  \TYPE{style #1 = {\expandafter\detokenize\expandafter{\argtest@tmp}}}}
+
+%%% Report the value of a pgf key, e.g. \SHOWKEY{/argumentation/attack tip}
+\newcommand\SHOWKEY[1]{%
+  \pgfkeysgetvalue{#1}\argtest@tmp
+  \TYPE{key #1 = {\expandafter\detokenize\expandafter{\argtest@tmp}}}}
+
+%%% Report which type (if any) id #1 is registered as in the current af
+\newcommand\SHOWID[1]{%
+  \edef\argtest@tmp{\@idtypeof{#1}}%
+  \TYPE{id #1: \ifx\argtest@tmp\@empty -\else\argtest@tmp\fi}}
+
+%%% Show the box an argument name #1 is typeset into under the current namestyle
+% (TikZ typesets in \nullfont outside of node text, hence the interrupt)
+\newcommand\SHOWNAME[1]{\setbox0\hbox{\pgfinterruptpicture\normalfont\@arg@style{#1}\endpgfinterruptpicture}\showbox0 }
+
+%%% Report the active namestyle by name: compare against what each namestyle value
+%%% defines (captured here, in a group so the current namestyle is kept)
+\begingroup
+  \def\argtest@do#1{%
+    \pgfkeys{/argumentation/namestyle=#1}%
+    \global\expandafter\let\csname argtest@ns@#1\endcsname\@arg@style}%
+  \argtest@do{none}\argtest@do{math}\argtest@do{bold}\argtest@do{monospace}\argtest@do{monoemph}%
+\endgroup
+\newcommand\SHOWNAMESTYLE{%
+  \def\argtest@tmp{unknown}%
+  \@for\argtest@ns:={none,math,bold,monospace,monoemph}\do{%
+    \expandafter\ifx\csname argtest@ns@\argtest@ns\endcsname\@arg@style
+      \let\argtest@tmp\argtest@ns
+    \fi}%
+  \TYPE{namestyle: \argtest@tmp}}
+
+%%% Report the state of every package option (to be used inside an af).
+%%% Engine independent: how names are typeset is checked in namestyle.lvt.
+\newcommand\SHOWOPTIONS{%
+  \SHOWSTYLE{argument}%
+  \SHOWKEY{/argumentation/attack tip}%
+  \SHOWSTYLE{support}%
+  \SHOWKEY{/argumentation/junction dist}%
+  \TYPE{covered: \if@afoverlay transparent\else invisible\fi}%
+  \TYPE{indexing: \if@numericidx numeric\else\if@alphaidx alphabetic\else none\fi\fi}%
+  \TYPE{macros: \if@argumentation@macros true\else false\fi}%
+  \SHOWNAMESTYLE
+}
+\makeatother

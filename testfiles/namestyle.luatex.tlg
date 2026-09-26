@@ -1,0 +1,284 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: default (none) outside an af
+============================================================
+> \box...=
+\hbox(6.88875+0.0)x10.5555, direction TLT
+.\OT1/lmr/m/n/10 a
+.\OT1/lmr/m/n/10 b
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......fault (none) outside an af}{\SHOWNAME{ab}}
+============================================================
+============================================================
+TEST 2: namestyle=none
+============================================================
+[namestyle=none]
+> \box...=
+\hbox(6.88875+0.0)x10.5555, direction TLT
+.\OT1/lmr/m/n/10 a
+.\OT1/lmr/m/n/10 b
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=none}{\NAMES{namestyle=none}}
+> \box...=
+\hbox(4.3055+1.94443)x32.25, direction TLT
+.\OT1/lmr/m/n/10 a
+.\OT1/lmr/m/n/10 r
+.\OT1/lmr/m/n/10 g
+.\glue(\spaceskip) 3.33333 plus 1.66666 minus 1.11111
+.\OT1/lmr/m/n/10 o
+.\OT1/lmr/m/n/10 n
+.\OT1/lmr/m/n/10 e
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=none}{\NAMES{namestyle=none}}
+> \box...=
+\hbox(4.30554+1.49998)x9.77202, direction TLT
+.\mathon
+.\OML/cmm/m/it/10 a
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998, direction TLT
+..\OT1/cmr/m/n/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=none}{\NAMES{namestyle=none}}
+> \box...=
+\hbox(4.30554+1.49998)x9.77202, direction TLT
+.\mathon
+.\OML/cmm/m/it/10 a
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998, direction TLT
+..\OT1/cmr/m/n/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=none}{\NAMES{namestyle=none}}
+============================================================
+============================================================
+TEST 3: namestyle=math
+============================================================
+[namestyle=math]
+> \box...=
+\hbox(6.94444+0.0)x11.1094, direction TLT
+.\mathon
+.\hbox(6.94444+0.0)x11.1094, direction TLT
+..\OT1/cmr/m/it/10 a
+..\kern0.76714 (italic)
+..\OT1/cmr/m/it/10 b
+..\kern0.63123 (italic)
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=math}{\NAMES{namestyle=math}}
+> \box...=
+\hbox(4.30554+1.94444)x36.96109, direction TLT
+.\mathon
+.\hbox(4.30554+1.94444)x36.96109, direction TLT
+..\OT1/cmr/m/it/10 a
+..\kern0.76714 (italic)
+..\OT1/cmr/m/it/10 r
+..\kern1.07637 (italic)
+..\kern-0.51112 (font)
+..\OT1/cmr/m/it/10 g
+..\kern0.88472 (italic)
+..\glue(\spaceskip) 3.33333 plus 1.66666 minus 1.11111
+..\OT1/cmr/m/it/10 o
+..\kern0.63123 (italic)
+..\OT1/cmr/m/it/10 n
+..\kern0.76714 (italic)
+..\OT1/cmr/m/it/10 e
+..\kern0.75139 (italic)
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=math}{\NAMES{namestyle=math}}
+> \box...=
+\hbox(4.30554+1.49998)x10.75555, direction TLT
+.\mathon
+.\hbox(4.30554+1.49998)x10.75555, direction TLT
+..\OT1/cmr/m/it/10 a
+..\hbox(4.51111+0.0)x5.64447, shifted 1.49998, direction TLT
+...\OT1/cmr/m/it/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=math}{\NAMES{namestyle=math}}
+> \box...=
+\hbox(4.30554+1.49998)x10.75555, direction TLT
+.\mathon
+.\hbox(4.30554+1.49998)x10.75555, direction TLT
+..\OT1/cmr/m/it/10 a
+..\hbox(4.51111+0.0)x5.64447, shifted 1.49998, direction TLT
+...\OT1/cmr/m/it/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=math}{\NAMES{namestyle=math}}
+============================================================
+============================================================
+TEST 4: namestyle=bold
+============================================================
+[namestyle=bold]
+> \box...=
+\hbox(6.94444+0.0)x12.96191, direction TLT
+.\mathon
+.\hbox(6.94444+0.0)x12.96191, direction TLT
+..\hbox(6.94444+0.0)x12.96191, direction TLT
+...\mathon
+...\hbox(6.94444+0.0)x12.96191, direction TLT
+....\OT1/cmr/bx/it/10 a
+....\kern0.94261 (italic)
+....\OT1/cmr/bx/it/10 b
+....\kern0.7861 (italic)
+...\mathoff
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=bold}{\NAMES{namestyle=bold}}
+> \box...=
+\hbox(4.44444+1.94444)x42.40987, direction TLT
+.\mathon
+.\hbox(4.44444+1.94444)x42.40987, direction TLT
+..\hbox(4.44444+1.94444)x42.40987, direction TLT
+...\mathon
+...\hbox(4.44444+1.94444)x42.40987, direction TLT
+....\OT1/cmr/bx/it/10 a
+....\kern0.94261 (italic)
+....\OT1/cmr/bx/it/10 r
+....\kern1.11111 (italic)
+....\kern-0.5889 (font)
+....\OT1/cmr/bx/it/10 g
+....\kern1.05 (italic)
+....\glue(\spaceskip) 3.33333 plus 1.66666 minus 1.11111
+....\OT1/cmr/bx/it/10 o
+....\kern0.7861 (italic)
+....\OT1/cmr/bx/it/10 n
+....\kern0.94261 (italic)
+....\OT1/cmr/bx/it/10 e
+....\kern0.85 (italic)
+...\mathoff
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=bold}{\NAMES{namestyle=bold}}
+> \box...=
+\hbox(4.44444+1.49998)x11.47043, direction TLT
+.\mathon
+.\hbox(4.44444+1.49998)x11.47043, direction TLT
+..\hbox(4.44444+1.49998)x11.47043, direction TLT
+...\mathon
+...\hbox(4.44444+1.49998)x11.47043, direction TLT
+....\OT1/cmr/bx/it/10 a
+....\hbox(4.51111+0.0)x5.55939, shifted 1.49998, direction TLT
+.....\OT1/cmr/bx/it/7 1
+...\mathoff
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=bold}{\NAMES{namestyle=bold}}
+> \box...=
+\hbox(4.44444+1.49998)x11.47043, direction TLT
+.\mathon
+.\hbox(4.44444+1.49998)x11.47043, direction TLT
+..\hbox(4.44444+1.49998)x11.47043, direction TLT
+...\mathon
+...\hbox(4.44444+1.49998)x11.47043, direction TLT
+....\OT1/cmr/bx/it/10 a
+....\hbox(4.51111+0.0)x5.55939, shifted 1.49998, direction TLT
+.....\OT1/cmr/bx/it/7 1
+...\mathoff
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ...\TEST{namestyle=bold}{\NAMES{namestyle=bold}}
+============================================================
+============================================================
+TEST 5: namestyle=monospace
+============================================================
+[namestyle=monospace]
+LaTeX Font Info:    Trying to load font information for OT1+lmtt on input line ....
+> \box...=
+\hbox(5.9905+0.0)x10.49997, direction TLT
+.\OT1/lmtt/m/n/10 a
+.\OT1/lmtt/m/n/10 b
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......le=monospace}{\NAMES{namestyle=monospace}}
+> \box...=
+\hbox(4.23775+2.22223)x36.7499, direction TLT
+.\OT1/lmtt/m/n/10 a
+.\OT1/lmtt/m/n/10 r
+.\OT1/lmtt/m/n/10 g
+.\glue(\spaceskip) 5.24998
+.\OT1/lmtt/m/n/10 o
+.\OT1/lmtt/m/n/10 n
+.\OT1/lmtt/m/n/10 e
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......le=monospace}{\NAMES{namestyle=monospace}}
+> \box...=
+\hbox(4.30554+1.49998)x9.77202, direction TLT
+.\mathon
+.\OML/cmm/m/it/10 a
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998, direction TLT
+..\OT1/cmr/m/n/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......le=monospace}{\NAMES{namestyle=monospace}}
+> \box...=
+\hbox(4.30554+1.49998)x9.77202, direction TLT
+.\mathon
+.\OML/cmm/m/it/10 a
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998, direction TLT
+..\OT1/cmr/m/n/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......le=monospace}{\NAMES{namestyle=monospace}}
+============================================================
+============================================================
+TEST 6: namestyle=monoemph
+============================================================
+[namestyle=monoemph]
+> \box...=
+\hbox(6.1805+0.0)x10.49997, direction TLT
+.\OT1/lmtt/m/it/10 a
+.\OT1/lmtt/m/it/10 b
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......tyle=monoemph}{\NAMES{namestyle=monoemph}}
+> \box...=
+\hbox(4.23775+2.22223)x36.7499, direction TLT
+.\OT1/lmtt/m/it/10 a
+.\OT1/lmtt/m/it/10 r
+.\OT1/lmtt/m/it/10 g
+.\glue(\spaceskip) 5.24998
+.\OT1/lmtt/m/it/10 o
+.\OT1/lmtt/m/it/10 n
+.\OT1/lmtt/m/it/10 e
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......tyle=monoemph}{\NAMES{namestyle=monoemph}}
+> \box...=
+\hbox(4.30554+1.49998)x9.77202, direction TLT
+.\mathon
+.\OML/cmm/m/it/10 a
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998, direction TLT
+..\OT1/cmr/m/n/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......tyle=monoemph}{\NAMES{namestyle=monoemph}}
+> \box...=
+\hbox(4.30554+1.49998)x9.77202, direction TLT
+.\mathon
+.\OML/cmm/m/it/10 a
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998, direction TLT
+..\OT1/cmr/m/n/7 1
+.\mathoff
+! OK.
+\SHOWNAME ...}\endpgfinterruptpicture }\showbox 0 
+l. ......tyle=monoemph}{\NAMES{namestyle=monoemph}}
+============================================================

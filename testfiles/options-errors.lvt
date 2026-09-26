@@ -1,0 +1,19 @@
+% Contract: unknown options and invalid option values raise errors.
+\input{regression-test}
+\documentclass{article}
+% Load the dependencies before \START so that only argumentation's own
+% messages end up in the log.
+\RequirePackage{amsbsy,amsmath,pgfopts,xspace,xcolor,tikz}
+\usetikzlibrary{positioning,arrows.meta,arrows,decorations.markings,calc}
+\START
+% Suppress the \wlog lines for register allocations etc.
+\makeatletter\let\argtest@wlog\wlog\let\wlog\@gobble\makeatother
+\usepackage[nosuchoption,argumentstyle=nosuchvalue,junction dist=1ex]{argumentation}
+\makeatletter\let\wlog\argtest@wlog\makeatother
+\OMIT % font and driver setup at \begin{document} is not part of the test
+\begin{document}
+\TIMO
+\TEST{invalid value in af options}{%
+  \setbox0\hbox{\begin{af}[namestyle=nosuchvalue]\end{af}}%
+}
+\END

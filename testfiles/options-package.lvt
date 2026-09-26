@@ -1,0 +1,23 @@
+% Contract: every package option is processed when given to \usepackage.
+% All options are set to a non-default value; see options-defaults for the defaults.
+\input{regression-test}
+\documentclass{article}
+\usepackage[
+  argumentstyle=gray,
+  attackstyle=modern,
+  supportstyle=dashed,
+  junctiondist=2ex,
+  namestyle=math,
+  indexing=alphabetic,
+  macros,
+]{argumentation}
+\input{argumentation-test}
+\begin{document}
+\START
+\TEST{package options}{%
+  \setbox0\hbox{\begin{af}\SHOWOPTIONS\end{af}}%
+}
+\TEST{indexing=alphabetic generates a, b, ...}{%
+  \setbox0\hbox{\begin{af}\argument{x}\argument{y}\SHOWID{a}\SHOWID{b}\SHOWID{a1}\end{af}}%
+}
+\END

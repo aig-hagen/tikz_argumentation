@@ -1,0 +1,51 @@
+% Warnings and errors the package raises for unintended use.
+\input{regression-test}
+\documentclass{article}
+\usepackage{argumentation}
+\input{argumentation-test}
+\newcommand\SMOKE[1]{\setbox0\hbox{\begin{af}#1\end{af}}}
+\begin{document}
+\START
+\TEST{duplicate id: same type}{%
+  \SMOKE{\argument(x){x}\argument(x){x}}
+}
+\TEST{duplicate id: different types}{%
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\attack(x){x}{y}}
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\support(y){x}{y}}
+  \SMOKE{\argument(x){x}\annotation(x){x} at (1,1)}
+  \SMOKE{\argument(caption){x}\afname{name}}
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\attack(e){x}{y}\setattack(e){x}{y}}
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\setattack(e){x}{y}\argument(e-1){z}}
+}
+\TEST{duplicate id: automatic ids clash with explicit ones}{%
+  \SMOKE{\argument(a2){x}\argument{y}\argument{z}}
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\attack(att2){x}{y}\attack{y}{x}}
+}
+\TEST{no warning: same-type reuse with explicit overlay}{%
+  \SMOKE{\argument<1>(x){x}\argument<2->[fill=red](x){x}}
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\attack<1>(e){x}{y}\attack<2->[red](e){x}{y}}
+}
+\TEST{no warning: ids are per af}{%
+  \SMOKE{\argument(x){x}}
+  \SMOKE{\argument(x){x}}
+}
+\TEST{deprecated: \annotation{argId}{text}}{%
+  \SMOKE{\argument(x){x}\annotation{x}{legacy}\SHOWID{an_x}}
+  \SMOKE{\argument(x){x}\annotation[red](note){x}{legacy}\SHOWID{note}}
+}
+\TEST{not deprecated: \annotation{text} followed by a group}{%
+  \SMOKE{\argument(x){x}\annotation[right=of x]{unknown}{\relax}}
+}
+\TEST{deprecated: \annotatedattack}{%
+  \SMOKE{\argument(x){x}\argument[right=of x](y){y}\annotatedattack{x}{y}{text}}
+}
+\TEST{error: _ outside math mode with a text namestyle}{%
+  \SMOKE{\argument{a_1}}
+  \SMOKE{\argument{$a_1$}\argument{\ensuremath{a_1}}\argument{\(a_1\)}}
+}
+\TEST{error: missing argument id with indexing=none}{%
+  \setbox0\hbox{\begin{af}[indexing=none]\argument{$x_1$}\SHOWID{a1}\end{af}}
+  % must not take over the id of the previous argument
+  \setbox0\hbox{\begin{af}[indexing=none]\argument(x){x}\argument[right=of x]{y}\SHOWID{x}\SHOWID{a2}\end{af}}
+}
+\END

@@ -1,0 +1,21 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: package options
+============================================================
+style argument = {\pgfkeysalso {argument gray,argument size}}
+key /argumentation/attack tip = {To[sharp,length=0.65ex,line width=0.05em]}
+style support = {\pgfkeysalso {support dashed}}
+key /argumentation/junction dist = {2ex}
+covered: transparent
+indexing: alphabetic
+macros: true
+namestyle: math
+============================================================
+============================================================
+TEST 2: indexing=alphabetic generates a, b, ...
+============================================================
+id a: argument
+id b: argument
+id a1: -
+============================================================

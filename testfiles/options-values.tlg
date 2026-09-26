@@ -1,0 +1,268 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: argumentstyle
+============================================================
+[argumentstyle=standard]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[argumentstyle=large]
+style argument = {\pgfkeysalso {argument large,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[argumentstyle=thick]
+style argument = {\pgfkeysalso {argument thick,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[argumentstyle=gray]
+style argument = {\pgfkeysalso {argument gray,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[argumentstyle=colored]
+style argument = {\pgfkeysalso {argument colored,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 2: attackstyle
+============================================================
+[attackstyle=standard]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[attackstyle=large]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {Stealth[scale=1.25]}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[attackstyle=modern]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {To[sharp,length=0.65ex,line width=0.05em]}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 3: supportstyle
+============================================================
+[supportstyle=marked]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support marked}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[supportstyle=dashed]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support dashed}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[supportstyle=double]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 4: namestyle
+============================================================
+[namestyle=none]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[namestyle=math]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: math
+[namestyle=bold]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: bold
+[namestyle=monospace]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: monospace
+[namestyle=monoemph]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: monoemph
+============================================================
+============================================================
+TEST 5: indexing
+============================================================
+[indexing=none]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: none
+macros: false
+namestyle: none
+[indexing=alphabetic]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: alphabetic
+macros: false
+namestyle: none
+[indexing=numeric]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[indexing]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 6: junction dist
+============================================================
+[junction dist=3ex]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {3ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 7: covered
+============================================================
+[covered=invisible]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: invisible
+indexing: numeric
+macros: false
+namestyle: none
+[covered=transparent]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+[covered]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================
+============================================================
+TEST 8: af options are local to the environment
+============================================================
+[argumentstyle=gray,attackstyle=large,supportstyle=marked,namestyle=bold,indexing=none,junction dist=3ex,covered=invisible]
+style argument = {\pgfkeysalso {argument gray,argument size}}
+key /argumentation/attack tip = {Stealth[scale=1.25]}
+style support = {\pgfkeysalso {support marked}}
+key /argumentation/junction dist = {3ex}
+covered: invisible
+indexing: none
+macros: false
+namestyle: bold
+[]
+style argument = {\pgfkeysalso {argument standard,argument size}}
+key /argumentation/attack tip = {stealth'}
+style support = {\pgfkeysalso {support double}}
+key /argumentation/junction dist = {1ex}
+covered: transparent
+indexing: numeric
+macros: false
+namestyle: none
+============================================================

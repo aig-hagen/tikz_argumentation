@@ -1,0 +1,53 @@
+% Contract: every documented value of every option is accepted per af environment
+% and has the documented effect. build.lua checks that each choice key=value of the
+% package appears in this file.
+\input{regression-test}
+\documentclass{article}
+\usepackage{argumentation}
+\input{argumentation-test}
+\newcommand\SHOWIN[1]{\setbox0\hbox{\begin{af}[#1]\TYPE{[#1]}\SHOWOPTIONS\end{af}}}
+\begin{document}
+\START
+\TEST{argumentstyle}{%
+  \SHOWIN{argumentstyle=standard}
+  \SHOWIN{argumentstyle=large}
+  \SHOWIN{argumentstyle=thick}
+  \SHOWIN{argumentstyle=gray}
+  \SHOWIN{argumentstyle=colored}
+}
+\TEST{attackstyle}{%
+  \SHOWIN{attackstyle=standard}
+  \SHOWIN{attackstyle=large}
+  \SHOWIN{attackstyle=modern}
+}
+\TEST{supportstyle}{%
+  \SHOWIN{supportstyle=marked}
+  \SHOWIN{supportstyle=dashed}
+  \SHOWIN{supportstyle=double}
+}
+\TEST{namestyle}{%
+  \SHOWIN{namestyle=none}
+  \SHOWIN{namestyle=math}
+  \SHOWIN{namestyle=bold}
+  \SHOWIN{namestyle=monospace}
+  \SHOWIN{namestyle=monoemph}
+}
+\TEST{indexing}{%
+  \SHOWIN{indexing=none}
+  \SHOWIN{indexing=alphabetic}
+  \SHOWIN{indexing=numeric}
+  \SHOWIN{indexing}
+}
+\TEST{junction dist}{%
+  \SHOWIN{junction dist=3ex}
+}
+\TEST{covered}{%
+  \SHOWIN{covered=invisible}
+  \SHOWIN{covered=transparent}
+  \SHOWIN{covered}
+}
+\TEST{af options are local to the environment}{%
+  \SHOWIN{argumentstyle=gray,attackstyle=large,supportstyle=marked,namestyle=bold,indexing=none,junction dist=3ex,covered=invisible}
+  \SHOWIN{}
+}
+\END
