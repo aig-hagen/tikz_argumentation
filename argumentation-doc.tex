@@ -967,12 +967,13 @@ For the exact definitions of these parameters, refer to Section~\ref{sec:paramet
 \begin{align*}
     \mathsf{none} &\quad \text{No effect applied to argument name.}\\
     \mathsf{math} &\quad \text{The argument name is rendered as $math$ text.}\\
-    &\quad\quad \text{(name must be given without mathmode).}\\
+    &\quad\quad \text{(name may be given with or without mathmode, e.g.\ \texttt{a\_1} or \texttt{\$a\_1\$}).}\\
     \mathsf{bold} &\quad \text{The argument name is rendered in $\boldsymbol{bold}$.}\\
-    &\quad\quad \text{(name must be given without mathmode).}\\
+    &\quad\quad \text{(name may be given with or without mathmode, e.g.\ \texttt{a\_1} or \texttt{\$a\_1\$}).}\\
     \mathsf{monospace} &\quad \text{The argument name is rendered in \texttt{monospace} font.}\\
-    &\quad\quad \text{(name must be given without mathmode).}\\
-    \mathsf{monoemph} &\quad \text{The argument name is rendered as {\ttfamily\emph{name}}.}
+    &\quad\quad \text{(subscripts and math symbols must be given in mathmode, e.g.\ \texttt{\$a\_1\$}).}\\
+    \mathsf{monoemph} &\quad \text{The argument name is rendered as {\ttfamily\emph{name}}.}\\
+    &\quad\quad \text{(subscripts and math symbols must be given in mathmode, e.g.\ \texttt{\$a\_1\$}).}
 \end{align*}
 
 \begin{figure}[!ht]
@@ -1099,15 +1100,14 @@ You may use or redefine them at your own discretion.
 \subsection*{[v1.8 2026/07/08]}
 \begin{itemize}
     \item Changed the signature of \verb|\annotation| to match \verb|\argument|.
-    \item Added an optional \texttt{(id)} parameter to \verb|\attack|, \verb|\support|, \verb|\selfattack|, \verb|\dualattack|, \verb|\setattack| and \verb|\setsupport|, naming a coordinate on the edge that can be referenced like any other node. Defaults to automatically numbered identifiers (\textsf{att1}, \textsf{att2}, \dots for attacks; \textsf{supp1}, \textsf{supp2}, \dots for supports).
-    \item Attack and support edges now always create a referenceable coordinate, even without an \popt{annotation}; previously no node was created in that case.
+    \item Added an optional \texttt{(id)} parameter to \verb|\attack|, \verb|\support|, \verb|\selfattack|, \verb|\dualattack|, \verb|\setattack| and \verb|\setsupport|. Defaults to (\textsf{att1}, \textsf{att2}, \dots for attacks; \textsf{supp1}, \textsf{supp2}, \dots for supports).
+    \item Attack and support edges now always create a referenceable coordinate, even without an \popt{annotation}.
     \item \verb|\setattack|/\verb|\setsupport| additionally name each individual source-to-junction curve (\texttt{id-1}, \texttt{id-2}, \dots).
-    \item Unknown package options now raise an error instead of being silently ignored.
-    \item A warning is now issued when an identifier is used more than once within the same \texttt{af} environment (except when the same kind of element is redrawn with an explicit overlay specification).
-    \item Fixed a bug where automatically generated identifiers for attacks, supports and annotations were not reset between separate \texttt{af} environments (only argument identifiers were).
-    \item Fixed spurious horizontal spaces around the \texttt{af} and \texttt{af*} environments, which added extra whitespace when placing AFs inline or side by side.
     \item The \texttt{indexing} option can now also be set per \texttt{af} environment; fixed switching from \textit{alphabetic} back to \textit{numeric} indexing.
+    \item Fixed spurious horizontal spaces around the \texttt{af} and \texttt{af*} environments, which added extra whitespace when placing AFs inline or side by side.
     \item Fixed \verb|\afref| only linking the index instead of the full reference when \textsf{hyperref} is loaded after the \argumentation package.
+    \item Added various package errors and warnings for unintended behavior.
+    \item Various fixes regarding the \textsf{namestyle} options.
 \end{itemize}
 
 \subsection*{[v1.7 2026/06/20]}

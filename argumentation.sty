@@ -98,6 +98,51 @@
     %%% Defines the font style in which argument names are displayed
     \newcommand{\@arg@style}[1]{#1}
 
+    %%% Math body of the math/bold namestyles: \mathit, so multi-letter names read as words.
+    %%% The name is already set in math mode, so $ signs in it are dropped (they would otherwise
+    %%% end the math mode opened by \ensuremath), and spaces are kept as explicit math spaces.
+    \ExplSyntaxOn
+    \tl_new:N \l__argumentation_name_tl
+    \regex_const:Nn \c__argumentation_mathshift_regex { \cM\$ }
+    \regex_const:Nn \c__argumentation_space_regex { \s }
+    \cs_new_protected:Npn \@arg@mathname #1 {
+        \tl_set:Nn \l__argumentation_name_tl {#1}
+        \tl_trim_spaces:N \l__argumentation_name_tl
+        \regex_replace_all:NnN \c__argumentation_mathshift_regex { } \l__argumentation_name_tl
+        \regex_replace_all:NnN \c__argumentation_space_regex { \c{\ } } \l__argumentation_name_tl
+        \mathit { \l__argumentation_name_tl }
+    }
+
+    %%% Body of the text-mode namestyles (none/monospace/monoemph). A _ or ^ outside of
+    %%% $...$ / \(...\) would make TeX fail with "Missing $ inserted" at the wrong line and
+    %%% garble the rest of the picture, so raise a clear error and print the name verbatim.
+    %%% Only top-level tokens are checked, so \ensuremath{a_1} or \mbox{$a_1$} are fine.
+    \bool_new:N \l__argumentation_inmath_bool
+    \bool_new:N \l__argumentation_badname_bool
+    \msg_new:nnnn { argumentation } { name-outside-math }
+        { Argument~name~'#1'~contains~_~or~\iow_char:N \^~outside~math~mode. }
+        { Write~the~math~part~in~math~mode~(e.g.~\iow_char:N \$a_1\iow_char:N \$)~or~use~namestyle=math. }
+    \cs_new_protected:Npn \@arg@textname #1 {
+        \bool_set_false:N \l__argumentation_inmath_bool
+        \bool_set_false:N \l__argumentation_badname_bool
+        \tl_map_inline:nn {#1} {
+            \tl_if_single_token:nT {##1} {
+                \token_if_math_toggle:NT ##1 { \bool_set_inverse:N \l__argumentation_inmath_bool }
+                \token_if_eq_meaning:NNT ##1 \( { \bool_set_true:N \l__argumentation_inmath_bool }
+                \token_if_eq_meaning:NNT ##1 \) { \bool_set_false:N \l__argumentation_inmath_bool }
+                \bool_if:NF \l__argumentation_inmath_bool {
+                    \token_if_math_subscript:NT ##1 { \bool_set_true:N \l__argumentation_badname_bool }
+                    \token_if_math_superscript:NT ##1 { \bool_set_true:N \l__argumentation_badname_bool }
+                }
+            }
+        }
+        \bool_if:NTF \l__argumentation_badname_bool {
+            \msg_error:nnx { argumentation } { name-outside-math } { \tl_to_str:n {#1} }
+            \tl_to_str:n {#1}
+        } {#1}
+    }
+    \ExplSyntaxOff
+
     % Dummy command in case the beamer documentclass is not loaded
     \ProvideDocumentCommand{ \alt } {r<> m m} {#2}
 
@@ -203,11 +248,11 @@
     \makeatletter
     \pgfkeys{/argumentation/.cd,
         namestyle/.is choice,
-        namestyle/none/.code={\renewcommand{\@arg@style}[1]{##1}},
-        namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{##1}}},
-        namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{##1}}}},
-        namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily##1}}},
-        namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape##1}}},
+        namestyle/none/.code={\renewcommand{\@arg@style}[1]{\@arg@textname{##1}}},
+        namestyle/math/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\@arg@mathname{##1}}}},
+        namestyle/bold/.code={\renewcommand{\@arg@style}[1]{\ensuremath{\boldsymbol{\@arg@mathname{##1}}}}},
+        namestyle/monospace/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\@arg@textname{##1}}}},
+        namestyle/monoemph/.code={\renewcommand{\@arg@style}[1]{{\ttfamily\itshape\@arg@textname{##1}}}},
         namestyle=none,
     }
 
