@@ -143,7 +143,13 @@
     \newcommand{\@ifidtype}[4]{%
         \edef\@ifidtype@found{\@idtypeof{#1}}%
         \edef\@ifidtype@want{#2}%
-        \ifx\@ifidtype@found\@ifidtype@want #3\else #4\fi
+        % Select the branch outside the \ifx so it can look ahead (\@ifnextchar) past this command
+        \ifx\@ifidtype@found\@ifidtype@want
+            \expandafter\@firstoftwo
+        \else
+            \expandafter\@secondoftwo
+        \fi
+        {#3}{#4}%
     }
 
     %%% Test whether ID #1 is registered as an edge (attack or support), i.e. whether
@@ -755,27 +761,79 @@
     %   #4 annotation text
     %   #5 ignored
     %   #6 absolute positioning values (optional)
+    % The pre-v1.8 form \annotation[options]{argId}{text} is still recognised: if no
+    % position was given, a brace group follows and #4 is an id already used in this af,
+    % the call is handed to \@annotation@legacy.
     \NewDocumentCommand { \annotation } {D<>{.-} O{} d() m dat d()} {%
+        \IfNoValueTF {#6}{%
+            \@ifnextchar\bgroup{%
+                \@ifknownid{#4}{%
+                    \@annotation@legacy{#1}{#2}{#3}{#4}%
+                }{%
+                    \@create@annotation{#1}{#2}{#3}{#4}{}%
+                }%
+            }{%
+                \@create@annotation{#1}{#2}{#3}{#4}{}%
+            }%
+        }{%
+            \@create@annotation{#1}{#2}{#3}{#4}{#6}%
+        }%
+    }
+
+    %%% Test whether #1 is an id registered in the current picture. Unlike \@idtypeof,
+    %%% safe for arbitrary text (e.g. math), since #1 is detokenized.
+    %   #1 candidate id, #2 true branch, #3 false branch
+    \newcommand{\@ifknownid}[3]{%
+        \ifcsname @idtype@\the\@afpicturecnt @\detokenize{#1}\endcsname
+            \expandafter\@firstoftwo
+        \else
+            \expandafter\@secondoftwo
+        \fi
+        {#2}{#3}%
+    }
+
+    %%% Deprecated pre-v1.8 form: \annotation[options]{argId}{text}, placed above argId
+    %   #1 beamer overlay specification
+    %   #2 TikZ parameters
+    %   #3 unique annotation ID (optional; defaults to the old name an_<argId>)
+    %   #4 argument ID
+    %   #5 annotation text
+    \NewDocumentCommand { \@annotation@legacy } {mmmmm} {%
+        \PackageWarning{argumentation}{\string\annotation{#4}{...} is deprecated;\MessageBreak use \string\annotation[above=of #4]{...} instead}%
+        \IfNoValueTF {#3}{%
+            \@create@annotation{#1}{above=of #4,#2}{an_#4}{#5}{}%
+        }{%
+            \@create@annotation{#1}{above=of #4,#2}{#3}{#5}{}%
+        }%
+    }
+
+    %%% Internal command for creating the annotation node
+    %   #1 beamer overlay specification
+    %   #2 TikZ parameters
+    %   #3 unique annotation ID (optional)
+    %   #4 annotation text
+    %   #5 absolute positioning values (empty for none)
+    \NewDocumentCommand { \@create@annotation } {mmmmm} {%
         \global\advance\@annotationcnt by 1
         \IfNoValueTF {#3}{%
-            \edef\@annid{annotation\the\@annotationcnt}
+            \edef\@annid{annotation\the\@annotationcnt}%
         }{%
-            \edef\@annid{#3}
-        }
+            \edef\@annid{#3}%
+        }%
         \@registerid{\@annid}{other}{#1}%
-        \alt<#1>{
-            \IfNoValueTF {#6}{%
-                \node[annotation,#2](\@annid){#4};
-            }{%
-                \node[annotation,#2](\@annid) at (#6) {#4};
-            }
+        \alt<#1>{%
+            \if\relax\detokenize{#5}\relax
+                \node[annotation,#2](\@annid){#4};%
+            \else
+                \node[annotation,#2](\@annid) at (#5) {#4};%
+            \fi
         }{%
-            \IfNoValueTF {#6}{%
-                \node[annotation,invisible,#2](\@annid){#4};
-            }{%
-                \node[annotation,invisible,#2](\@annid) at (#6) {#4};
-            }
-        }
+            \if\relax\detokenize{#5}\relax
+                \node[annotation,invisible,#2](\@annid){#4};%
+            \else
+                \node[annotation,invisible,#2](\@annid) at (#5) {#4};%
+            \fi
+        }%
     }
     \makeatother
 

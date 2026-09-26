@@ -638,6 +638,8 @@ It behaves essentially exactly like the \cs[0cm]{argument} command: there is no 
     \item[\popt{posX},\popt{posY}] (optional) the coordinates for placement. Omit if using relative positioning.\\
 \end{description}
 
+The form \cs[0cm]{annotation[\oopt{options}]\{\mopt{argId}\}\{\mopt{value}\}} of earlier versions is deprecated, but still recognised: it places the annotation \verb|above=of| \mopt{argId}, names it \textsf{an\_}\mopt{argId} and issues a warning.\\
+
 The command \cs[0cm]{afname} can be used to create a simple text node inside the AF.
 Mainly intended to add the name of the AF into the picture, you can generally put any text there.
 The command behaves essentially exactly like the \cs[0cm]{argument} command.\\
@@ -661,6 +663,8 @@ For that you may also reuse some of the pre-defined parameters of the \argumenta
 
 \noindent\cs{setannotationstyle \{\mopt{style parameters}\}}\\
 
+Note that these commands replace the respective style entirely.\\
+
 Similarly, you can also use the following command to override the default settings of the \texttt{af} environment, e.\,g., the \texttt{node distance}.\\
 
 \noindent\cs{setafstyle \{\mopt{style parameters}\}}\\
@@ -676,7 +680,6 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
         \centering
         \setargumentstyle{argument thick,text=blue}
         \setafstyle{node distance=0.75cm}
-        \setannotationstyle{node distance=1ex}
         \begin{af}
             \label{af:8}
             \argument{a}
@@ -696,7 +699,6 @@ Finally, when using the $\textsf{argumentstyle}{=}\emph{colored}$ package option
         \begin{verbatim}
             \setargumentstyle{argument thick,text=blue}
             \setafstyle{node distance=0.75cm}
-            \setannotationstyle{node distance=1ex}
             \begin{af}\label{af:8}
                 ...
 
@@ -1096,6 +1098,7 @@ You may use or redefine them at your own discretion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{[v1.8 2026/07/08]}
 \begin{itemize}
+    \item Changed the signature of \verb|\annotation| to match \verb|\argument|.
     \item Added an optional \texttt{(id)} parameter to \verb|\attack|, \verb|\support|, \verb|\selfattack|, \verb|\dualattack|, \verb|\setattack| and \verb|\setsupport|, naming a coordinate on the edge that can be referenced like any other node. Defaults to automatically numbered identifiers (\textsf{att1}, \textsf{att2}, \dots for attacks; \textsf{supp1}, \textsf{supp2}, \dots for supports).
     \item Attack and support edges now always create a referenceable coordinate, even without an \popt{annotation}; previously no node was created in that case.
     \item \verb|\setattack|/\verb|\setsupport| additionally name each individual source-to-junction curve (\texttt{id-1}, \texttt{id-2}, \dots).
